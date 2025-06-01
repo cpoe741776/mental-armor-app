@@ -1,25 +1,22 @@
-import logo from './logo.svg';
-import './App.css';
+// src/App.js
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './home';                     // ← new Home component
+import Library from './library';
+import SkillDetail from './SkillDetail';
+import EnterScores from './EnterScores';
+import RepairKit from './RepairKit';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
-
-export default App;
+ export default function App() {
+   return (
+     <Router>
+       <Routes>
++        <Route path="/" element={<Home />} />            {/* ← show Home at root */}
++        <Route path="/library" element={<Library />} /> {/* ← Library moved to /library */}
+         <Route path="/skill/:id" element={<SkillDetail />} />
+         <Route path="/enter-scores" element={<EnterScores />} />
+         <Route path="/repair-kit" element={<RepairKit />} />
+       </Routes>
+     </Router>
+   );
+ }
