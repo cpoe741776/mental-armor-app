@@ -30,7 +30,7 @@ export const skills = [
     brief: 'Identify and apply your character strengths in new contexts.',
     trainer: 'AJ',
     trainerImage: '/aj.jpg',
-    videoUrl: '/videos/fys.mp4',
+    videoUrl: 'https://videos.files.wordpress.com/HXvYn4pz/fys.mp4',
     goal: 'Identify and apply your strengths at work and home.',
     when: 'When you want to leverage your unique talents.',
     benefits: [
@@ -181,6 +181,7 @@ export const skills = [
     brief: 'Evaluate thoughts against evidence to make balanced decisions.',
     trainer: 'Terry',
     trainerImage: '/terry.jpg',
+    videoUrl: 'https://videos.files.wordpress.com/R6fW11cK/bytintro.mp4',
     goal: 'Help you see situations accurately and take action based on evidence.',
     when: 'When you recognize biased or rushed thinking.',
     benefits: [
