@@ -1,50 +1,55 @@
 // netlify/functions/saveUserMetadata.js
 const fetch = require('node-fetch');
+const { Buffer } = require('buffer');
 
 exports.handler = async (event, context) => {
   // Debug logging
   console.log('▶ saveUserMetadata invoked');
   console.log('▶ event.httpMethod:', event.httpMethod);
   console.log('▶ context.clientContext.identity:', context.clientContext?.identity);
-  console.log('▶ raw event.body:', event.body);
   console.log('▶ NETLIFY_IDENTITY_URL:', process.env.NETLIFY_IDENTITY_URL);
   console.log('▶ NETLIFY_IDENTITY_TOKEN:', process.env.NETLIFY_IDENTITY_TOKEN ? '<<present>>' : '<<missing>>');
 
-  // 1. Ensure the request is from a logged-in user
+  // 1. Ensure request is authenticated
   const identity = context.clientContext?.identity;
-  if (!identity) {
-    console.log('‼ saveUserMetadata: Not authenticated');
-    return {
-      statusCode: 401,
-      body: JSON.stringify({ error: 'Not authenticated' }),
-    };
+  const idToken = identity?.token;
+  if (!idToken) {
+    console.error('‼ saveUserMetadata: Not authenticated or missing token');
+    return { statusCode: 401, body: JSON.stringify({ error: 'Not authenticated' }) };
   }
 
-  const userId = identity.sub;
-  console.log('▶ saveUserMetadata: userId =', userId);
-
-  // 2. Parse incoming JSON (it may contain visitedSkills and/or mfaScores)
-  let payload;
+  // 2. Decode JWT to extract userId (sub claim)
+  let userId;
   try {
-    payload = JSON.parse(event.body);
-    console.log('▶ saveUserMetadata: parsed payload =', payload);
-  } catch (parseErr) {
-    console.error('‼ saveUserMetadata: Invalid JSON body', parseErr);
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'Invalid JSON body' }),
-    };
+    const payload = idToken.split('.')[1];
+    const decoded = JSON.parse(Buffer.from(payload, 'base64').toString('utf8'));
+    userId = decoded.sub;
+    console.log('▶ saveUserMetadata: decoded userId =', userId);
+  } catch (err) {
+    console.error('‼ saveUserMetadata: Error decoding token', err);
+    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid token' }) };
   }
 
-  const metadataUpdates = {};
-  if (payload.visitedSkills !== undefined) metadataUpdates.visitedSkills = payload.visitedSkills;
-  if (payload.mfaScores     !== undefined) metadataUpdates.mfaScores     = payload.mfaScores;
-  console.log('▶ saveUserMetadata: metadataUpdates =', metadataUpdates);
+  // 3. Parse incoming JSON
+  let bodyData;
+  try {
+    bodyData = JSON.parse(event.body);
+    console.log('▶ saveUserMetadata: parsed body =', bodyData);
+  } catch (err) {
+    console.error('‼ saveUserMetadata: Invalid JSON body', err);
+    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON body' }) };
+  }
 
-  // 3. PATCH the user record with the new user_metadata
+  // 4. Build metadata updates
+  const updates = {};
+  if (bodyData.visitedSkills !== undefined) updates.visitedSkills = bodyData.visitedSkills;
+  if (bodyData.mfaScores     !== undefined) updates.mfaScores     = bodyData.mfaScores;
+  console.log('▶ saveUserMetadata: metadata updates =', updates);
+
+  // 5. PATCH to Identity Admin API
   try {
     const url = `${process.env.NETLIFY_IDENTITY_URL}/admin/users/${encodeURIComponent(userId)}`;
-    console.log('▶ saveUserMetadata: PATCHing to URL =', url);
+    console.log('▶ saveUserMetadata: PATCH to', url);
 
     const resp = await fetch(url, {
       method: 'PATCH',
@@ -52,29 +57,20 @@ exports.handler = async (event, context) => {
         Authorization: `Bearer ${process.env.NETLIFY_IDENTITY_TOKEN}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ user_metadata: metadataUpdates }),
+      body: JSON.stringify({ user_metadata: updates }),
     });
 
-    console.log('▶ saveUserMetadata: Admin API responded with status', resp.status);
+    console.log('▶ saveUserMetadata: Admin API status =', resp.status);
     if (!resp.ok) {
       const text = await resp.text();
-      console.error('‼ saveUserMetadata: Error patching user metadata:', text);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: 'Could not update user metadata' }),
-      };
+      console.error('‼ saveUserMetadata: Admin API error body =', text);
+      return { statusCode: resp.status, body: JSON.stringify({ error: 'Could not update user metadata' }) };
     }
 
-    console.log('▶ saveUserMetadata: successful update');
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ message: 'User metadata updated' }),
-    };
+    console.log('▶ saveUserMetadata: update successful');
+    return { statusCode: 200, body: JSON.stringify({ message: 'User metadata updated' }) };
   } catch (err) {
-    console.error('‼ saveUserMetadata: Caught exception:', err);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Unexpected error' }),
-    };
+    console.error('‼ saveUserMetadata: Caught exception', err);
+    return { statusCode: 500, body: JSON.stringify({ error: 'Unexpected error' }) };
   }
 };
