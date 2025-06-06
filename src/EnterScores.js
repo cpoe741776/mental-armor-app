@@ -78,7 +78,7 @@ export default function EnterScores() {
     }
 
     // Navigate to Repair Kit
-    navigate('/repair-kit');
+    navigate('/profile');
   };
 
   return (
