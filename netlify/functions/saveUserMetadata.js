@@ -1,5 +1,5 @@
 // netlify/functions/saveUserMetadata.js
-const fetch = require('node-fetch');
+const fetch      = require('node-fetch');
 const { Buffer } = require('buffer');
 
 exports.handler = async (event, context) => {
@@ -10,18 +10,17 @@ exports.handler = async (event, context) => {
   console.log('▶ NETLIFY_IDENTITY_URL:', process.env.NETLIFY_IDENTITY_URL);
   console.log('▶ NETLIFY_IDENTITY_TOKEN:', process.env.NETLIFY_IDENTITY_TOKEN ? '<<present>>' : '<<missing>>');
 
-  // 1. Ensure request is authenticated
+  // 1. Verify the user is logged in and we have a JWT
   const identity = context.clientContext?.identity;
-  const idToken = identity?.token;
-  if (!idToken) {
+  if (!identity?.token) {
     console.error('‼ saveUserMetadata: Not authenticated or missing token');
     return { statusCode: 401, body: JSON.stringify({ error: 'Not authenticated' }) };
   }
 
-  // 2. Decode JWT to extract userId (sub claim)
+  // 2. Decode the JWT to extract the "sub" claim (the Netlify user ID)
   let userId;
   try {
-    const payload = idToken.split('.')[1];
+    const payload = identity.token.split('.')[1];
     const decoded = JSON.parse(Buffer.from(payload, 'base64').toString('utf8'));
     userId = decoded.sub;
     console.log('▶ saveUserMetadata: decoded userId =', userId);
@@ -30,7 +29,7 @@ exports.handler = async (event, context) => {
     return { statusCode: 400, body: JSON.stringify({ error: 'Invalid token' }) };
   }
 
-  // 3. Parse incoming JSON
+  // 3. Parse the incoming JSON body
   let bodyData;
   try {
     bodyData = JSON.parse(event.body);
@@ -40,16 +39,16 @@ exports.handler = async (event, context) => {
     return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON body' }) };
   }
 
-  // 4. Build metadata updates
+  // 4. Build the metadata updates object
   const updates = {};
   if (bodyData.visitedSkills !== undefined) updates.visitedSkills = bodyData.visitedSkills;
   if (bodyData.mfaScores     !== undefined) updates.mfaScores     = bodyData.mfaScores;
   console.log('▶ saveUserMetadata: metadata updates =', updates);
 
-  // 5. PATCH to Identity Admin API
+  // 5. Send the PATCH to the Netlify Identity Admin API
   try {
     const url = `${process.env.NETLIFY_IDENTITY_URL}/admin/users/${encodeURIComponent(userId)}`;
-    console.log('▶ saveUserMetadata: PATCH to', url);
+    console.log('▶ saveUserMetadata: PATCHing to', url);
 
     const resp = await fetch(url, {
       method: 'PATCH',
