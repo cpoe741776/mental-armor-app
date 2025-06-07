@@ -132,9 +132,18 @@ export default function Profile() {
           </div>
         ) : (
           <>
-            {/* Email & Actions */}
+            {/* Email & Actions with Avatar */}
             <div className="flex items-center justify-between">
-              <div><strong>Email:</strong> {user.email}</div>
+              <div className="flex items-center space-x-3">
+                {avatar && (
+                  <img
+                    src={AVATARS.find(a => a.id === avatar)?.src}
+                    alt="Your avatar"
+                    className="w-10 h-10 rounded-full"
+                  />
+                )}
+                <div><strong>Email:</strong> {user.email}</div>
+              </div>
               <div className="space-x-2">
                 <button
                   onClick={handleResetPassword}
@@ -151,7 +160,7 @@ export default function Profile() {
               </div>
             </div>
 
-            {/* Scores & Strengths + Avatar */}
+            {/* Scores & Strengths + Avatar Picker */}
             <div className="flex flex-col md:flex-row gap-8">
               <div className="flex-1 space-y-6">
                 <section>
@@ -207,14 +216,14 @@ export default function Profile() {
               {visitedSkillIds.length > 0 ? (
                 <ul className="list-disc list-inside text-gray-700">
                   {visitedSkillIds.map(id => {
-                    const skill=skills.find(s=>s.id===id)
-                    return skill?(
+                    const skill = skills.find(s => s.id === id)
+                    return skill ? (
                       <li key={id}>
                         <Link to={`/skill/${id}`} className="text-blue-600 hover:underline">
                           {skill.title}
                         </Link>
                       </li>
-                    ):null
+                    ) : null
                   })}
                 </ul>
               ) : (
@@ -227,17 +236,23 @@ export default function Profile() {
             {/* Suggested Skills */}
             <section>
               <h2 className="text-2xl font-semibold mb-4">Skills We Suggest</h2>
-              {suggestedSkills.length>0?(<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {suggestedSkills.map(skill=>(
-                  <Link key={skill.id} to={`/skill/${skill.id}`} className="block p-4 border rounded-lg hover:shadow-lg">
-                    <div className="font-semibold text-[#003049]">{skill.title}</div>
-                    <p className="text-gray-700 mt-1 line-clamp-2">{skill.brief}</p>
-                    <span className="text-blue-600 hover:underline mt-2 inline-block">Learn more →</span>
-                  </Link>
-                ))}
-              </div>):(
+              {suggestedSkills.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {suggestedSkills.map(skill => (
+                    <Link
+                      key={skill.id}
+                      to={`/skill/${skill.id}`}
+                      className="block p-4 border rounded-lg hover:shadow-lg"
+                    >
+                      <div className="font-semibold text-[#003049]">{skill.title}</div>
+                      <p className="text-gray-700 mt-1 line-clamp-2">{skill.brief}</p>
+                      <span className="text-blue-600 hover:underline mt-2 inline-block">Learn more →</span>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
                 <p className="text-gray-600">
-                  {mfaScores?'Keep reinforcing what you’ve learned!':'Enter your MFA scores.'}
+                  {mfaScores ? 'Keep reinforcing what you’ve learned!' : 'Enter your MFA scores.'}
                 </p>
               )}
             </section>
