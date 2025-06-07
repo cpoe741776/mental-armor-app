@@ -117,18 +117,28 @@ export default function EnterScores() {
         {/* Top 2 Character Strengths */}
         <div>
           <label className="block mb-1 text-gray-700">Select Your Top 2 Character Strengths</label>
+
+          {/* First dropdown */}
           <select
             value={strength1}
-            onChange={e => setStrength1(e.target.value)}
+            onChange={e => {
+              const val = e.target.value
+              setStrength1(val)
+              // If second strength matches new first, reset second
+              if (val === strength2) setStrength2('')
+            }}
             className="w-full p-2 border rounded mb-2"
             required
           >
             <option value="">-- Strength 1 --</option>
-            {strengthOptions.map(str => (
-              <option key={str} value={str}>{str}</option>
-            ))}
+            {strengthOptions
+              .filter(str => str !== strength2)
+              .map(str => (
+                <option key={str} value={str}>{str}</option>
+              ))}
           </select>
 
+          {/* Second dropdown: filter out the first selection */}
           <select
             value={strength2}
             onChange={e => setStrength2(e.target.value)}
@@ -136,9 +146,11 @@ export default function EnterScores() {
             required
           >
             <option value="">-- Strength 2 --</option>
-            {strengthOptions.map(str => (
-              <option key={str} value={str}>{str}</option>
-            ))}
+            {strengthOptions
+              .filter(str => str !== strength1)
+              .map(str => (
+                <option key={str} value={str}>{str}</option>
+              ))}
           </select>
         </div>
       </div>
