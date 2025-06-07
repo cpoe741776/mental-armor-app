@@ -37,7 +37,7 @@ export default function Profile() {
   const [suggestedSkills, setSuggestedSkills] = useState([])
   const [loading, setLoading] = useState(true)
 
-  // load profile metadata
+  // Load profile metadata
   const loadMetadata = (u) => {
     const { user_metadata = {} } = u
     const {
@@ -92,6 +92,7 @@ export default function Profile() {
       else alert(`Password reset email sent to ${user.email}.`)
     })
   }
+
   const updateAvatar = (newAvatar) => {
     if (!user) return
     const metadata = { ...(user.user_metadata || {}), avatar: newAvatar }
@@ -131,7 +132,7 @@ export default function Profile() {
           </div>
         ) : (
           <>
-            {/* Header with email & actions */}
+            {/* Email & Actions */}
             <div className="flex items-center justify-between">
               <div><strong>Email:</strong> {user.email}</div>
               <div className="space-x-2">
@@ -150,9 +151,8 @@ export default function Profile() {
               </div>
             </div>
 
-            {/* Side-by-side: Scores & Strengths and Avatars */}
+            {/* Scores & Strengths + Avatar */}
             <div className="flex flex-col md:flex-row gap-8">
-              {/* Left: Scores & Strengths */}
               <div className="flex-1 space-y-6">
                 <section>
                   <h2 className="text-2xl font-semibold mb-3">Your MFA Scores</h2>
@@ -165,7 +165,7 @@ export default function Profile() {
                     </ul>
                   ) : (
                     <p className="text-gray-600">
-                      No scores yet. Go to “Enter MFA Scores” to log yours.
+                      No scores yet. Go to “Enter MFA Scores”.
                     </p>
                   )}
                 </section>
@@ -178,13 +178,11 @@ export default function Profile() {
                     </ul>
                   ) : (
                     <p className="text-gray-600">
-                      No strengths selected. Head to “Enter MFA Scores.”
+                      No strengths selected. Go to “Enter MFA Scores”.
                     </p>
                   )}
                 </section>
               </div>
-
-              {/* Right: Avatar Picker */}
               <div className="w-32">
                 <h2 className="text-xl font-semibold mb-2 text-center">Avatar</h2>
                 <div className="grid grid-cols-2 gap-2">
@@ -194,7 +192,7 @@ export default function Profile() {
                       src={a.src}
                       alt={a.id}
                       className={`w-16 h-16 rounded-full cursor-pointer border-2 ${
-                        avatar === a.id ? 'border-blue-500' : 'border-transparent'
+                        avatar===a.id?'border-blue-500':'border-transparent'
                       }`}
                       onClick={() => updateAvatar(a.id)}
                     />
@@ -205,4 +203,47 @@ export default function Profile() {
 
             {/* Visited Skills */}
             <section>
-              <h2 className="text-2xl font-semibold mb-4">Skills You’ve Viewed</n
+              <h2 className="text-2xl font-semibold mb-4">Skills You’ve Viewed</h2>
+              {visitedSkillIds.length > 0 ? (
+                <ul className="list-disc list-inside text-gray-700">
+                  {visitedSkillIds.map(id => {
+                    const skill=skills.find(s=>s.id===id)
+                    return skill?(
+                      <li key={id}>
+                        <Link to={`/skill/${id}`} className="text-blue-600 hover:underline">
+                          {skill.title}
+                        </Link>
+                      </li>
+                    ):null
+                  })}
+                </ul>
+              ) : (
+                <p className="text-gray-600">
+                  No skills viewed yet.
+                </p>
+              )}
+            </section>
+
+            {/* Suggested Skills */}
+            <section>
+              <h2 className="text-2xl font-semibold mb-4">Skills We Suggest</h2>
+              {suggestedSkills.length>0?(<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {suggestedSkills.map(skill=>(
+                  <Link key={skill.id} to={`/skill/${skill.id}`} className="block p-4 border rounded-lg hover:shadow-lg">
+                    <div className="font-semibold text-[#003049]">{skill.title}</div>
+                    <p className="text-gray-700 mt-1 line-clamp-2">{skill.brief}</p>
+                    <span className="text-blue-600 hover:underline mt-2 inline-block">Learn more →</span>
+                  </Link>
+                ))}
+              </div>):(
+                <p className="text-gray-600">
+                  {mfaScores?'Keep reinforcing what you’ve learned!':'Enter your MFA scores.'}
+                </p>
+              )}
+            </section>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
