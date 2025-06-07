@@ -5,45 +5,112 @@ import Header from './Header'
 import { skills } from './skills'
 import netlifyIdentity from 'netlify-identity-widget'
 
-// Helper to map scores → suggested skills
+// Helper: map MFA scores → suggested skills
 function mapScoresToSkills(mfaScores) {
   if (!mfaScores) return []
   const THRESHOLD = 5
   const lowCats = []
-
   if (mfaScores.emotional <= THRESHOLD) lowCats.push('Emotional Fitness')
   if (mfaScores.social    <= THRESHOLD) lowCats.push('Social Fitness')
   if (mfaScores.family    <= THRESHOLD) lowCats.push('Family Fitness')
   if (mfaScores.spiritual <= THRESHOLD) lowCats.push('Spiritual Fitness')
-
   return skills.filter(skill => lowCats.includes(skill.category))
 }
 
-export default function Profile() {
-  const [visitedSkillIds, setVisitedSkillIds] = useState([])
-  const [mfaScores, setMfaScores]             = useState(null)
-  const [topStrengths, setTopStrengths]       = useState({ strength1: null, strength2: null })
-  const [suggestedSkills, setSuggestedSkills] = useState([])
-  const [loading, setLoading]                 = useState(true)
+// Eight resilience avatars
+const AVATARS = [
+  { id: 'flower',  label: 'Flower in Concrete', src: '/avatars/flower.png' },
+  { id: 'summit',  label: 'Summit Peak',        src: '/avatars/summit.png' },
+  { id: 'bicycle', label: 'First Bicycle',      src: '/avatars/bicycle.png' },
+  { id: 'sapling', label: 'Young Sapling',      src: '/avatars/sapling.png' },
+  { id: 'phoenix', label: 'Rising Phoenix',     src: '/avatars/phoenix.png' },
+  { id: 'wave',    label: 'Ocean Wave',         src: '/avatars/wave.png' },
+  { id: 'sunrise', label: 'New Dawn',           src: '/avatars/sunrise.png' },
+  { id: 'trail',   label: 'Mountain Trail',     src: '/avatars/trail.png' },
+]
 
-  useEffect(() => {
-    const user = netlifyIdentity.currentUser()
-    if (!user) {
-      setLoading(false)
-      return
-    }
-    // Read metadata directly from the user object
-    const { user_metadata = {} } = user
-    const { visitedSkills = [], mfaScores = null, topStrengths = {} } = user_metadata
+export default function Profile() {
+  const [user, setUser] = useState(null)
+  const [avatar, setAvatar] = useState('')
+  const [visitedSkillIds, setVisitedSkillIds] = useState([])
+  const [mfaScores, setMfaScores] = useState(null)
+  const [topStrengths, setTopStrengths] = useState({ strength1: null, strength2: null })
+  const [suggestedSkills, setSuggestedSkills] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  // load all profile metadata from the identity user
+  const loadMetadata = (u) => {
+    const { user_metadata = {} } = u
+    const {
+      visitedSkills = [],
+      mfaScores: scores = null,
+      topStrengths: strengths = {},
+      avatar: avatarId = '',
+    } = user_metadata
 
     setVisitedSkillIds(visitedSkills)
-    setMfaScores(mfaScores)
-    setTopStrengths(topStrengths)
-    setSuggestedSkills(mapScoresToSkills(mfaScores))
+    setMfaScores(scores)
+    setTopStrengths(strengths)
+    setSuggestedSkills(mapScoresToSkills(scores))
+    setAvatar(avatarId)
+  }
+
+  useEffect(() => {
+    netlifyIdentity.init()
+    const u = netlifyIdentity.currentUser()
+    if (u) {
+      setUser(u)
+      loadMetadata(u)
+    }
     setLoading(false)
+
+    const onLogin = (u) => {
+      setUser(u)
+      loadMetadata(u)
+    }
+    const onLogout = () => {
+      setUser(null)
+      setVisitedSkillIds([])
+      setMfaScores(null)
+      setTopStrengths({ strength1: null, strength2: null })
+      setSuggestedSkills([])
+      setAvatar('')
+    }
+
+    netlifyIdentity.on('login', onLogin)
+    netlifyIdentity.on('logout', onLogout)
+    return () => {
+      netlifyIdentity.off('login', onLogin)
+      netlifyIdentity.off('logout', onLogout)
+    }
   }, [])
 
-  const user = netlifyIdentity.currentUser()
+  const handleLoginClick     = () => netlifyIdentity.open('login')
+  const handleLogoutClick    = () => netlifyIdentity.logout()
+  const handleResetPassword  = () => {
+    if (!user) return
+    netlifyIdentity.forgotPassword(user.email, (err) => {
+      if (err) {
+        alert('Error sending reset email: ' + err.message)
+      } else {
+        alert(`Password reset email sent to ${user.email}.`)
+      }
+    })
+  }
+  const updateAvatar = (newAvatar) => {
+    if (!user) return
+    const metadata = { ...(user.user_metadata || {}), avatar: newAvatar }
+    user
+      .update({ user_metadata: metadata })
+      .then((u) => {
+        setUser(u)
+        setAvatar(newAvatar)
+      })
+      .catch((err) => {
+        alert('Error updating avatar: ' + err.message)
+      })
+  }
+
   if (loading) {
     return (
       <div className="py-12 text-center">
@@ -55,14 +122,13 @@ export default function Profile() {
   return (
     <div className="bg-white min-h-screen pb-24">
       <Header title="Your Profile" />
-
-      <div className="container mx-auto px-4 py-8 space-y-12">
+      <div className="container mx-auto px-4 py-8 space-y-8">
         {!user ? (
           <div className="text-center text-gray-600">
             <p>
               Please{' '}
               <button
-                onClick={() => netlifyIdentity.open('login')}
+                onClick={handleLoginClick}
                 className="text-blue-600 underline"
               >
                 log in
@@ -72,14 +138,53 @@ export default function Profile() {
           </div>
         ) : (
           <>
-            {/* Section: MFA Scores */}
+            {/* Email + Actions */}
+            <div className="flex items-center justify-between">
+              <div><strong>Email:</strong> {user.email}</div>
+              <div className="space-x-2">
+                <button
+                  onClick={handleResetPassword}
+                  className="px-4 py-2 bg-yellow-400 rounded"
+                >
+                  Reset Password
+                </button>
+                <button
+                  onClick={handleLogoutClick}
+                  className="px-4 py-2 bg-red-400 rounded"
+                >
+                  Log Out
+                </button>
+              </div>
+            </div>
+
+            {/* Avatar Picker */}
+            <section>
+              <h2 className="text-2xl font-semibold mb-4">Choose Your Avatar</h2>
+              <div className="grid grid-cols-4 gap-4">
+                {AVATARS.map((a) => (
+                  <div key={a.id} className="text-center">
+                    <img
+                      src={a.src}
+                      alt={a.label}
+                      className={`w-24 h-24 rounded-full cursor-pointer border-4 ${
+                        avatar === a.id ? 'border-blue-500' : 'border-transparent'
+                      }`}
+                      onClick={() => updateAvatar(a.id)}
+                    />
+                    <div className="text-sm mt-1">{a.label}</div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* MFA Scores */}
             <section>
               <h2 className="text-2xl font-semibold mb-4">Your Latest MFA Scores</h2>
               {mfaScores ? (
                 <ul className="list-disc list-inside text-gray-700">
                   <li><strong>Emotional:</strong> {mfaScores.emotional}</li>
-                  <li><strong>Social:</strong> {mfaScores.social}</li>
-                  <li><strong>Family:</strong> {mfaScores.family}</li>
+                  <li><strong>Social:</strong>    {mfaScores.social}</li>
+                  <li><strong>Family:</strong>    {mfaScores.family}</li>
                   <li><strong>Spiritual:</strong> {mfaScores.spiritual}</li>
                 </ul>
               ) : (
@@ -89,7 +194,7 @@ export default function Profile() {
               )}
             </section>
 
-            {/* Section: Top Strengths */}
+            {/* Top Strengths */}
             <section>
               <h2 className="text-2xl font-semibold mb-4">Your Top 2 Strengths</h2>
               {(topStrengths.strength1 || topStrengths.strength2) ? (
@@ -104,7 +209,7 @@ export default function Profile() {
               )}
             </section>
 
-            {/* Section: Visited Skills */}
+            {/* Visited Skills */}
             <section>
               <h2 className="text-2xl font-semibold mb-4">Skills You’ve Viewed</h2>
               {visitedSkillIds.length > 0 ? (
@@ -129,7 +234,7 @@ export default function Profile() {
               )}
             </section>
 
-            {/* Section: Suggested Skills */}
+            {/* Suggested Skills */}
             <section>
               <h2 className="text-2xl font-semibold mb-4">Skills We Suggest</h2>
               {suggestedSkills.length > 0 ? (
