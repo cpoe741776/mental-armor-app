@@ -150,7 +150,7 @@ export default function Profile() {
               </div>
             </div>
 
-            {/* Side-by-side: Scores/Strengths and Avatars */}
+            {/* Side-by-side: Scores & Strengths and Avatars */}
             <div className="flex flex-col md:flex-row gap-8">
               {/* Left: Scores & Strengths */}
               <div className="flex-1 space-y-6">
@@ -203,10 +203,6 @@ export default function Profile() {
               </div>
             </div>
 
-            {/* Other sections unchanged... */}
-          </>
-        )}
-      </div>
-    </div>
-  )
-}
+            {/* Visited Skills */}
+            <section>
+              <h2 className="text-2xl font-semibold mb-4">Skills You’ve Viewed</n
