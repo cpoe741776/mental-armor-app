@@ -38,17 +38,29 @@ export default function Profile() {
   const [suggestedSkills, setSuggestedSkills] = useState([])
   const [loading, setLoading] = useState(true)
 
-  // Load profile metadata
+  // Load profile metadata (parse MFA scores as floats)
   const loadMetadata = (u) => {
     const { user_metadata = {} } = u
     const {
-      visitedSkills = [],
-      mfaScores: scores = null,
+      visitedSkills      = [],
+      mfaScores: rawScores = null,
       topStrengths: strengths = {},
-      avatar: avatarId = '',
+      avatar: avatarId   = '',
     } = user_metadata
+
     setVisitedSkillIds(visitedSkills)
+
+    // Parse raw score strings into floats for decimal precision
+    const scores = rawScores
+      ? {
+          emotional: parseFloat(rawScores.emotional),
+          social:    parseFloat(rawScores.social),
+          family:    parseFloat(rawScores.family),
+          spiritual: parseFloat(rawScores.spiritual),
+        }
+      : null
     setMfaScores(scores)
+
     setTopStrengths(strengths)
     setSuggestedSkills(mapScoresToSkills(scores))
     setAvatar(avatarId)
@@ -123,7 +135,6 @@ export default function Profile() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-
             {/* Left Column */}
             <div className="space-y-8">
               <div className="flex items-center space-x-3">
@@ -134,35 +145,29 @@ export default function Profile() {
                     className="w-12 h-12 rounded-full"
                   />
                 )}
-                <div>
-                  <strong>Email:</strong> {user.email}
-                </div>
+                <div><strong>Email:</strong> {user.email}</div>
               </div>
 
               <section>
                 <h2 className="text-xl font-semibold mb-2">Your MFA Scores</h2>
                 {mfaScores ? (
                   <ul className="list-disc list-inside text-gray-700">
-                    <li><strong>Emotional:</strong> {mfaScores.emotional}</li>
-                    <li><strong>Social:</strong>    {mfaScores.social}</li>
-                    <li><strong>Family:</strong>    {mfaScores.family}</li>
-                    <li><strong>Spiritual:</strong> {mfaScores.spiritual}</li>
+                    <li><strong>Emotional:</strong> {mfaScores.emotional.toFixed(1)}</li>
+                    <li><strong>Social:</strong>    {mfaScores.social.toFixed(1)}</li>
+                    <li><strong>Family:</strong>    {mfaScores.family.toFixed(1)}</li>
+                    <li><strong>Spiritual:</strong> {mfaScores.spiritual.toFixed(1)}</li>
                   </ul>
-                ) : (
-                  <p className="text-gray-600">No scores yet. Enter MFA scores.</p>
-                )}
+                ) : (<p className="text-gray-600">No scores yet. Enter MFA scores.</p>)}
               </section>
 
               <section>
                 <h2 className="text-xl font-semibold mb-2">Your Top Strengths</h2>
-                {topStrengths.strength1 || topStrengths.strength2 ? (
+                {(topStrengths.strength1 || topStrengths.strength2) ? (
                   <ul className="list-disc list-inside text-gray-700">
                     <li><strong>1:</strong> {topStrengths.strength1}</li>
                     <li><strong>2:</strong> {topStrengths.strength2}</li>
                   </ul>
-                ) : (
-                  <p className="text-gray-600">No strengths selected.</p>
-                )}
+                ) : (<p className="text-gray-600">No strengths selected.</p>)}
               </section>
 
               <section>
@@ -171,18 +176,12 @@ export default function Profile() {
                   <ul className="list-disc list-inside text-gray-700">
                     {visitedSkillIds.map(id => {
                       const skill = skills.find(s => s.id === id)
-                      return (
-                        <li key={id}>
-                          <Link to={`/skill/${id}`} className="text-blue-600 hover:underline">
-                            {skill.title}
-                          </Link>
-                        </li>
-                      )
+                      return skill ? (
+                        <li key={id}><Link to={`/skill/${id}`} className="text-blue-600 hover:underline">{skill.title}</Link></li>
+                      ) : null
                     })}
                   </ul>
-                ) : (
-                  <p className="text-gray-600">No skills viewed yet.</p>
-                )}
+                ) : (<p className="text-gray-600">No skills viewed yet.</p>)}
               </section>
             </div>
 
@@ -195,55 +194,29 @@ export default function Profile() {
                 {suggestedSkills.length > 0 ? (
                   <div className="grid grid-cols-1 gap-4">
                     {suggestedSkills.map(skill => (
-                      <Link
-                        key={skill.id}
-                        to={`/skill/${skill.id}`}
-                        className="block p-4 border rounded-lg hover:shadow-lg"
-                      >
+                      <Link key={skill.id} to={`/skill/${skill.id}`} className="block p-4 border rounded-lg hover:shadow-lg">
                         <div className="font-semibold text-[#003049]">{skill.title}</div>
                         <p className="text-gray-700 mt-1 line-clamp-2">{skill.brief}</p>
-                        <span className="text-blue-600 hover:underline mt-2 inline-block">
-                          Learn more →
-                        </span>
+                        <span className="text-blue-600 hover:underline mt-2 inline-block">Learn more →</span>
                       </Link>
                     ))}
                   </div>
-                ) : (
-                  <p className="text-gray-600">Enter your MFA scores to see suggestions.</p>
-                )}
+                ) : (<p className="text-gray-600">Enter your MFA scores to see suggestions.</p>)}
               </section>
             </div>
 
             {/* Right Column */}
             <div className="space-y-8">
               <div className="space-y-2">
-                <button
-                  onClick={handleResetPassword}
-                  className="w-full px-4 py-2 bg-yellow-400 rounded"
-                >
-                  Reset Password
-                </button>
-                <button
-                  onClick={handleLogoutClick}
-                  className="w-full px-4 py-2 bg-red-400 rounded"
-                >
-                  Log Out
-                </button>
+                <button onClick={handleResetPassword} className="w-full px-4 py-2 bg-yellow-400 rounded">Reset Password</button>
+                <button onClick={handleLogoutClick} className="w-full px-4 py-2 bg-red-400 rounded">Log Out</button>
               </div>
 
               <section>
                 <h2 className="text-xl font-semibold mb-2 text-center">Choose your Avatar</h2>
                 <div className="grid grid-cols-2 gap-2 justify-items-center">
                   {AVATARS.map(a => (
-                    <img
-                      key={a.id}
-                      src={a.src}
-                      alt={a.id}
-                      className={`w-16 h-16 rounded-full cursor-pointer border-2 ${
-                        avatar === a.id ? 'border-blue-500' : 'border-transparent'
-                      }`} 
-                      onClick={() => updateAvatar(a.id)}
-                    />
+                    <img key={a.id} src={a.src} alt={a.id} className={`w-16 h-16 rounded-full cursor-pointer border-2 ${avatar===a.id?'border-blue-500':'border-transparent'}`} onClick={()=>updateAvatar(a.id)} />
                   ))}
                 </div>
               </section>
