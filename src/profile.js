@@ -17,6 +17,7 @@ function mapScoresToSkills(mfaScores) {
   return skills.filter(skill => lowCats.includes(skill.category))
 }
 
+
 // Eight resilience avatars
 const AVATARS = [
   { id: 'flower',  src: '/avatars/flower.png' },
@@ -94,13 +95,14 @@ export default function Profile() {
     }
   }, [])
 
-  // Reload metadata when user object is updated (e.g., after avatar change)
+  // Reload metadata when user updates (including avatar changes)
   useEffect(() => {
     if (user) {
       loadMetadata(user)
     }
   }, [user])
 
+  // Auth/UI handlers
   const handleLoginClick    = () => netlifyIdentity.open('login')
   const handleLogoutClick   = () => netlifyIdentity.logout()
   const handleResetPassword = () => {
@@ -111,11 +113,15 @@ export default function Profile() {
     })
   }
 
+  // Avatar update: persists and sets local state
   const updateAvatar = (newAvatar) => {
     if (!user) return
     const metadata = { ...(user.user_metadata || {}), avatar: newAvatar }
     user.update({ user_metadata: metadata })
-      .then(u => setUser(u))
+      .then(u => {
+        setUser(u)
+        setAvatar(newAvatar)  // immediate local update
+      })
       .catch(err => alert('Error updating avatar: ' + err.message))
   }
 
@@ -143,11 +149,10 @@ export default function Profile() {
             {/* Left Column */}
             <div className="space-y-8">
               <div className="flex items-center space-x-3">
-                {avatar && (
-                  <img src={AVATARS.find(a => a.id===avatar)?.src} alt="Your avatar" className="w-12 h-12 rounded-full" />
-                )}
+                {avatar && <img src={AVATARS.find(a => a.id===avatar)?.src} alt="Your avatar" className="w-12 h-12 rounded-full" />}
                 <div><strong>Email:</strong> {user.email}</div>
               </div>
+
               <section>
                 <h2 className="text-xl font-semibold mb-2">Your MFA Scores</h2>
                 {mfaScores ? (
@@ -159,26 +164,24 @@ export default function Profile() {
                   </ul>
                 ) : (<p className="text-gray-600">No scores yet. Enter MFA scores.</p>)}
               </section>
+
               <section>
                 <h2 className="text-xl font-semibold mb-2">Your Top Strengths</h2>
                 {(topStrengths.strength1 || topStrengths.strength2) ? (
-                  <ul className="list-disc list-inside text-gray-700">"+
-            "<li><strong>1:</strong> {topStrengths.strength1}</li>
-" +
-            "<li><strong>2:</strong> {topStrengths.strength2}</li>
-" +
-            "</ul>
+                  <ul className="list-disc list-inside text-gray-700">
+                    <li><strong>1:</strong> {topStrengths.strength1}</li>
+                    <li><strong>2:</strong> {topStrengths.strength2}</li>
+                  </ul>
                 ) : (<p className="text-gray-600">No strengths selected.</p>)}
               </section>
+
               <section>
                 <h2 className="text-xl font-semibold mb-2">Skills You’ve Viewed</h2>
                 {visitedSkillIds.length > 0 ? (
                   <ul className="list-disc list-inside text-gray-700">
                     {visitedSkillIds.map(id => {
                       const skill = skills.find(s => s.id === id)
-                      return skill ? (
-                        <li key={id}><Link to={`/skill/${id}`} className="text-blue-600 hover:underline">{skill.title}</Link></li>
-                      ) : null
+                      return skill ? (<li key={id}><Link to={`/skill/${id}`} className="text-blue-600 hover:underline">{skill.title}</Link></li>) : null
                     })}
                   </ul>
                 ) : (<p className="text-gray-600">No skills viewed yet.</p>)}
