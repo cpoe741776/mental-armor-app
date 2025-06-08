@@ -154,49 +154,32 @@ export default function Profile() {
               </section>
             </div>
 
-            {/* Center Column */}
+          {/* Center Column */}
             <div className="space-y-8">
               {mfaScores && <MFADials scores={mfaScores} />}
-
               <section>
                 <h2 className="text-xl font-semibold mb-2">Skills We Suggest</h2>
-                {mfaScores ? (
+                {suggestedSkills.length > 0 ? (
                   <div className="space-y-6">
                     {Object.entries(mfaScores).map(([dim, score]) => {
-                      const label = labelMap[dim];
-                      const skillsFor = suggestedSkills.filter(s => s.category === label);
+                      const label = labelMap[dim]
+                      const skillsFor = suggestedSkills.filter(s => s.category === label)
                       if (score >= 3.5) {
-                        return (
-                          <p key={dim} className="text-green-600">
-                            Your {label} is Thriving! Well done!
-                          </p>
-                        );
+                        return <p key={dim} className="text-green-600">Your {label} is Thriving! Well done!</p>
                       }
                       return (
-                        <div key={dim}>
-                          <p className="font-semibold">
-                            To increase your {label} score, we recommend:
-                          </p>
-                          {skillsFor.length > 0 ? (
-                            <ul className="list-disc list-inside ml-4 space-y-1">
-                              {skillsFor.map(skill => (
-                                <li key={skill.id}>
-                                  <Link to={`/skill/${skill.id}`} className="text-blue-600 hover:underline">
-                                    {skill.title}
-                                  </Link>
-                                </li>
-                              ))}
-                            </ul>
-                          ) : (
-                            <p className="text-gray-600 ml-4">No recommendations at this time.</p>
-                          )}
+                        <div key={dim} className="space-y-2">
+                          <p className="font-semibold">To increase your {label} score, we recommend:</p>
+                          <ul className="list-disc list-inside ml-4 space-y-1">
+                            {skillsFor.map(skill => (
+                              <li key={skill.id}><Link to={`/skill/${skill.id}`} className="text-blue-600 hover:underline">{skill.title}</Link></li>
+                            ))}
+                          </ul>
                         </div>
-                      );
+                      )
                     })}
                   </div>
-                ) : (
-                  <p className="text-gray-600">Enter your MFA scores to see recommendations.</p>
-                )}
+                ) : (<p className="text-gray-600">Enter your MFA scores to see recommendations.</p>)}
               </section>
             </div>
 
