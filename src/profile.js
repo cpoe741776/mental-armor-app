@@ -138,7 +138,7 @@ const handleResetPassword = () => {
   }
   auth.requestPasswordRecovery(user.email)
     .then(() => {
-      alert(`✅ Recovery email sent to ${user.email}`);
+      alert(`Reset password email sent to ${user.email}`);
     })
     .catch(err => {
       console.error('Password recovery error:', err);
