@@ -66,6 +66,7 @@ export default function Profile() {
     setAvatar(avatarId)
   }
 
+  // Initialize user and metadata
   useEffect(() => {
     netlifyIdentity.init()
     const u = netlifyIdentity.currentUser()
@@ -92,6 +93,13 @@ export default function Profile() {
       netlifyIdentity.off('logout', onLogout)
     }
   }, [])
+
+  // Re-load metadata whenever `user` updates (e.g. after saving new scores)
+  useEffect(() => {
+    if (user) {
+      loadMetadata(netlifyIdentity.currentUser())
+    }
+  }, [user])
 
   const handleLoginClick    = () => netlifyIdentity.open('login')
   const handleLogoutClick   = () => netlifyIdentity.logout()
@@ -135,6 +143,7 @@ export default function Profile() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
             {/* Left Column */}
             <div className="space-y-8">
               <div className="flex items-center space-x-3">
