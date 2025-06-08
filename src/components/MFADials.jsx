@@ -37,7 +37,7 @@ export default function MFADials({ scores }) {
 
   return (
     <div className="mx-auto w-full max-w-4xl p-4 my-6 bg-white shadow-lg rounded-lg">
-      <h3 className="text-xl font-semibold mb-4">Scores</h3>
+      <h3 className="text-xl font-semibold mb-4">Your Mental Fitness Scores</h3>
       <div className="grid grid-cols-2 gap-8 items-center">
         {dimensions.map(({ key, label, score }) => {
           const percentage = (score / MAX_SCORE) * 100;
