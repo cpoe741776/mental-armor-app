@@ -128,6 +128,7 @@ setMfaScores(scores)
   const handleLoginClick    = () => netlifyIdentity.open('login')
   const handleLogoutClick   = () => netlifyIdentity.logout()
   const handleResetPassword = () => {
+  console.log('🔑 Reset password clicked');
     if (!user) return
     netlifyIdentity.forgotPassword(user.email, (err) => {
       if (err) alert('Error sending reset email: ' + err.message)
