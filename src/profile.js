@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import Header from './Header'
 import { skills } from './skills'
 import netlifyIdentity from 'netlify-identity-widget'
-import MFADials from './components/MFADials.jsx'
+import MFADials from './components/MFADials'
 
 // Helper: map MFA scores → suggested skills
 function mapScoresToSkills(mfaScores) {
@@ -63,10 +63,7 @@ export default function Profile() {
     }
     setLoading(false)
 
-    const onLogin = (u) => {
-      setUser(u)
-      loadMetadata(u)
-    }
+    const onLogin = (u) => { setUser(u); loadMetadata(u) }
     const onLogout = () => {
       setUser(null)
       setVisitedSkillIds([])
@@ -97,181 +94,105 @@ export default function Profile() {
   const updateAvatar = (newAvatar) => {
     if (!user) return
     const metadata = { ...(user.user_metadata || {}), avatar: newAvatar }
-    user
-      .update({ user_metadata: metadata })
-      .then((u) => {
-        setUser(u)
-        setAvatar(newAvatar)
-      })
-      .catch((err) => alert('Error updating avatar: ' + err.message))
+    user.update({ user_metadata: metadata })
+      .then(u => { setUser(u); setAvatar(newAvatar) })
+      .catch(err => alert('Error updating avatar: ' + err.message))
   }
 
   if (loading) {
-    return (
-      <div className="py-12 text-center">
-        <p className="text-lg">Loading profile…</p>
-      </div>
-    )
+    return <div className="py-12 text-center"><p className="text-lg">Loading profile…</p></div>
   }
 
   return (
     <div className="bg-white min-h-screen pb-24">
       <Header title="Your Profile" />
-      {/* Centered MFA Dials */}
-      <div className="flex flex-col items-center pt-8">
-        {mfaScores && (
-          <MFADials
-            scores={{
-              emotional: mfaScores.emotional,
-              social:    mfaScores.social,
-              family:    mfaScores.family,
-              spiritual: mfaScores.spiritual
-            }}
-          />
-        )}
-      </div>
-
-      <div className="container mx-auto px-4 py-8 space-y-8">
+      <div className="container mx-auto px-4 py-8">
         {!user ? (
           <div className="text-center text-gray-600">
-            <p>
-              Please{' '}
-              <button
-                onClick={handleLoginClick}
-                className="text-blue-600 underline"
-              >
-                log in
-              </button>{' '}
+            <p>Please{' '}
+              <button onClick={handleLoginClick} className="text-blue-600 underline">log in</button>{' '}
               to view your profile.
             </p>
           </div>
         ) : (
-          <>
-            {/* Email & Actions with Avatar */}
-            <div className="flex items-center justify-between">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Left Column */}
+            <div className="space-y-8">
               <div className="flex items-center space-x-3">
-                {avatar && (
-                  <img
-                    src={AVATARS.find(a => a.id === avatar)?.src}
-                    alt="Your avatar"
-                    className="w-10 h-10 rounded-full"
-                  />
-                )}
+                {avatar && <img src={AVATARS.find(a => a.id===avatar)?.src} alt="Your avatar" className="w-12 h-12 rounded-full" />}
                 <div><strong>Email:</strong> {user.email}</div>
               </div>
-              <div className="space-x-2">
-                <button
-                  onClick={handleResetPassword}
-                  className="px-3 py-1 bg-yellow-400 rounded"
-                >
-                  Reset Password
-                </button>
-                <button
-                  onClick={handleLogoutClick}
-                  className="px-3 py-1 bg-red-400 rounded"
-                >
-                  Log Out
-                </button>
-              </div>
+              <section>
+                <h2 className="text-xl font-semibold mb-2">Your MFA Scores</h2>
+                {mfaScores ? (
+                  <ul className="list-disc list-inside text-gray-700">
+                    <li><strong>Emotional:</strong> {mfaScores.emotional}</li>
+                    <li><strong>Social:</strong>    {mfaScores.social}</li>
+                    <li><strong>Family:</strong>    {mfaScores.family}</li>
+                    <li><strong>Spiritual:</strong> {mfaScores.spiritual}</li>
+                  </ul>
+                ) : <p className="text-gray-600">No scores yet. Enter MFA scores.</p>}
+              </section>
+              <section>
+                <h2 className="text-xl font-semibold mb-2">Your Top Strengths</h2>
+                {(topStrengths.strength1 || topStrengths.strength2) ? (
+                  <ul className="list-disc list-inside text-gray-700">
+                    <li><strong>1:</strong> {topStrengths.strength1}</li>
+                    <li><strong>2:</strong> {topStrengths.strength2}</li>
+                  </ul>
+                ) : <p className="text-gray-600">No strengths selected.</p>}
+              </section>
+              <section>
+                <h2 className="text-xl font-semibold mb-2">Skills You’ve Viewed</h2>
+                {visitedSkillIds.length > 0 ? (
+                  <ul className="list-disc list-inside text-gray-700">
+                    {visitedSkillIds.map(id => {
+                      const skill = skills.find(s => s.id===id)
+                      return skill ? (<li key={id}><Link to={`/skill/${id}`} className="text-blue-600 hover:underline">{skill.title}</Link></li>) : null
+                    })}
+                  </ul>
+                ) : <p className="text-gray-600">No skills viewed yet.</p>}
+              </section>
             </div>
 
-            {/* Scores & Strengths + Avatar Picker */}
-            <div className="flex flex-col md:flex-row gap-8">
-              <div className="flex-1 space-y-6">
-                <section>
-                  <h2 className="text-2xl font-semibold mb-3">Your MFA Scores</h2>
-                  {mfaScores ? (
-                    <ul className="list-disc list-inside text-gray-700">
-                      <li><strong>Emotional:</strong> {mfaScores.emotional}</li>
-                      <li><strong>Social:</strong>    {mfaScores.social}</li>
-                      <li><strong>Family:</strong>    {mfaScores.family}</li>
-                      <li><strong>Spiritual:</strong> {mfaScores.spiritual}</li>
-                    </ul>
-                  ) : (
-                    <p className="text-gray-600">
-                      No scores yet. Go to “Enter MFA Scores”.
-                    </p>
-                  )}
-                </section>
-                <section>
-                  <h2 className="text-2xl font-semibold mb-3">Your Top 2 Strengths</h2>
-                  {(topStrengths.strength1 || topStrengths.strength2) ? (
-                    <ul className="list-disc list-inside text-gray-700">
-                      <li><strong>1:</strong> {topStrengths.strength1}</li>
-                      <li><strong>2:</strong> {topStrengths.strength2}</li>
-                    </ul>
-                  ) : (
-                    <p className="text-gray-600">
-                      No strengths selected. Go to “Enter MFA Scores”.
-                    </p>
-                  )}
-                </section>
+            {/* Center Column */}
+            <div className="space-y-8">
+              {mfaScores && <MFADials scores={mfaScores} />}
+              <section>
+                <h2 className="text-xl font-semibold mb-2">Skills We Suggest</h2>
+                {suggestedSkills.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-4">
+                    {suggestedSkills.map(skill => (
+                      <Link key={skill.id} to={`/skill/${skill.id}`} className="block p-4 border rounded-lg hover:shadow-lg">
+                        <div className="font-semibold text-[#003049]">{skill.title}</div>
+                        <p className="text-gray-700 mt-1 line-clamp-2">{skill.brief}</p>
+                        <span className="text-blue-600 hover:underline mt-2 inline-block">Learn more →</span>
+                      </Link>
+                    ))}
+                  </div>
+                ) : <p className="text-gray-600">Enter your MFA scores to see suggestions.</p>}
+              </section>
+            </div>
+
+            {/* Right Column */}
+            <div className="space-y-8">
+              <div className="space-y-2">
+                <button onClick={handleResetPassword} className="w-full px-4 py-2 bg-yellow-400 rounded">Reset Password</button>
+                <button onClick={handleLogoutClick}   className="w-full px-4 py-2 bg-red-400 rounded">Log Out</button>
               </div>
-              <div className="w-32">
+              <section>
                 <h2 className="text-xl font-semibold mb-2 text-center">Avatar</h2>
                 <div className="grid grid-cols-2 gap-2">
-                  {AVATARS.map((a) => (
-                    <img
-                      key={a.id}
-                      src={a.src}
-                      alt={a.id}
-                      className={`w-16 h-16 rounded-full cursor-pointer border-2 ${
-                        avatar===a.id?'border-blue-500':'border-transparent'
-                      }`}
+                  {AVATARS.map(a => (
+                    <img key={a.id} src={a.src} alt={a.id}
+                      className={`w-16 h-16 rounded-full cursor-pointer border-2 ${avatar===a.id?'border-blue-500':'border-transparent'}`}
                       onClick={() => updateAvatar(a.id)}
                     />
                   ))}
                 </div>
-              </div>
+              </section>
             </div>
-
-            {/* Visited Skills */}
-            <section>
-              <h2 className="text-2xl font-semibold mb-4">Skills You’ve Viewed</h2>
-              {visitedSkillIds.length > 0 ? (
-                <ul className="list-disc list-inside text-gray-700">
-                  {visitedSkillIds.map(id => {
-                    const skill = skills.find(s => s.id === id)
-                    return skill ? (
-                      <li key={id}>
-                        <Link to={`/skill/${id}`} className="text-blue-600 hover:underline">
-                          {skill.title}
-                        </Link>
-                      </li>
-                    ) : null
-                  })}
-                </ul>
-              ) : (
-                <p className="text-gray-600">
-                  No skills viewed yet.
-                </p>
-              )}
-            </section>
-
-            {/* Suggested Skills */}
-            <section>
-              <h2 className="text-2xl font-semibold mb-4">Skills We Suggest</h2>
-              {suggestedSkills.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {suggestedSkills.map(skill => (
-                    <Link
-                      key={skill.id}
-                      to={`/skill/${skill.id}`}
-                      className="block p-4 border rounded-lg hover:shadow-lg"
-                    >
-                      <div className="font-semibold text-[#003049]">{skill.title}</div>
-                      <p className="text-gray-700 mt-1 line-clamp-2">{skill.brief}</p>
-                      <span className="text-blue-600 hover:underline mt-2 inline-block">Learn more →</span>
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-600">
-                  {mfaScores ? 'Keep reinforcing what you’ve learned!' : 'Enter your MFA scores.'}
-                </p>
-              )}
-            </section>
-          </>
+          </div>
         )}
       </div>
     </div>
