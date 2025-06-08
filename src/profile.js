@@ -200,49 +200,50 @@ export default function Profile() {
                 ) : (<p className="text-gray-600">No skills viewed yet.</p>)}
               </section>
             </div>
-            {/* Center Column */}
-            <div className="space-y-8">
-              {mfaScores && <MFADials scores={mfaScores} />}
+          {/* Center Column */}
+<div className="space-y-8">
+  {mfaScores && <MFADials scores={mfaScores} />}
 
-              <section>
-                <h2 className="text-xl font-semibold mb-2">Skills We Suggest</h2>
-                {mfaScores ? (
-                  Object.entries(mfaScores).map(([dim, score]) => {
-                    const label = labelMap[dim];
-                    const skillsFor = suggestedSkills.filter(s => s.category === label);
-                    if (score >= 3.5) {
-                      return (
-                        <p key={dim} className="text-green-600">
-                          Your {label} is Thriving! Well done!
-                        </p>
-                      );
-                    }
-                    return (
-                      <div key={dim} className="mb-4">
-                        <p className="font-semibold">
-                          To increase your {label} score, we recommend:
-                        </p>
-                        {skillsFor.length > 0 ? (
-                          <ul className="list-disc list-inside ml-4">
-                            {skillsFor.map(skill => (
-                              <li key={skill.id}>
-                                <Link to={`/skill/${skill.id}`} className="text-blue-600 hover:underline">
-                                  {skill.title}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="text-gray-600 ml-4">No recommendations at this time.</p>
-                        )}
-                      </div>
-                    );
-                  })
-                ) : (
-                  <p className="text-gray-600">Enter your MFA scores to see recommendations.</p>
-                )}
-              </section>
-            </div>
+  <section>
+    <h2 className="text-xl font-semibold mb-2">Skills We Suggest</h2>
+    {mfaScores ? (
+      Object.entries(mfaScores).map(([dim, score]) => {
+        const label = labelMap[dim];
+        const skillsFor = suggestedSkills.filter(s => s.category === label);
+        if (score >= 3.5) {
+          return (
+            <p key={dim} className="text-green-600">
+              Your {label} is Thriving! Well done!
+            </p>
+          );
+        }
+        return (
+          <div key={dim} className="mb-4">
+            <p className="font-semibold">
+              To increase your {label} score, we recommend:
+            </p>
+            {skillsFor.length > 0 ? (
+              <ul className="list-disc list-inside ml-4">
+                {skillsFor.map(skill => (
+                  <li key={skill.id}>
+                    <Link to={`/skill/${skill.id}`} className="text-blue-600 hover:underline">
+                      {skill.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-600 ml-4">No recommendations at this time.</p>
+            )}
+          </div>
+        );
+      })
+    ) : (
+      <p className="text-gray-600">Enter your MFA scores to see recommendations.</p>
+    )}
+  </section>
+</div>
+
 
             {/* Right Column */}
             <div className="space-y-8">
