@@ -13,26 +13,6 @@ const labelMap = {
   spiritual: 'Spiritual Fitness'
 }
 
-// Helper: map MFA scores → suggested skills
-function mapScoresToSkills(mfaScores) {
-  if (!mfaScores) return []
-
-  // Find all dimensions where the user score is below 3.5
-  const lowDims = Object.entries(mfaScores)
-    .filter(([_, score]) => score < 3.5)
-    .map(([dim]) => dim)    // ['emotional','social',…]
-  
-  // Return skills whose category key matches a low dimension
-  return skills.filter(skill => {
-    // e.g. category="Emotional Fitness" → "emotional"
-    const catKey = skill.category
-      .trim()
-      .toLowerCase()
-      .split(/\s+/)[0]
-    return lowDims.includes(catKey)
-  })
-}
-
 
 // Eight resilience avatars
 const AVATARS = [
@@ -52,7 +32,6 @@ export default function Profile() {
   const [visitedSkillIds, setVisitedSkillIds] = useState([])
   const [mfaScores, setMfaScores] = useState(null)
   const [topStrengths, setTopStrengths] = useState({ strength1: null, strength2: null })
-  const [suggestedSkills, setSuggestedSkills] = useState([])
   const [loading, setLoading] = useState(true)
 
   // Load user metadata into state
@@ -83,7 +62,6 @@ export default function Profile() {
     setMfaScores(scores)
 
     setTopStrengths(strengths)
-    setSuggestedSkills(mapScoresToSkills(scores))
     setAvatar(finalAvatar)
   }
 
@@ -103,7 +81,6 @@ export default function Profile() {
       setVisitedSkillIds([])
       setMfaScores(null)
       setTopStrengths({ strength1: null, strength2: null })
-      setSuggestedSkills([])
       setAvatar('')
       localStorage.removeItem('selectedAvatar')
     }
@@ -200,7 +177,7 @@ export default function Profile() {
                 ) : (<p className="text-gray-600">No skills viewed yet.</p>)}
               </section>
             </div>
-          {/* Center Column */}
+    {/* Center Column */}
 <div className="space-y-8">
   {mfaScores && <MFADials scores={mfaScores} />}
 
@@ -209,7 +186,7 @@ export default function Profile() {
     {mfaScores ? (
       Object.entries(mfaScores).map(([dim, score]) => {
         const label = labelMap[dim];
-        const skillsFor = suggestedSkills.filter(s => s.category === label);
+        const skillsFor = skills.filter(s => s.category === label);
         if (score >= 3.5) {
           return (
             <p key={dim} className="text-green-600">
