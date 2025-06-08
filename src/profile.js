@@ -13,18 +13,26 @@ const labelMap = {
   spiritual: 'Spiritual Fitness'
 }
 
-// Helper: map MFA scores → suggested skills by dimension
+// Helper: map MFA scores → suggested skills
 function mapScoresToSkills(mfaScores) {
   if (!mfaScores) return []
+
+  // Find all dimensions where the user score is below 3.5
   const lowDims = Object.entries(mfaScores)
     .filter(([_, score]) => score < 3.5)
-    .map(([dim]) => dim)
-
+    .map(([dim]) => dim)    // ['emotional','social',…]
+  
+  // Return skills whose category key matches a low dimension
   return skills.filter(skill => {
-    const catKey = skill.category.trim().toLowerCase().split(/\s+/)[0]
+    // e.g. category="Emotional Fitness" → "emotional"
+    const catKey = skill.category
+      .trim()
+      .toLowerCase()
+      .split(/\s+/)[0]
     return lowDims.includes(catKey)
   })
 }
+
 
 // Eight resilience avatars
 const AVATARS = [
@@ -41,18 +49,27 @@ const AVATARS = [
 export default function Profile() {
   const [user, setUser] = useState(null)
   const [avatar, setAvatar] = useState('')
+  const [visitedSkillIds, setVisitedSkillIds] = useState([])
   const [mfaScores, setMfaScores] = useState(null)
+  const [topStrengths, setTopStrengths] = useState({ strength1: null, strength2: null })
   const [suggestedSkills, setSuggestedSkills] = useState([])
   const [loading, setLoading] = useState(true)
 
   // Load user metadata into state
   const loadMetadata = (u) => {
     const { user_metadata = {} } = u
-    const { mfaScores: rawScores = null, avatar: avatarId = '' } = user_metadata
+    const {
+      visitedSkills      = [],
+      mfaScores: rawScores = null,
+      topStrengths: strengths = {},
+      avatar: avatarId   = '',
+    } = user_metadata
 
-    // Fallback to localStorage for avatar
+    // Fallback to localStorage in case metadata isn't updated yet
     const storedAvatar = localStorage.getItem('selectedAvatar')
-    setAvatar(avatarId || storedAvatar || '')
+    const finalAvatar = avatarId || storedAvatar || ''
+
+    setVisitedSkillIds(visitedSkills)
 
     // Parse and set MFA scores
     const scores = rawScores
@@ -64,7 +81,10 @@ export default function Profile() {
         }
       : null
     setMfaScores(scores)
+
+    setTopStrengths(strengths)
     setSuggestedSkills(mapScoresToSkills(scores))
+    setAvatar(finalAvatar)
   }
 
   // Initialize on mount
@@ -80,10 +100,12 @@ export default function Profile() {
     const onLogin = (u) => { setUser(u); loadMetadata(u) }
     const onLogout = () => {
       setUser(null)
+      setVisitedSkillIds([])
+      setMfaScores(null)
+      setTopStrengths({ strength1: null, strength2: null })
+      setSuggestedSkills([])
       setAvatar('')
       localStorage.removeItem('selectedAvatar')
-      setMfaScores(null)
-      setSuggestedSkills([])
     }
 
     netlifyIdentity.on('login', onLogin)
@@ -94,7 +116,7 @@ export default function Profile() {
     }
   }, [])
 
-  // Reload metadata when user updates
+  // Reload metadata when user updates (including avatar changes)
   useEffect(() => {
     if (user) loadMetadata(user)
   }, [user])
@@ -115,15 +137,19 @@ export default function Profile() {
     user.update({ user_metadata: metadata })
       .then(u => {
         setUser(u)
-        setAvatar(newAvatar)
+        setAvatar(newAvatar)  // immediate local update
         localStorage.setItem('selectedAvatar', newAvatar)
       })
       .catch(err => alert('Error updating avatar: ' + err.message))
   }
 
-  if (loading) return (
-    <div className="py-12 text-center"><p className="text-lg">Loading profile…</p></div>
-  )
+  if (loading) {
+    return (
+      <div className="py-12 text-center">
+        <p className="text-lg">Loading profile…</p>
+      </div>
+    )
+  }
 
   return (
     <div className="bg-white min-h-screen pb-24">
@@ -142,64 +168,82 @@ export default function Profile() {
                 {avatar && <img src={AVATARS.find(a => a.id===avatar)?.src} alt="Your avatar" className="w-12 h-12 rounded-full" />}
                 <div><strong>Email:</strong> {user.email}</div>
               </div>
-
               <section>
                 <h2 className="text-xl font-semibold mb-2">Your MFA Scores</h2>
                 {mfaScores ? (
                   <ul className="list-disc list-inside text-gray-700">
-                    {Object.entries(mfaScores).map(([dim, score]) => (
-                      <li key={dim}><strong>{labelMap[dim]}:</strong> {score.toFixed(1)}</li>
-                    ))}
+                    <li><strong>Emotional:</strong> {mfaScores.emotional.toFixed(1)}</li>
+                    <li><strong>Social:</strong>    {mfaScores.social.toFixed(1)}</li>
+                    <li><strong>Family:</strong>    {mfaScores.family.toFixed(1)}</li>
+                    <li><strong>Spiritual:</strong> {mfaScores.spiritual.toFixed(1)}</li>
                   </ul>
                 ) : (<p className="text-gray-600">No scores yet. Enter MFA scores.</p>)}
               </section>
-            </div>
-
-            {/* Center Column */}
-            <div className="space-y-8">
-              {mfaScores && <MFADials scores={mfaScores} />}
-
               <section>
-                <h2 className="text-xl font-semibold mb-2">Skills We Suggest</h2>
-                {mfaScores ? (
-                  <div className="space-y-6">
-                    {Object.entries(mfaScores).map(([dim, score]) => {
-                      const label = labelMap[dim];
-                      const skillsFor = suggestedSkills.filter(s => s.category === label);
-                      if (score >= 3.5) {
-                        return (
-                          <p key={dim} className="text-green-600">
-                            Your {label} is Thriving! Well done!
-                          </p>
-                        );
-                      }
-                      return (
-                        <div key={dim}>
-                          <p className="font-semibold">
-                            To increase your {label} score, we recommend:
-                          </p>
-                          {skillsFor.length > 0 ? (
-                            <ul className="list-disc list-inside ml-4 space-y-1">
-                              {skillsFor.map(skill => (
-                                <li key={skill.id}>
-                                  <Link to={`/skill/${skill.id}`} className="text-blue-600 hover:underline">
-                                    {skill.title}
-                                  </Link>
-                                </li>
-                              ))}
-                            </ul>
-                          ) : (
-                            <p className="text-gray-600 ml-4">No recommendations at this time.</p>
-                          )}
-                        </div>
-                      );
+                <h2 className="text-xl font-semibold mb-2">Your Top Strengths</h2>
+                {(topStrengths.strength1 || topStrengths.strength2) ? (
+                  <ul className="list-disc list-inside text-gray-700">
+                    <li><strong>1:</strong> {topStrengths.strength1}</li>
+                    <li><strong>2:</strong> {topStrengths.strength2}</li>
+                  </ul>
+                ) : (<p className="text-gray-600">No strengths selected.</p>)}
+              </section>
+              <section>
+                <h2 className="text-xl font-semibold mb-2">Skills You’ve Viewed</h2>
+                {visitedSkillIds.length > 0 ? (
+                  <ul className="list-disc list-inside text-gray-700">
+                    {visitedSkillIds.map(id => {
+                      const skill = skills.find(s => s.id===id)
+                      return skill ? (<li key={id}><Link to={`/skill/${id}`} className="text-blue-600 hover:underline">{skill.title}</Link></li>) : null
                     })}
-                  </div>
-                ) : (
-                  <p className="text-gray-600">Enter your MFA scores to see recommendations.</p>
-                )}
+                  </ul>
+                ) : (<p className="text-gray-600">No skills viewed yet.</p>)}
               </section>
             </div>
+          {/* Center Column */}
+<div className="space-y-8">
+  {mfaScores && <MFADials scores={mfaScores} />}
+
+  <section>
+    <h2 className="text-xl font-semibold mb-2">Skills We Suggest</h2>
+    {mfaScores ? (
+      Object.entries(mfaScores).map(([dim, score]) => {
+        const label = labelMap[dim];
+        const skillsFor = suggestedSkills.filter(s => s.category === label);
+        if (score >= 3.5) {
+          return (
+            <p key={dim} className="text-green-600">
+              Your {label} is Thriving! Well done!
+            </p>
+          );
+        }
+        return (
+          <div key={dim} className="mb-4">
+            <p className="font-semibold">
+              To increase your {label} score, we recommend:
+            </p>
+            {skillsFor.length > 0 ? (
+              <ul className="list-disc list-inside ml-4">
+                {skillsFor.map(skill => (
+                  <li key={skill.id}>
+                    <Link to={`/skill/${skill.id}`} className="text-blue-600 hover:underline">
+                      {skill.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-600 ml-4">No recommendations at this time.</p>
+            )}
+          </div>
+        );
+      })
+    ) : (
+      <p className="text-gray-600">Enter your MFA scores to see recommendations.</p>
+    )}
+  </section>
+</div>
+
 
             {/* Right Column */}
             <div className="space-y-8">
@@ -207,7 +251,6 @@ export default function Profile() {
                 <button onClick={handleResetPassword} className="w-full px-4 py-2 bg-yellow-400 rounded">Reset Password</button>
                 <button onClick={handleLogoutClick} className="w-full px-4 py-2 bg-red-400 rounded">Log Out</button>
               </div>
-
               <section>
                 <h2 className="text-xl font-semibold mb-2 text-center">Choose your Avatar</h2>
                 <div className="grid grid-cols-2 gap-2 justify-items-center">
@@ -216,8 +259,8 @@ export default function Profile() {
                   ))}
                 </div>
               </section>
-
             </div>
+
           </div>
         )}
       </div>
