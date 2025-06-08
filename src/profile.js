@@ -80,7 +80,12 @@ export default function Profile() {
           spiritual: parseFloat(rawScores.spiritual),
         }
       : null
-    setMfaScores(scores)
+      // inside loadMetadata, right after you parse `scores`:
+      console.log('rawScores from Netlify:', rawScores);
+      console.log('parsed mfaScores:', scores);
+      console.log('initial suggestedSkills:', mapScoresToSkills(scores));
+   
+setMfaScores(scores)
 
     setTopStrengths(strengths)
     setSuggestedSkills(mapScoresToSkills(scores))
