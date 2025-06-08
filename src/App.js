@@ -1,7 +1,11 @@
 // src/App.js
 import React, { useEffect } from 'react'
 import netlifyIdentity from 'netlify-identity-widget'
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+
+// Import your consolidated Header component
+import Header from './Header'
+
 import Home from './home'
 import Library from './library'
 import SkillDetail from './SkillDetail'
@@ -11,31 +15,29 @@ import Profile from './profile'
 
 // Note: netlifyIdentity.init() is called in src/index.js
 export default function App() {
-  // When login completes, close modal and reload to capture JWT
   useEffect(() => {
+    // 1) When login completes in the widget, close it and reload to pick up the JWT
     netlifyIdentity.on('login', () => {
       netlifyIdentity.close()
       window.location.reload()
     })
+
+    // 2) If the URL contains a recovery_token, immediately open the reset form
+    if (window.location.hash.includes('recovery_token=')) {
+      netlifyIdentity.open()
+    }
+
+    // Cleanup listener on unmount
+    return () => {
+      netlifyIdentity.off('login')
+    }
   }, [])
 
   return (
     <Router>
-      <header className="p-4 bg-gray-100 flex justify-between items-center">
-        <nav className="space-x-4">
-          <Link to="/" className="hover:underline">Home</Link>
-          <Link to="/library" className="hover:underline">Library</Link>
-          <Link to="/enter-scores" className="hover:underline">Enter Scores</Link>
-          <Link to="/repair-kit" className="hover:underline">Repair Kit</Link>
-          <Link to="/profile" className="hover:underline">Profile</Link>
-        </nav>
-        <button
-          className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-          onClick={() => netlifyIdentity.open('login')}
-        >
-          Log In
-        </button>
-      </header>
+      {/* Single header, with nav and login/logout built into Header.js */}
+      <Header />
+
       <main className="p-4">
         <Routes>
           <Route path="/" element={<Home />} />
