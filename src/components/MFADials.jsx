@@ -1,11 +1,11 @@
-import React from 'react'
-import { RadialBarChart, RadialBar, PolarAngleAxis } from 'recharts'
+import React from 'react';
+import { RadialBarChart, RadialBar, PolarAngleAxis } from 'recharts';
 
 // Maximum possible score (e.g., 5)
-const MAX_SCORE = 5
+const MAX_SCORE = 5;
 
 // Determine gauge color based on score thresholds
- const getColor = (score) => {
+const getColor = (score) => {
   if (score >= 3.5) return '#67BF4F';
   if (score >= 2.3) return '#FDD835';
   return '#EF5350';
@@ -13,14 +13,14 @@ const MAX_SCORE = 5
 
 // Determine descriptor text based on score
 const getDescriptor = (score) => {
-  if (score >= 3.5) return 'Thriving'
-  if (score >= 2.3) return 'Challenged'
-  return 'Needs Improvement'
-}
+  if (score >= 3.5) return 'Thriving';
+  if (score >= 2.3) return 'Challenged';
+  return 'Needs Improvement';
+};
 
 /**
  * MFADials component displays four half-circle gauges for different MFA dimensions.
- * @param {{ emotional: number, social: number, family: number, spiritual: number }} props.scores
+ * @param {{ emotional: number, social: number, family: number, spiritual: number }} scores
  */
 export default function MFADials({ scores }) {
   const dimensions = [
@@ -28,17 +28,17 @@ export default function MFADials({ scores }) {
     { key: 'social',    label: 'SOCIAL/PROFESSIONAL', score: scores.social },
     { key: 'family',    label: 'FAMILY/PERSONAL', score: scores.family },
     { key: 'spiritual', label: 'SPIRITUAL', score: scores.spiritual },
-  ]
+  ];
 
   return (
     <div className="mx-auto w-full max-w-4xl p-6 bg-white shadow-lg rounded-lg">
       <h3 className="text-xl font-semibold mb-4">Your Mental Fitness Scores</h3>
       <div className="grid grid-cols-2 gap-8 items-center">
         {dimensions.map(({ key, label, score }) => {
-          const raw = (score / MAX_SCORE) * 100
-          const percentage = Math.max(0, Math.min(100, raw))
-          const color = getColor(score)
-          const descriptor = getDescriptor(score)
+          // Convert score (1–5) to percentage of the 180° arc
+          const percentage = Math.max(0, Math.min(100, (score / MAX_SCORE) * 100));
+          const color = getColor(score);
+          const descriptor = getDescriptor(score);
 
           return (
             <div key={key} className="flex flex-col items-center">
@@ -68,9 +68,9 @@ export default function MFADials({ scores }) {
               </div>
               <div className="text-sm text-gray-600">{descriptor}</div>
             </div>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }
