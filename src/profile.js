@@ -208,49 +208,59 @@ setMfaScores(scores)
 <div className="space-y-8">
   {mfaScores && <MFADials scores={mfaScores} />}
 
-  <section>
-  <h2 className="text-xl font-semibold mb-2">Skills We Suggest</h2>
+ <section>
+  <h2 className="text-xl font-semibold mb-4">Skills We Suggest</h2>
   {mfaScores ? (
     Object.entries(mfaScores).map(([dim, score]) => {
-      const label = labelMap[dim]
-      // pick up any skill that’s tagged for this dimension
+      const label     = labelMap[dim];
       const skillsFor = suggestedSkills.filter(skill =>
-        Array.isArray(skill.domains)
-          ? skill.domains.includes(dim)
-          : false
-      )
+        Array.isArray(skill.domains) && skill.domains.includes(dim)
+      );
 
       if (score >= 3.5) {
         return (
-          <p key={dim} className="text-green-600">
+          <p key={dim} className="text-green-600 mb-6">
             Your {label} is Thriving! Well done!
           </p>
-        )
+        );
       }
 
       return (
-        <div key={dim} className="mb-4">
-          <p className="font-semibold">
+        <div key={dim} className="mb-8">
+          <p className="font-semibold mb-2">
             To increase your {label}, we recommend:
           </p>
+
           {skillsFor.length > 0 ? (
-            <ul className="list-disc list-inside ml-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {skillsFor.map(skill => (
-                <li key={skill.id}>
+                <div
+                  key={skill.id}
+                  className="bg-white rounded-xl shadow p-4 flex flex-col"
+                >
+                  <h3 className="text-lg font-medium mb-1">
+                    {skill.title}
+                  </h3>
+                  <p className="text-sm text-gray-500 mb-2">
+                    Trainer: {skill.trainer}
+                  </p>
+                  <p className="text-sm text-gray-700 mb-4">
+                    {skill.benefits[0]}
+                  </p>
                   <Link
                     to={`/skill/${skill.id}`}
-                    className="text-blue-600 hover:underline"
+                    className="mt-auto text-blue-600 hover:underline text-sm"
                   >
-                    {skill.title}
+                    Learn more
                   </Link>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           ) : (
             <p className="text-gray-600 ml-4">No recommendations at this time.</p>
           )}
         </div>
-      )
+      );
     })
   ) : (
     <p className="text-gray-600">Enter your MFA scores to see recommendations.</p>
