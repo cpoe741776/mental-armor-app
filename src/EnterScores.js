@@ -33,12 +33,12 @@ export default function EnterScores() {
     }
 
     // Parse each input as integer (or default to 0)
-    const mfaScores = {
-      emotional: parseInt(emotionalFitness, 10) || 0,
-      social:    parseInt(socialFitness, 10)     || 0,
-      family:    parseInt(familyFitness, 10)     || 0,
-      spiritual: parseInt(spiritualFitness, 10)  || 0,
-    }
+   const mfaScores = {
+  emotional: parseFloat(emotionalFitness) || 0,
+  social:    parseFloat(socialFitness)    || 0,
+  family:    parseFloat(familyFitness)    || 0,
+  spiritual: parseFloat(spiritualFitness) || 0,
+}
     const topStrengths = {
       strength1: strength1 || null,
       strength2: strength2 || null,
