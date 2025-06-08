@@ -112,13 +112,17 @@ export default function Profile() {
     })
   }
 
-  const updateAvatar = (newAvatar) => {
-    if (!user) return
-    const metadata = { ...(user.user_metadata || {}), avatar: newAvatar }
-    user.update({ user_metadata: metadata })
-      .then(u => { setUser(u); setAvatar(newAvatar) })
-      .catch(err => alert('Error updating avatar: ' + err.message))
-  }
+ const updateAvatar = (newAvatar) => {
+  if (!user) return;
+  const metadata = { ...(user.user_metadata || {}), avatar: newAvatar };
+  user
+    .update({ user_metadata: metadata })
+    .then((u) => {
+      setUser(u);        // _this_ triggers the reload‐on‐user effect
+      setAvatar(newAvatar);
+    })
+    .catch((err) => alert('Error updating avatar: ' + err.message));
+}
 
   if (loading) {
     return (
