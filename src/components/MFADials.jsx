@@ -1,5 +1,4 @@
 import React from 'react';
-import { Card, CardContent } from './ui/card';
 import { RadialBarChart, RadialBar } from 'recharts';
 
 // Maximum possible score (e.g., 5)
@@ -37,47 +36,44 @@ export default function MFADials({ scores }) {
   ];
 
   return (
-    <Card className="mx-auto w-full max-w-4xl p-4 my-6">
-      <CardContent>
-        <h3 className="text-xl font-semibold mb-4">Scores</h3>
-        <div className="grid grid-cols-2 gap-8 items-center">
-          {dimensions.map(({ key, label, score }) => {
-            const percentage = (score / MAX_SCORE) * 100;
-            const color = getColor(score);
-            const descriptor = getDescriptor(score);
+    <div className="mx-auto w-full max-w-4xl p-4 my-6 bg-white shadow-lg rounded-lg">
+      <h3 className="text-xl font-semibold mb-4">Scores</h3>
+      <div className="grid grid-cols-2 gap-8 items-center">
+        {dimensions.map(({ key, label, score }) => {
+          const percentage = (score / MAX_SCORE) * 100;
+          const color = getColor(score);
+          const descriptor = getDescriptor(score);
 
-            return (
-              <div key={key} className="flex flex-col items-center">
-                <span className="text-sm font-semibold text-gray-700 mb-2">{label}</span>
-                <RadialBarChart
-                  width={160}
-                  height={80}
-                  cx="50%"
-                  cy="100%"
-                  startAngle={180}
-                  endAngle={0}
-                  innerRadius={50}
-                  outerRadius={72}
-                  data={[{ value: percentage }]}
-                >
-                  {/* background track + colored arc */}
-                  <RadialBar
-                    dataKey="value"
-                    background={{ fill: '#F2F2F2' }}
-                    cornerRadius={72}
-                    clockWise
-                    fill={color}
-                  />
-                </RadialBarChart>
-                <div className="mt-2 text-lg font-bold" style={{ color }}>
-                  {score.toFixed(1)}
-                </div>
-                <div className="text-sm text-gray-600">{descriptor}</div>
+          return (
+            <div key={key} className="flex flex-col items-center">
+              <span className="text-sm font-semibold text-gray-700 mb-2">{label}</span>
+              <RadialBarChart
+                width={160}
+                height={80}
+                cx="50%"
+                cy="100%"
+                startAngle={180}
+                endAngle={0}
+                innerRadius={50}
+                outerRadius={72}
+                data={[{ value: percentage }]}
+              >
+                <RadialBar
+                  dataKey="value"
+                  background={{ fill: '#F2F2F2' }}
+                  cornerRadius={72}
+                  clockWise
+                  fill={color}
+                />
+              </RadialBarChart>
+              <div className="mt-2 text-lg font-bold" style={{ color }}>
+                {score.toFixed(1)}
               </div>
-            );
-          })}
-        </div>
-      </CardContent>
-    </Card>
+              <div className="text-sm text-gray-600">{descriptor}</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
