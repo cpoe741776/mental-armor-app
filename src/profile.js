@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import Header from './Header'
 import { skills } from './skills'
 import MFADials from './components/MFADials'
 import netlifyIdentity from 'netlify-identity-widget'
@@ -171,7 +170,6 @@ if (loading) {
 // 4) Main render follows:
 return (
   <div className="bg-white min-h-screen pb-24">
-      <Header title="Your Profile" />
       <div className="container mx-auto px-4 py-8">
         {!user ? (
           <div className="text-center text-gray-600">
