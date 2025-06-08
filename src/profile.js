@@ -16,14 +16,13 @@ const labelMap = {
 // Helper: map MFA scores → suggested skills by dimension
 function mapScoresToSkills(mfaScores) {
   if (!mfaScores) return []
-  const lowDims = Object.entries(mfaScores)
+  // Collect labels for dimensions needing improvement (<3.5)
+  const lowLabels = Object.entries(mfaScores)
     .filter(([_, score]) => score < 3.5)
-    .map(([dim]) => dim)
+    .map(([dim]) => labelMap[dim])
 
-  return skills.filter(skill => {
-    const catKey = skill.category.trim().toLowerCase().split(/\s+/)[0]
-    return lowDims.includes(catKey)
-  })
+  // Return skills matching those full category labels
+  return skills.filter(skill => lowLabels.includes(skill.category))
 }
 
 // Eight resilience avatars
