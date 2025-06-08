@@ -238,15 +238,28 @@ setMfaScores(scores)
                   key={skill.id}
                   className="bg-white rounded-xl shadow p-4 flex flex-col"
                 >
-                  <h3 className="text-lg font-medium mb-1">
+                  <h3 className="text-lg font-medium mb-2">
                     {skill.title}
                   </h3>
-                  <p className="text-sm text-gray-500 mb-2">
-                    Trainer: {skill.trainer}
-                  </p>
+
+                  {/* Trainer image + name */}
+                  <div className="flex items-center mb-3">
+                    {skill.trainerImage && (
+                      <img
+                        src={skill.trainerImage}
+                        alt={skill.trainer}
+                        className="w-8 h-8 rounded-full mr-2"
+                      />
+                    )}
+                    <p className="text-sm text-gray-500">
+                      Trainer: {skill.trainer}
+                    </p>
+                  </div>
+
                   <p className="text-sm text-gray-700 mb-4">
                     {skill.benefits[0]}
                   </p>
+
                   <Link
                     to={`/skill/${skill.id}`}
                     className="mt-auto text-blue-600 hover:underline text-sm"
