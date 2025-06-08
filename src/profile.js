@@ -8,22 +8,23 @@ import MFADials from './components/MFADials'
 // Helper: map MFA scores → suggested skills
 function mapScoresToSkills(mfaScores) {
   if (!mfaScores) return []
-  const labelMap = {
-    emotional: 'Emotional Fitness',
-    social:    'Social Fitness',
-    family:    'Family Fitness',
-    spiritual: 'Spiritual Fitness'
-  }
-  const lowCats = []
-  // Suggest for any score below 3.5 (Needs Improvement or Challenged)
-  Object.entries(mfaScores).forEach(([dim, score]) => {
-    if (score < 3.5) {
-      lowCats.push(labelMap[dim])
-    }
+
+  // Find all dimensions where the user score is below 3.5
+  const lowDims = Object.entries(mfaScores)
+    .filter(([_, score]) => score < 3.5)
+    .map(([dim]) => dim)    // ['emotional','social',…]
+  
+  // Return skills whose category key matches a low dimension
+  return skills.filter(skill => {
+    // e.g. category="Emotional Fitness" → "emotional"
+    const catKey = skill.category
+      .trim()
+      .toLowerCase()
+      .split(/\s+/)[0]
+    return lowDims.includes(catKey)
   })
-  // Return skills matching those low-scoring categories
-  return skills.filter(skill => lowCats.includes(skill.category))
 }
+
 
 // Eight resilience avatars
 const AVATARS = [
