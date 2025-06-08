@@ -19,20 +19,19 @@ function mapScoresToSkills(mfaScores) {
 
   // Find all dimensions where the user score is below 3.5
   const lowDims = Object.entries(mfaScores)
-    .filter(([_, score]) => score < 3.5)
+    .filter(([, score]) => score < 3.5)
     .map(([dim]) => dim)    // ['emotional','social',…]
-  
-  // Return skills whose category key matches a low dimension
+
   return skills.filter(skill => {
-    // e.g. category="Emotional Fitness" → "emotional"
-    const catKey = skill.category
-      .trim()
-      .toLowerCase()
-      .split(/\s+/)[0]
-    return lowDims.includes(catKey)
+    // normalize domains to an array
+    const domains = Array.isArray(skill.domains)
+      ? skill.domains
+      : [skill.domains]
+
+    // include if any of the skill’s domains is in lowDims
+    return domains.some(d => lowDims.includes(d))
   })
 }
-
 
 // Eight resilience avatars
 const AVATARS = [
@@ -210,43 +209,53 @@ setMfaScores(scores)
   {mfaScores && <MFADials scores={mfaScores} />}
 
   <section>
-    <h2 className="text-xl font-semibold mb-2">Skills We Suggest</h2>
-    {mfaScores ? (
-      Object.entries(mfaScores).map(([dim, score]) => {
-        const label = labelMap[dim];
-        const skillsFor = suggestedSkills.filter(s => s.category === label);
-        if (score >= 3.5) {
-          return (
-            <p key={dim} className="text-green-600">
-              Your {label} is Thriving! Well done!
-            </p>
-          );
-        }
+  <h2 className="text-xl font-semibold mb-2">Skills We Suggest</h2>
+  {mfaScores ? (
+    Object.entries(mfaScores).map(([dim, score]) => {
+      const label = labelMap[dim]
+      // pick up any skill that’s tagged for this dimension
+      const skillsFor = suggestedSkills.filter(skill =>
+        Array.isArray(skill.domains)
+          ? skill.domains.includes(dim)
+          : false
+      )
+
+      if (score >= 3.5) {
         return (
-          <div key={dim} className="mb-4">
-            <p className="font-semibold">
-              To increase your {label} score, we recommend:
-            </p>
-            {skillsFor.length > 0 ? (
-              <ul className="list-disc list-inside ml-4">
-                {skillsFor.map(skill => (
-                  <li key={skill.id}>
-                    <Link to={`/skill/${skill.id}`} className="text-blue-600 hover:underline">
-                      {skill.title}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-gray-600 ml-4">No recommendations at this time.</p>
-            )}
-          </div>
-        );
-      })
-    ) : (
-      <p className="text-gray-600">Enter your MFA scores to see recommendations.</p>
-    )}
-  </section>
+          <p key={dim} className="text-green-600">
+            Your {label} is Thriving! Well done!
+          </p>
+        )
+      }
+
+      return (
+        <div key={dim} className="mb-4">
+          <p className="font-semibold">
+            To increase your {label}, we recommend:
+          </p>
+          {skillsFor.length > 0 ? (
+            <ul className="list-disc list-inside ml-4">
+              {skillsFor.map(skill => (
+                <li key={skill.id}>
+                  <Link
+                    to={`/skill/${skill.id}`}
+                    className="text-blue-600 hover:underline"
+                  >
+                    {skill.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-600 ml-4">No recommendations at this time.</p>
+          )}
+        </div>
+      )
+    })
+  ) : (
+    <p className="text-gray-600">Enter your MFA scores to see recommendations.</p>
+  )}
+</section>
 </div>
 
 
