@@ -8,12 +8,17 @@ import MFADials from './components/MFADials'
 // Helper: map MFA scores → suggested skills
 function mapScoresToSkills(mfaScores) {
   if (!mfaScores) return []
-  const THRESHOLD = 5
+
+  // Collect any dimension where score < 3.5
   const lowCats = []
-  if (mfaScores.emotional <= THRESHOLD) lowCats.push('Emotional Fitness')
-  if (mfaScores.social    <= THRESHOLD) lowCats.push('Social Fitness')
-  if (mfaScores.family    <= THRESHOLD) lowCats.push('Family Fitness')
-  if (mfaScores.spiritual <= THRESHOLD) lowCats.push('Spiritual Fitness')
+  Object.entries(mfaScores).forEach(([dim, score]) => {
+    if (score < 3.5) {
+      // dim will be one of 'emotional', 'social', 'family', 'spiritual'
+      lowCats.push(dim)
+    }
+  })
+
+  // Filter your skills list for those matching any low-scoring category
   return skills.filter(skill => lowCats.includes(skill.category))
 }
 
