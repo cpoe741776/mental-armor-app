@@ -40,6 +40,7 @@ export default function Profile() {
 
   // Load profile metadata (parse MFA scores as floats)
   const loadMetadata = (u) => {
+    console.log('loadMetadata raw user_metadata:', u.user_metadata);
     const { user_metadata = {} } = u
     const {
       visitedSkills      = [],
