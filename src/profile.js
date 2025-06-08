@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Header from './Header'
 import { skills } from './skills'
-import netlifyIdentity from 'netlify-identity-widget'
 import MFADials from './components/MFADials'
+import netlifyIdentity from 'netlify-identity-widget'
+import { auth } from './auth'
 
 // Map dimension keys to human-readable labels
 const labelMap = {
@@ -59,7 +60,7 @@ export default function Profile() {
     const { user_metadata = {} } = u
     const {
       visitedSkills      = [],
-      mfaScores: rawScores = null,
+      mfaScores: rawScores = null ,
       topStrengths: strengths = {},
       avatar: avatarId   = '',
     } = user_metadata
@@ -127,32 +128,49 @@ setMfaScores(scores)
 
   const handleLoginClick    = () => netlifyIdentity.open('login')
   const handleLogoutClick   = () => netlifyIdentity.logout()
-  const handleResetPassword = () => { netlifyIdentity.open()
+  // Inside your Profile component, alongside your other handlers:
+
+// 1) Define the handler, with its own console.log inside:
+const handleResetPassword = () => {
   console.log('🔑 Reset password clicked');
+  if (!user) {
+    return alert('Please log in first');
   }
+  auth.requestPasswordRecovery(user.email)
+    .then(() => {
+      alert(`✅ Recovery email sent to ${user.email}`);
+    })
+    .catch(err => {
+      console.error('Password recovery error:', err);
+      alert('❌ Error sending recovery email: ' + err.message);
+    });
+};  // ← only one closing brace here, and a semicolon
 
-  const updateAvatar = (newAvatar) => {
-    if (!user) return
-    const metadata = { ...(user.user_metadata || {}), avatar: newAvatar }
-    user.update({ user_metadata: metadata })
-      .then(u => {
-        setUser(u)
-        setAvatar(newAvatar)  // immediate local update
-        localStorage.setItem('selectedAvatar', newAvatar)
-      })
-      .catch(err => alert('Error updating avatar: ' + err.message))
-  }
+// 2) Next handler, no stray braces:
+const updateAvatar = (newAvatar) => {
+  if (!user) return;
+  const metadata = { ...(user.user_metadata || {}), avatar: newAvatar };
+  user.update({ user_metadata: metadata })
+    .then(u => {
+      setUser(u);
+      setAvatar(newAvatar);
+      localStorage.setItem('selectedAvatar', newAvatar);
+    })
+    .catch(err => alert('Error updating avatar: ' + err.message));
+};
 
-  if (loading) {
-    return (
-      <div className="py-12 text-center">
-        <p className="text-lg">Loading profile…</p>
-      </div>
-    )
-  }
-
+// 3) Early return for loading state — still inside Profile():
+if (loading) {
   return (
-    <div className="bg-white min-h-screen pb-24">
+    <div className="py-12 text-center">
+      <p className="text-lg">Loading profile…</p>
+    </div>
+  );
+}
+
+// 4) Main render follows:
+return (
+  <div className="bg-white min-h-screen pb-24">
       <Header title="Your Profile" />
       <div className="container mx-auto px-4 py-8">
         {!user ? (
@@ -281,7 +299,10 @@ setMfaScores(scores)
             {/* Right Column */}
             <div className="space-y-8">
               <div className="space-y-2">
-                <button onClick={handleResetPassword} className="w-full px-4 py-2 bg-yellow-400 rounded">Reset Password</button>
+                <button onClick={handleResetPassword} className="w-full px-4 py-2 bg-yellow-400 rounded"
+>
+  Reset Password
+</button>
                 <button onClick={handleLogoutClick} className="w-full px-4 py-2 bg-red-400 rounded">Log Out</button>
               </div>
               <section>
