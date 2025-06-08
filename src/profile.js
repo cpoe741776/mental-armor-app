@@ -5,26 +5,13 @@ import { skills } from './skills'
 import netlifyIdentity from 'netlify-identity-widget'
 import MFADials from './components/MFADials'
 
-// Helper: map MFA scores → suggested skills
-function mapScoresToSkills(mfaScores) {
-  if (!mfaScores) return []
-
-  // Find all dimensions where the user score is below 3.5
-  const lowDims = Object.entries(mfaScores)
-    .filter(([_, score]) => score < 3.5)
-    .map(([dim]) => dim)    // ['emotional','social',…]
-  
-  // Return skills whose category key matches a low dimension
-  return skills.filter(skill => {
-    // e.g. category="Emotional Fitness" → "emotional"
-    const catKey = skill.category
-      .trim()
-      .toLowerCase()
-      .split(/\s+/)[0]
-    return lowDims.includes(catKey)
-  })
+// Map dimension keys to human-readable labels
+const labelMap = {
+  emotional: 'Emotional Fitness',
+  social:    'Social Fitness',
+  family:    'Family Fitness',
+  spiritual: 'Spiritual Fitness'
 }
-
 
 // Eight resilience avatars
 const AVATARS = [
@@ -41,27 +28,19 @@ const AVATARS = [
 export default function Profile() {
   const [user, setUser] = useState(null)
   const [avatar, setAvatar] = useState('')
-  const [visitedSkillIds, setVisitedSkillIds] = useState([])
   const [mfaScores, setMfaScores] = useState(null)
-  const [topStrengths, setTopStrengths] = useState({ strength1: null, strength2: null })
-  const [suggestedSkills, setSuggestedSkills] = useState([])
+
   const [loading, setLoading] = useState(true)
 
   // Load user metadata into state
   const loadMetadata = (u) => {
     const { user_metadata = {} } = u
-    const {
-      visitedSkills      = [],
-      mfaScores: rawScores = null,
-      topStrengths: strengths = {},
-      avatar: avatarId   = '',
-    } = user_metadata
+    const { mfaScores: rawScores = null, avatar: avatarId = '' } = user_metadata
 
-    // Fallback to localStorage in case metadata isn't updated yet
+    // Fallback to localStorage
     const storedAvatar = localStorage.getItem('selectedAvatar')
     const finalAvatar = avatarId || storedAvatar || ''
-
-    setVisitedSkillIds(visitedSkills)
+    setAvatar(finalAvatar)
 
     // Parse and set MFA scores
     const scores = rawScores
@@ -73,10 +52,7 @@ export default function Profile() {
         }
       : null
     setMfaScores(scores)
-
-    setTopStrengths(strengths)
-    setSuggestedSkills(mapScoresToSkills(scores))
-    setAvatar(finalAvatar)
+  
   }
 
   // Initialize on mount
@@ -92,12 +68,10 @@ export default function Profile() {
     const onLogin = (u) => { setUser(u); loadMetadata(u) }
     const onLogout = () => {
       setUser(null)
-      setVisitedSkillIds([])
-      setMfaScores(null)
-      setTopStrengths({ strength1: null, strength2: null })
-      setSuggestedSkills([])
       setAvatar('')
       localStorage.removeItem('selectedAvatar')
+      setMfaScores(null)
+   
     }
 
     netlifyIdentity.on('login', onLogin)
@@ -129,7 +103,7 @@ export default function Profile() {
     user.update({ user_metadata: metadata })
       .then(u => {
         setUser(u)
-        setAvatar(newAvatar)  // immediate local update
+        setAvatar(newAvatar)
         localStorage.setItem('selectedAvatar', newAvatar)
       })
       .catch(err => alert('Error updating avatar: ' + err.message))
@@ -164,32 +138,11 @@ export default function Profile() {
                 <h2 className="text-xl font-semibold mb-2">Your MFA Scores</h2>
                 {mfaScores ? (
                   <ul className="list-disc list-inside text-gray-700">
-                    <li><strong>Emotional:</strong> {mfaScores.emotional.toFixed(1)}</li>
-                    <li><strong>Social:</strong>    {mfaScores.social.toFixed(1)}</li>
-                    <li><strong>Family:</strong>    {mfaScores.family.toFixed(1)}</li>
-                    <li><strong>Spiritual:</strong> {mfaScores.spiritual.toFixed(1)}</li>
+                    {Object.entries(mfaScores).map(([dim, score]) => (
+                      <li key={dim}><strong>{labelMap[dim]}:</strong> {score.toFixed(1)}</li>
+                    ))}
                   </ul>
                 ) : (<p className="text-gray-600">No scores yet. Enter MFA scores.</p>)}
-              </section>
-              <section>
-                <h2 className="text-xl font-semibold mb-2">Your Top Strengths</h2>
-                {(topStrengths.strength1 || topStrengths.strength2) ? (
-                  <ul className="list-disc list-inside text-gray-700">
-                    <li><strong>1:</strong> {topStrengths.strength1}</li>
-                    <li><strong>2:</strong> {topStrengths.strength2}</li>
-                  </ul>
-                ) : (<p className="text-gray-600">No strengths selected.</p>)}
-              </section>
-              <section>
-                <h2 className="text-xl font-semibold mb-2">Skills You’ve Viewed</h2>
-                {visitedSkillIds.length > 0 ? (
-                  <ul className="list-disc list-inside text-gray-700">
-                    {visitedSkillIds.map(id => {
-                      const skill = skills.find(s => s.id===id)
-                      return skill ? (<li key={id}><Link to={`/skill/${id}`} className="text-blue-600 hover:underline">{skill.title}</Link></li>) : null
-                    })}
-                  </ul>
-                ) : (<p className="text-gray-600">No skills viewed yet.</p>)}
               </section>
             </div>
 
@@ -198,17 +151,29 @@ export default function Profile() {
               {mfaScores && <MFADials scores={mfaScores} />}
               <section>
                 <h2 className="text-xl font-semibold mb-2">Skills We Suggest</h2>
-                {suggestedSkills.length > 0 ? (
-                  <div className="grid grid-cols-1 gap-4">
-                    {suggestedSkills.map(skill => (
-                      <Link key={skill.id} to={`/skill/${skill.id}`} className="block p-4 border rounded-lg hover:shadow-lg">
-                        <div className="font-semibold text-[#003049]">{skill.title}</div>
-                        <p className="text-gray-700 mt-1 line-clamp-2">{skill.brief}</p>
-                        <span className="text-blue-600 hover:underline mt-2 inline-block">Learn more →</span>
-                      </Link>
-                    ))}
-                  </div>
-                ) : (<p className="text-gray-600">Enter your MFA scores to see suggestions.</p>)}
+                {mfaScores ? (
+                  <>
+                    {Object.entries(mfaScores).map(([dim, score]) => {
+                      const label = labelMap[dim]
+                      const skillsFor = skills.filter(s => s.category === label)
+                      if (score >= 3.5) {
+                        return <p key={dim} className="text-green-600">Your {label} is Thriving! Great job!</p>
+                      }
+                      return (
+                        <div key={dim} className="mb-4">
+                          <p className="font-semibold">To increase your {label}, we suggest:</p>
+                          {skillsFor.length > 0 ? (
+                            <ul className="list-disc list-inside ml-4">
+                              {skillsFor.map(s => <li key={s.id}><Link to={`/skill/${s.id}`} className="text-blue-600 hover:underline">{s.title}</Link></li>)}
+                            </ul>
+                          ) : (<p className="text-gray-600 ml-4">No suggestions at this time.</p>)}
+                        </div>
+                      )
+                    })}
+                  </>
+                ) : (
+                  <p className="text-gray-600">Enter your MFA scores to see suggestions.</p>
+                )}
               </section>
             </div>
 
@@ -216,18 +181,23 @@ export default function Profile() {
             <div className="space-y-8">
               <div className="space-y-2">
                 <button onClick={handleResetPassword} className="w-full px-4 py-2 bg-yellow-400 rounded">Reset Password</button>
-                <button onClick={handleLogoutClick} className="w-full px-4 py-2 bg-red-400 rounded">Log Out</button>
+                <button onClick={handleLogoutClick} className="w-full px-4 py-2 bg-red-400.rounded">Log Out</button>
               </div>
               <section>
                 <h2 className="text-xl font-semibold mb-2 text-center">Choose your Avatar</h2>
                 <div className="grid grid-cols-2 gap-2 justify-items-center">
                   {AVATARS.map(a => (
-                    <img key={a.id} src={a.src} alt={a.id} className={`w-16 h-16 rounded-full cursor-pointer border-2 ${avatar===a.id?'border-blue-500':'border-transparent'}`} onClick={()=>updateAvatar(a.id)} />
+                    <img
+                      key={a.id}
+                      src={a.src}
+                      alt={a.id}
+                      className={`w-16 h-16 rounded-full cursor-pointer border-2 ${avatar===a.id?'border-blue-500':'border-transparent'}`}
+                      onClick={()=>updateAvatar(a.id)}
+                    />
                   ))}
                 </div>
               </section>
             </div>
-
           </div>
         )}
       </div>
