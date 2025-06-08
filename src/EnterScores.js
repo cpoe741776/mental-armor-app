@@ -1,7 +1,6 @@
 // src/EnterScores.js
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Header from './Header'
 import netlifyIdentity from 'netlify-identity-widget'
 
 export default function EnterScores() {
@@ -59,7 +58,6 @@ export default function EnterScores() {
 
   return (
     <div className="bg-white min-h-screen overflow-y-auto pb-24 p-4">
-      <Header title="Enter MFA Scores" />
 
       <div className="mt-4 space-y-4 max-w-md mx-auto">
         {/* Emotional Fitness */}

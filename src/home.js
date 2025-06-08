@@ -1,13 +1,11 @@
 // src/Home.js
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Header from './Header';
 
 export default function Home() {
   return (
     <div className="bg-white min-h-screen overflow-y-auto pb-24">
       {/* Shared header */}
-      <Header title="Mental Armor Home" />
 
       <div className="mt-6 flex flex-col items-center">
         {/* Video hosted on your own domain */}
