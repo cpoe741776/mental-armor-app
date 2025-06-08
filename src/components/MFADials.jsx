@@ -14,8 +14,8 @@ const getColor = (score) => {
 // Determine descriptor text based on score
 const getDescriptor = (score) => {
   if (score >= 3.5) return 'Thriving';
-  if (score >= 2.3) return 'Challenged';
-  return 'Needs Improvement';
+  if (score >= 2.3) return 'Needs Improvement';
+  return 'Challenged';
 };
 
 /**
