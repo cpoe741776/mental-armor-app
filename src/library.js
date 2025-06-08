@@ -1,7 +1,6 @@
 // src/library.js
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Header from './Header';        // ← shared Header with back/home links
 import { skills } from './skills';
 
 export default function Library() {
@@ -29,7 +28,7 @@ export default function Library() {
   return (
     <div className="bg-white min-h-screen overflow-y-auto pb-24">
       {/* Shared header */}
-      <Header title="Skill Library" />
+     
 
       <div className="p-4">
         {/* Search field */}
