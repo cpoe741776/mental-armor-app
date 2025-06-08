@@ -127,9 +127,8 @@ setMfaScores(scores)
 
   const handleLoginClick    = () => netlifyIdentity.open('login')
   const handleLogoutClick   = () => netlifyIdentity.logout()
-  const handleResetPassword = () => {
+  const handleResetPassword = () => { netlifyIdentity.open()
   console.log('🔑 Reset password clicked');
-   netlifyIdentity.open('forgot')
   }
 
   const updateAvatar = (newAvatar) => {
