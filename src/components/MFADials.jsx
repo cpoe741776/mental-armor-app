@@ -1,0 +1,83 @@
+import React from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { RadialBarChart, RadialBar } from 'recharts';
+
+// Maximum possible score (e.g., 5)
+const MAX_SCORE = 5;
+
+// Determine gauge color based on score thresholds
+const getColor = (score) => {
+  if (score >= 3.5) return '#67BF4F';    // Green (Thriving)
+  if (score >= 2.3) return '#FDD835';    // Yellow (Challenged)
+  return '#EF5350';                      // Red (Needs Improvement)
+};
+
+// Determine descriptor text based on score
+const getDescriptor = (score) => {
+  if (score >= 3.5) return 'Thriving';
+  if (score >= 2.3) return 'Challenged';
+  return 'Needs Improvement';
+};
+
+/**
+ * MFADials component displays four half-circle gauges for different MFA dimensions.
+ * @param {{
+ *   emotional: number,
+ *   social: number,
+ *   family: number,
+ *   spiritual: number
+ * }} scores
+ */
+export default function MFADials({ scores }) {
+  const dimensions = [
+    { key: 'emotional', label: 'EMOTIONAL', score: scores.emotional },
+    { key: 'social',    label: 'SOCIAL/PROFESSIONAL', score: scores.social },
+    { key: 'family',    label: 'FAMILY/PERSONAL', score: scores.family },
+    { key: 'spiritual', label: 'SPIRITUAL', score: scores.spiritual }
+  ];
+
+  return (
+    <Card className="mx-auto w-full max-w-4xl p-4 my-6">
+      <CardContent>
+        <h3 className="text-xl font-semibold mb-4">Scores</h3>
+        <div className="grid grid-cols-2 gap-8 items-center">
+          {dimensions.map(({ key, label, score }) => {
+            const percentage = (score / MAX_SCORE) * 100;
+            const color = getColor(score);
+            const descriptor = getDescriptor(score);
+
+            return (
+              <div key={key} className="flex flex-col items-center">
+                <span className="text-sm font-semibold text-gray-700 mb-2">{label}</span>
+                <RadialBarChart
+                  width={160}
+                  height={80}
+                  cx="50%"
+                  cy="100%"
+                  startAngle={180}
+                  endAngle={0}
+                  innerRadius={50}
+                  outerRadius={72}
+                  data={[{ value: percentage }]}
+                >
+                  {/* background track + colored arc */}
+                  <RadialBar
+                    dataKey="value"
+                    background={{ fill: '#F2F2F2' }}
+                    cornerRadius={72}
+                    clockWise
+                    fill={color}
+                  />
+                </RadialBarChart>
+                <div className="mt-2 text-lg font-bold" style={{ color }}>
+                  {score.toFixed(1)}
+                </div>
+                <div className="text-sm text-gray-600">{descriptor}</div>
+              </div>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
