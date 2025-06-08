@@ -100,7 +100,11 @@ export default function Profile() {
   }
 
   if (loading) {
-    return <div className="py-12 text-center"><p className="text-lg">Loading profile…</p></div>
+    return (
+      <div className="py-12 text-center">
+        <p className="text-lg">Loading profile…</p>
+      </div>
+    )
   }
 
   return (
@@ -109,19 +113,32 @@ export default function Profile() {
       <div className="container mx-auto px-4 py-8">
         {!user ? (
           <div className="text-center text-gray-600">
-            <p>Please{' '}
-              <button onClick={handleLoginClick} className="text-blue-600 underline">log in</button>{' '}
+            <p>
+              Please{' '}
+              <button onClick={handleLoginClick} className="text-blue-600 underline">
+                log in
+              </button>{' '}
               to view your profile.
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
             {/* Left Column */}
             <div className="space-y-8">
               <div className="flex items-center space-x-3">
-                {avatar && <img src={AVATARS.find(a => a.id===avatar)?.src} alt="Your avatar" className="w-12 h-12 rounded-full" />}
-                <div><strong>Email:</strong> {user.email}</div>
+                {avatar && (
+                  <img
+                    src={AVATARS.find(a => a.id === avatar)?.src}
+                    alt="Your avatar"
+                    className="w-12 h-12 rounded-full"
+                  />
+                )}
+                <div>
+                  <strong>Email:</strong> {user.email}
+                </div>
               </div>
+
               <section>
                 <h2 className="text-xl font-semibold mb-2">Your MFA Scores</h2>
                 {mfaScores ? (
@@ -131,67 +148,107 @@ export default function Profile() {
                     <li><strong>Family:</strong>    {mfaScores.family}</li>
                     <li><strong>Spiritual:</strong> {mfaScores.spiritual}</li>
                   </ul>
-                ) : <p className="text-gray-600">No scores yet. Enter MFA scores.</p>}
+                ) : (
+                  <p className="text-gray-600">No scores yet. Enter MFA scores.</p>
+                )}
               </section>
+
               <section>
                 <h2 className="text-xl font-semibold mb-2">Your Top Strengths</h2>
-                {(topStrengths.strength1 || topStrengths.strength2) ? (
+                {topStrengths.strength1 || topStrengths.strength2 ? (
                   <ul className="list-disc list-inside text-gray-700">
                     <li><strong>1:</strong> {topStrengths.strength1}</li>
                     <li><strong>2:</strong> {topStrengths.strength2}</li>
                   </ul>
-                ) : <p className="text-gray-600">No strengths selected.</p>}
+                ) : (
+                  <p className="text-gray-600">No strengths selected.</p>
+                )}
               </section>
+
               <section>
                 <h2 className="text-xl font-semibold mb-2">Skills You’ve Viewed</h2>
                 {visitedSkillIds.length > 0 ? (
                   <ul className="list-disc list-inside text-gray-700">
                     {visitedSkillIds.map(id => {
-                      const skill = skills.find(s => s.id===id)
-                      return skill ? (<li key={id}><Link to={`/skill/${id}`} className="text-blue-600 hover:underline">{skill.title}</Link></li>) : null
+                      const skill = skills.find(s => s.id === id)
+                      return (
+                        <li key={id}>
+                          <Link to={`/skill/${id}`} className="text-blue-600 hover:underline">
+                            {skill.title}
+                          </Link>
+                        </li>
+                      )
                     })}
                   </ul>
-                ) : <p className="text-gray-600">No skills viewed yet.</p>}
+                ) : (
+                  <p className="text-gray-600">No skills viewed yet.</p>
+                )}
               </section>
             </div>
 
             {/* Center Column */}
             <div className="space-y-8">
               {mfaScores && <MFADials scores={mfaScores} />}
+
               <section>
                 <h2 className="text-xl font-semibold mb-2">Skills We Suggest</h2>
                 {suggestedSkills.length > 0 ? (
                   <div className="grid grid-cols-1 gap-4">
                     {suggestedSkills.map(skill => (
-                      <Link key={skill.id} to={`/skill/${skill.id}`} className="block p-4 border rounded-lg hover:shadow-lg">
+                      <Link
+                        key={skill.id}
+                        to={`/skill/${skill.id}`}
+                        className="block p-4 border rounded-lg hover:shadow-lg"
+                      >
                         <div className="font-semibold text-[#003049]">{skill.title}</div>
                         <p className="text-gray-700 mt-1 line-clamp-2">{skill.brief}</p>
-                        <span className="text-blue-600 hover:underline mt-2 inline-block">Learn more →</span>
+                        <span className="text-blue-600 hover:underline mt-2 inline-block">
+                          Learn more →
+                        </span>
                       </Link>
                     ))}
                   </div>
-                ) : <p className="text-gray-600">Enter your MFA scores to see suggestions.</p>}
+                ) : (
+                  <p className="text-gray-600">Enter your MFA scores to see suggestions.</p>
+                )}
               </section>
             </div>
 
             {/* Right Column */}
             <div className="space-y-8">
               <div className="space-y-2">
-                <button onClick={handleResetPassword} className="w-full px-4 py-2 bg-yellow-400 rounded">Reset Password</button>
-                <button onClick={handleLogoutClick}   className="w-full px-4 py-2 bg-red-400 rounded">Log Out</button>
+                <button
+                  onClick={handleResetPassword}
+                  className="w-full px-4 py-2 bg-yellow-400 rounded"
+                >
+                  Reset Password
+                </button>
+                <button
+                  onClick={handleLogoutClick}
+                  className="w-full px-4 py-2 bg-red-400 rounded"
+                >
+                  Log Out
+                </button>
               </div>
+
               <section>
-                <h2 className="text-xl font-semibold mb-2 text-center">Avatar</h2>
-                <div className="grid grid-cols-2 gap-2">
+                <h2 className="text-xl font-semibold mb-2 text-center">Choose your Avatar</h2>
+                <div className="grid grid-cols-2 gap-2 justify-items-center">
                   {AVATARS.map(a => (
-                    <img key={a.id} src={a.src} alt={a.id}
-                      className={`w-16 h-16 rounded-full cursor-pointer border-2 ${avatar===a.id?'border-blue-500':'border-transparent'}`}
+                    <img
+                      key={a.id}
+                      src={a.src}
+                      alt={a.id}
+                      className={`w-16 h-16 rounded-full cursor-pointer border-2 ${
+                        avatar === a.id ? 'border-blue-500' : 'border-transparent'
+                      }`} 
                       onClick={() => updateAvatar(a.id)}
                     />
                   ))}
                 </div>
               </section>
             </div>
+
           </div>
         )}
       </div>
