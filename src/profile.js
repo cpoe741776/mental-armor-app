@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Header from './Header'
 import { skills } from './skills'
 import netlifyIdentity from 'netlify-identity-widget'
+import MFADials from './components/MFADials.jsx'
 
 // Helper: map MFA scores → suggested skills
 function mapScoresToSkills(mfaScores) {
@@ -116,6 +117,20 @@ export default function Profile() {
   return (
     <div className="bg-white min-h-screen pb-24">
       <Header title="Your Profile" />
+      {/* Centered MFA Dials */}
+      <div className="flex flex-col items-center pt-8">
+        {mfaScores && (
+          <MFADials
+            scores={{
+              emotional: mfaScores.emotional,
+              social:    mfaScores.social,
+              family:    mfaScores.family,
+              spiritual: mfaScores.spiritual
+            }}
+          />
+        )}
+      </div>
+
       <div className="container mx-auto px-4 py-8 space-y-8">
         {!user ? (
           <div className="text-center text-gray-600">
