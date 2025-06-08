@@ -1,7 +1,6 @@
 // src/RepairKit.js
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Header from './Header';
 import { skills } from './skills';
 
 const repairMappings = {
@@ -28,9 +27,11 @@ export default function RepairKit() {
   const [mode, setMode] = React.useState('emotion');
   const [selected, setSelected] = React.useState(null);
 
-  const options = React.useMemo(() => Object.keys(repairMappings[mode]), [mode]);
+  const options = React.useMemo(
+    () => Object.keys(repairMappings[mode]),
+    [mode]
+  );
 
-  // Compute suggestedSkills in one useMemo (depends on mode & selected)
   const suggestedSkills = React.useMemo(() => {
     const ids = selected ? repairMappings[mode][selected] : [];
     return ids
@@ -40,7 +41,10 @@ export default function RepairKit() {
 
   return (
     <div className="bg-white min-h-screen overflow-y-auto pb-24 p-4">
-      <Header title="Mental Armor Repair Kit" />
+      {/* Optional page title */}
+      <div className="mb-4">
+        <h1 className="text-2xl font-semibold text-[#003049]">Repair Kit</h1>
+      </div>
 
       <div className="flex mt-4 space-x-2">
         <button
