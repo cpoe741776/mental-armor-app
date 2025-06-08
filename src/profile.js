@@ -17,7 +17,6 @@ function mapScoresToSkills(mfaScores) {
   return skills.filter(skill => lowCats.includes(skill.category))
 }
 
-
 // Eight resilience avatars
 const AVATARS = [
   { id: 'flower',  src: '/avatars/flower.png' },
@@ -49,6 +48,10 @@ export default function Profile() {
       avatar: avatarId   = '',
     } = user_metadata
 
+    // Fallback to localStorage in case metadata isn't updated yet
+    const storedAvatar = localStorage.getItem('selectedAvatar')
+    const finalAvatar = avatarId || storedAvatar || ''
+
     setVisitedSkillIds(visitedSkills)
 
     // Parse and set MFA scores
@@ -64,7 +67,7 @@ export default function Profile() {
 
     setTopStrengths(strengths)
     setSuggestedSkills(mapScoresToSkills(scores))
-    setAvatar(avatarId)
+    setAvatar(finalAvatar)
   }
 
   // Initialize on mount
@@ -85,6 +88,7 @@ export default function Profile() {
       setTopStrengths({ strength1: null, strength2: null })
       setSuggestedSkills([])
       setAvatar('')
+      localStorage.removeItem('selectedAvatar')
     }
 
     netlifyIdentity.on('login', onLogin)
@@ -97,12 +101,9 @@ export default function Profile() {
 
   // Reload metadata when user updates (including avatar changes)
   useEffect(() => {
-    if (user) {
-      loadMetadata(user)
-    }
+    if (user) loadMetadata(user)
   }, [user])
 
-  // Auth/UI handlers
   const handleLoginClick    = () => netlifyIdentity.open('login')
   const handleLogoutClick   = () => netlifyIdentity.logout()
   const handleResetPassword = () => {
@@ -113,7 +114,6 @@ export default function Profile() {
     })
   }
 
-  // Avatar update: persists and sets local state
   const updateAvatar = (newAvatar) => {
     if (!user) return
     const metadata = { ...(user.user_metadata || {}), avatar: newAvatar }
@@ -121,6 +121,7 @@ export default function Profile() {
       .then(u => {
         setUser(u)
         setAvatar(newAvatar)  // immediate local update
+        localStorage.setItem('selectedAvatar', newAvatar)
       })
       .catch(err => alert('Error updating avatar: ' + err.message))
   }
@@ -139,9 +140,7 @@ export default function Profile() {
       <div className="container mx-auto px-4 py-8">
         {!user ? (
           <div className="text-center text-gray-600">
-            <p>
-              Please <button onClick={handleLoginClick} className="text-blue-600 underline">log in</button> to view your profile.
-            </p>
+            <p>Please <button onClick={handleLoginClick} className="text-blue-600 underline">log in</button> to view your profile.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -152,7 +151,6 @@ export default function Profile() {
                 {avatar && <img src={AVATARS.find(a => a.id===avatar)?.src} alt="Your avatar" className="w-12 h-12 rounded-full" />}
                 <div><strong>Email:</strong> {user.email}</div>
               </div>
-
               <section>
                 <h2 className="text-xl font-semibold mb-2">Your MFA Scores</h2>
                 {mfaScores ? (
@@ -164,7 +162,6 @@ export default function Profile() {
                   </ul>
                 ) : (<p className="text-gray-600">No scores yet. Enter MFA scores.</p>)}
               </section>
-
               <section>
                 <h2 className="text-xl font-semibold mb-2">Your Top Strengths</h2>
                 {(topStrengths.strength1 || topStrengths.strength2) ? (
@@ -174,13 +171,12 @@ export default function Profile() {
                   </ul>
                 ) : (<p className="text-gray-600">No strengths selected.</p>)}
               </section>
-
               <section>
                 <h2 className="text-xl font-semibold mb-2">Skills You’ve Viewed</h2>
                 {visitedSkillIds.length > 0 ? (
                   <ul className="list-disc list-inside text-gray-700">
                     {visitedSkillIds.map(id => {
-                      const skill = skills.find(s => s.id === id)
+                      const skill = skills.find(s => s.id===id)
                       return skill ? (<li key={id}><Link to={`/skill/${id}`} className="text-blue-600 hover:underline">{skill.title}</Link></li>) : null
                     })}
                   </ul>
