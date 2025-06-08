@@ -5,11 +5,11 @@ import { RadialBarChart, RadialBar, PolarAngleAxis } from 'recharts'
 const MAX_SCORE = 5
 
 // Determine gauge color based on score thresholds
-const getColor = (score) => {
-  if (score >= 3.5) return '#67BF4F'    // Green (Thriving)
-  if (score >= 2.3) return '#FDD835'    // Yellow (Challenged)
-  return '#EF5350'                      // Red (Needs Improvement)
-}
+ const getColor = (score) => {
+  if (score >= 3.5) return '#67BF4F';
+  if (score >= 2.3) return '#FDD835';
+  return '#EF5350';
+};
 
 // Determine descriptor text based on score
 const getDescriptor = (score) => {
@@ -20,14 +20,14 @@ const getDescriptor = (score) => {
 
 /**
  * MFADials component displays four half-circle gauges for different MFA dimensions.
- * @param {{ emotional: number, social: number, family: number, spiritual: number }} scores
+ * @param {{ emotional: number, social: number, family: number, spiritual: number }} props.scores
  */
 export default function MFADials({ scores }) {
   const dimensions = [
     { key: 'emotional', label: 'EMOTIONAL', score: scores.emotional },
     { key: 'social',    label: 'SOCIAL/PROFESSIONAL', score: scores.social },
     { key: 'family',    label: 'FAMILY/PERSONAL', score: scores.family },
-    { key: 'spiritual', label: 'SPIRITUAL', score: scores.spiritual }
+    { key: 'spiritual', label: 'SPIRITUAL', score: scores.spiritual },
   ]
 
   return (
@@ -35,7 +35,6 @@ export default function MFADials({ scores }) {
       <h3 className="text-xl font-semibold mb-4">Your Mental Fitness Scores</h3>
       <div className="grid grid-cols-2 gap-8 items-center">
         {dimensions.map(({ key, label, score }) => {
-          // Calculate percentage of 180° arc
           const raw = (score / MAX_SCORE) * 100
           const percentage = Math.max(0, Math.min(100, raw))
           const color = getColor(score)
@@ -55,7 +54,6 @@ export default function MFADials({ scores }) {
                 outerRadius={72}
                 data={[{ value: percentage }]}
               >
-                {/* Force domain to [0,100] so arc length scales properly */}
                 <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
                 <RadialBar
                   dataKey="value"
