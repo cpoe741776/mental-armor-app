@@ -1,7 +1,6 @@
 // src/SkillDetail.js
 import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import Header from './Header'
 import { skills } from './skills'
 import netlifyIdentity from 'netlify-identity-widget'
 
@@ -44,7 +43,6 @@ export default function SkillDetail() {
 
   return (
     <div className="bg-white min-h-screen overflow-y-auto pb-24">
-      <Header title={skill.title} />
 
       <div className="container mx-auto px-4 py-8 space-y-8">
         {skill.videoUrl && (
