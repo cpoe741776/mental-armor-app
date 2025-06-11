@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { skills } from './skills'
 import MFADials from './components/MFADials'
+import { Garden } from './components/GardenComponents'   // ← NEW
 import netlifyIdentity from 'netlify-identity-widget'
 import { auth } from './auth'
 
@@ -215,6 +216,15 @@ return (
                   </ul>
                 ) : (<p className="text-gray-600">No skills viewed yet.</p>)}
               </section>
+              {/* NEW – Resilience Garden */}
+              {mfaScores && (
+                <section>
+                  <h2 className="text-xl font-semibold mb-2">
+                    Your Resilience Garden
+                  </h2>
+                  <Garden domainScores={mfaScores} />
+                </section>
+              )}
             </div>
           {/* Center Column */}
 <div className="space-y-8">
