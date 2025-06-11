@@ -6,7 +6,7 @@ import Logo                           from './Logo';
 
 /* ───────────────────────────── NEW IMPORTS ───────────────────────────── */
 import { GardenHeader } from './components/GardenComponents';
-import useMfaScores     from './src/hooks/useMfaScores';      // we’ll create this hook next
+import useMfaScores     from './hooks/useMfaScores';
 /* ─────────────────────────────────────────────────────────────────────── */
 
 const Header = () => {
