@@ -219,9 +219,9 @@ return (
               {/* NEW – Resilience Garden */}
               {mfaScores && (
                 <section>
-                  <h2 className="text-xl font-semibold mb-2">
-                    Your Resilience Garden
-                  </h2>
+                  <h2 className="text-xl font-semibold mb-2 text-center">
+                  Your Resilience Garden
+                 </h2>
                   <Garden domainScores={mfaScores} />
                 </section>
               )}
