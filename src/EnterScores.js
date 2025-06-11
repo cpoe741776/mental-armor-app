@@ -48,6 +48,10 @@ export default function EnterScores() {
       .update({ data: { mfaScores, topStrengths } })
       .then(updatedUser => {
         console.log('✅ Metadata saved:', updatedUser.user_metadata)
+
+        window.dispatchEvent(
+          new CustomEvent('mfaScoresUpdated', { detail: mfaScores })
+           );
         
         // Notify any listeners (e.g. the header) that scores changed
        window.dispatchEvent(new Event('mfaScoresUpdated'));
