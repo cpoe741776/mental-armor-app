@@ -1,27 +1,28 @@
 // src/Header.js
 import React, { useEffect, useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
-import netlifyIdentity from 'netlify-identity-widget';
-import Logo from './Logo';
+import { Link, NavLink }              from 'react-router-dom';
+import netlifyIdentity                from 'netlify-identity-widget';
+import Logo                           from './Logo';
+
+/* ───────────────────────────── NEW IMPORTS ───────────────────────────── */
+import { GardenHeader } from './components/GardenComponents';
+import useMfaScores     from '.src/hooks/useMfaScores';      // we’ll create this hook next
+/* ─────────────────────────────────────────────────────────────────────── */
 
 const Header = () => {
   const [user, setUser] = useState(null);
+  const scores          = useMfaScores();   // ← NEW: returns null until identity + metadata load
 
-  // Subscribe to Identity events so we know when a user logs in or out
+  /* identity subscriptions – unchanged */
   useEffect(() => {
-    const updateUser = () => {
-      setUser(netlifyIdentity.currentUser());
-    };
-
-    netlifyIdentity.on('init', updateUser);
-    netlifyIdentity.on('login', updateUser);
+    const updateUser = () => setUser(netlifyIdentity.currentUser());
+    netlifyIdentity.on('init',   updateUser);
+    netlifyIdentity.on('login',  updateUser);
     netlifyIdentity.on('logout', updateUser);
-
     netlifyIdentity.init();
-
     return () => {
-      netlifyIdentity.off('init', updateUser);
-      netlifyIdentity.off('login', updateUser);
+      netlifyIdentity.off('init',   updateUser);
+      netlifyIdentity.off('login',  updateUser);
       netlifyIdentity.off('logout', updateUser);
     };
   }, []);
@@ -29,7 +30,7 @@ const Header = () => {
   return (
     <header className="bg-gray-800 text-white py-4">
       <nav className="container mx-auto flex items-center justify-between">
-        {/* Logo and site title linking to home */}
+        {/* Logo & site title */}
         <Link to="/" className="flex items-center space-x-2">
           <Logo />
           <span className="text-xl font-bold">Mental Armor</span>
@@ -37,66 +38,24 @@ const Header = () => {
 
         {/* Navigation links */}
         <ul className="flex space-x-6">
-          <li>
-            <NavLink
-              to="/"
-              className={({ isActive }) =>
-                isActive ? 'underline' : 'hover:underline'
-              }
-            >
-              Home
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/library"
-              className={({ isActive }) =>
-                isActive ? 'underline' : 'hover:underline'
-              }
-            >
-              Library
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/repair-kit"
-              className={({ isActive }) =>
-                isActive ? 'underline' : 'hover:underline'
-              }
-            >
-              Repair Kit
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/enter-scores"
-              className={({ isActive }) =>
-                isActive ? 'underline' : 'hover:underline'
-              }
-            >
-              Enter Scores
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/profile"
-              className={({ isActive }) =>
-                isActive ? 'underline' : 'hover:underline'
-              }
-            >
-              Profile
-            </NavLink>
-          </li>
+          <li><NavLink to="/"           className={({isActive})=>isActive?'underline':'hover:underline'}>Home</NavLink></li>
+          <li><NavLink to="/library"    className={({isActive})=>isActive?'underline':'hover:underline'}>Library</NavLink></li>
+          <li><NavLink to="/repair-kit" className={({isActive})=>isActive?'underline':'hover:underline'}>Repair Kit</NavLink></li>
+          <li><NavLink to="/enter-scores" className={({isActive})=>isActive?'underline':'hover:underline'}>Enter Scores</NavLink></li>
+          <li><NavLink to="/profile"    className={({isActive})=>isActive?'underline':'hover:underline'}>Profile</NavLink></li>
         </ul>
 
-        {/* Login / Logout button */}
-        <div>
+        {/* Mini-garden + Login/Logout button */}
+        <div className="flex items-center gap-4">
+          {/* ─── NEW MINI FLOWER ROW ─── */}
+          {scores && <GardenHeader domainScores={scores} />}
+          {/* ─── Auth button ─────────── */}
           {user ? (
             <button
               onClick={() => netlifyIdentity.logout()}
               className="px-3 py-1 border rounded bg-red-600 hover:bg-red-700"
             >
-              Log Out ({user.user_metadata?.full_name || user.email})
+              Log Out&nbsp;({user.user_metadata?.full_name || user.email})
             </button>
           ) : (
             <button
