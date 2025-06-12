@@ -18,10 +18,10 @@ export default function EnterScores() {
 
   // Replace these with your actual 24 character strength names:
   const strengthOptions = [
-    'Wisdom', 'Courage', 'Humanity', 'Justice', 'Temperance', 'Transcendence',
-    'Creativity', 'Curiosity', 'Open-Mindedness', 'Love of Learning', 'Perspective',
-    'Bravery', 'Persistence', 'Integrity', 'Vitality', 'Kindness', 'Social Intelligence',
-    'Teamwork', 'Fairness', 'Leadership', 'Self-Regulation', 'Prudence', 'Forgiveness', 'Humility',
+    'Appreciation of Beauty & Excellence', 'Bravery', 'Citizenship & Teamwork', 'Creativity', 'Curiosity',
+    'Fairness', 'Forgiveness', 'Gratitude', 'Honesty', 'Hope', 'Humility', 'Humor', 'Judgement & Critical Thinking', 
+    'Kindness', 'Leadership', 'Love and Be Loved', 'Love of Learning', 'Perseverance', 'Perspective', 
+    'Prudence & Caution', 'Self-Regulation', 'Social Intelligence', 'Spirituality', 'Zest & Enthusiasm'
   ]
 
   const handleSubmit = () => {
@@ -64,7 +64,25 @@ export default function EnterScores() {
   }
 
   return (
+    
     <div className="bg-white min-h-screen overflow-y-auto pb-24 p-4">
+          {/* ────── Take / Retake MFA Assessment ────── */}
+    <div className="max-w-md mx-auto mb-6">
+      <a
+        href="https://mymentalfitnessassessment.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="
+          block w-full text-center
+          py-3 rounded-xl shadow
+          bg-[#003049] text-white
+          font-semibold
+          hover:bg-[#002034] transition
+        "
+      >
+        Take / Retake the MFA Assessment
+      </a>
+    </div>
 
       <div className="mt-4 space-y-4 max-w-md mx-auto">
         {/* Emotional Fitness */}
@@ -75,7 +93,7 @@ export default function EnterScores() {
             value={emotionalFitness}
             onChange={e => setEmotionalFitness(e.target.value)}
             className="w-full p-2 border rounded"
-            placeholder="e.g. 7"
+            placeholder="e.g. 0.0 - 5.0"
             required
           />
         </div>
@@ -88,7 +106,7 @@ export default function EnterScores() {
             value={socialFitness}
             onChange={e => setSocialFitness(e.target.value)}
             className="w-full p-2 border rounded"
-            placeholder="e.g. 5"
+            placeholder="e.g. 0.0 - 5.0"
             required
           />
         </div>
@@ -101,7 +119,7 @@ export default function EnterScores() {
             value={familyFitness}
             onChange={e => setFamilyFitness(e.target.value)}
             className="w-full p-2 border rounded"
-            placeholder="e.g. 8"
+            placeholder="e.g. 0.0 - 5.0"
             required
           />
         </div>
@@ -114,7 +132,7 @@ export default function EnterScores() {
             value={spiritualFitness}
             onChange={e => setSpiritualFitness(e.target.value)}
             className="w-full p-2 border rounded"
-            placeholder="e.g. 6"
+            placeholder="e.g. 0.0 - 5.0"
             required
           />
         </div>
