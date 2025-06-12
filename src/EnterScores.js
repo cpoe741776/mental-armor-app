@@ -87,52 +87,52 @@ export default function EnterScores() {
       <div className="mt-4 space-y-4 max-w-md mx-auto">
         {/* Emotional Fitness */}
         <div>
-          <label className="block mb-1 text-gray-700">Emotional Fitness (0–10)</label>
+          <label className="block mb-1 text-gray-700">Emotional Fitness (0–5)</label>
           <input
-            type="number" min="0" max="10"
+            type="number" min="0" max="5"
             value={emotionalFitness}
             onChange={e => setEmotionalFitness(e.target.value)}
             className="w-full p-2 border rounded"
-            placeholder="e.g. 0.0 - 5.0"
+            placeholder="e.g. 4.6"
             required
           />
         </div>
 
         {/* Social Fitness */}
         <div>
-          <label className="block mb-1 text-gray-700">Social Fitness (0–10)</label>
+          <label className="block mb-1 text-gray-700">Social Fitness (0–5)</label>
           <input
-            type="number" min="0" max="10"
+            type="number" min="0" max="5"
             value={socialFitness}
             onChange={e => setSocialFitness(e.target.value)}
             className="w-full p-2 border rounded"
-            placeholder="e.g. 0.0 - 5.0"
+            placeholder="e.g. 2.7"
             required
           />
         </div>
 
         {/* Family Fitness */}
         <div>
-          <label className="block mb-1 text-gray-700">Family Fitness (0–10)</label>
+          <label className="block mb-1 text-gray-700">Family Fitness (0–5)</label>
           <input
-            type="number" min="0" max="10"
+            type="number" min="0" max="5"
             value={familyFitness}
             onChange={e => setFamilyFitness(e.target.value)}
             className="w-full p-2 border rounded"
-            placeholder="e.g. 0.0 - 5.0"
+            placeholder="e.g. 3.2"
             required
           />
         </div>
 
         {/* Spiritual Fitness */}
         <div>
-          <label className="block mb-1 text-gray-700">Spiritual Fitness (0–10)</label>
+          <label className="block mb-1 text-gray-700">Spiritual Fitness (0–5)</label>
           <input
-            type="number" min="0" max="10"
+            type="number" min="0" max="5"
             value={spiritualFitness}
             onChange={e => setSpiritualFitness(e.target.value)}
             className="w-full p-2 border rounded"
-            placeholder="e.g. 0.0 - 5.0"
+            placeholder="e.g. 1.9"
             required
           />
         </div>
