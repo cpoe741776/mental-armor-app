@@ -14,9 +14,10 @@ import PropTypes from "prop-types";
 const DOMAIN_ORDER = ["emotional", "social", "family", "spiritual"];
 
 const toStatus = (score) => {
-  if (score >= 3.5) return "thriving";
-  if (score >= 2.5) return "needsImprovement";
-  return "challenged";
+  // MFA is a 0–5 scale (custom cut‑offs)
+  if (score >= 3.5) return "thriving";          // 3.5 – 5
+  if (score >= 2.5) return "needsImprovement"; // 2.5 – 3.4
+  return "challenged";                          // 0 – 2.4
 };
 
 const capLeft = (str) => str.charAt(0).toUpperCase() + str.slice(1);
