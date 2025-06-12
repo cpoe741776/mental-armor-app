@@ -143,6 +143,12 @@ export default function Profile() {
           </div>
         ) : (
           <>
+          {/* ---------- MFA Dials top-center ---------- */}
+                 {mfaScores && (
+                   <div className="flex justify-center mb-8">
+                    <MFADials scores={mfaScores} />
+                 </div>
+                 )}
             {/* ================= 3-column grid ================= */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
@@ -216,7 +222,7 @@ export default function Profile() {
 
               {/* ---------- Center Column ---------- */}
               <div className="space-y-8">
-                {mfaScores && <MFADials scores={mfaScores} />}
+                {/* dials removed */}
               </div>
 
               {/* ---------- Right Column ---------- */}
