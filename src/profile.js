@@ -216,15 +216,6 @@ return (
                   </ul>
                 ) : (<p className="text-gray-600">No skills viewed yet.</p>)}
               </section>
-              {/* NEW – Resilience Garden */}
-              {mfaScores && (
-                <section>
-                  <h2 className="text-xl font-semibold mb-2 text-center">
-                  Your Resilience Garden
-                 </h2>
-                  <Garden domainScores={mfaScores} />
-                </section>
-              )}
             </div>
           {/* Center Column */}
 <div className="space-y-8">
@@ -321,6 +312,15 @@ return (
                   ))}
                 </div>
               </section>
+              {/* NEW – Resilience Garden */}
+              {mfaScores && (
+                <section>
+                  <h2 className="text-xl font-semibold mb-2 text-center">
+                  Your Resilience Garden
+                 </h2>
+                  <Garden domainScores={mfaScores} />
+                </section>
+              )}
             </div>
 
           </div>
