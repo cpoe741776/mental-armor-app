@@ -178,17 +178,6 @@ export default function Profile() {
                 
 
                 {/* MFA Scores */}
-                <section>
-                  <h2 className="text-xl font-semibold mb-2">Your MFA Scores</h2>
-                  {mfaScores ? (
-                    <ul className="list-disc list-inside text-gray-700">
-                      <li><strong>Emotional:</strong> {mfaScores.emotional.toFixed(1)}</li>
-                      <li><strong>Social:</strong>    {mfaScores.social.toFixed(1)}</li>
-                      <li><strong>Family:</strong>    {mfaScores.family.toFixed(1)}</li>
-                      <li><strong>Spiritual:</strong> {mfaScores.spiritual.toFixed(1)}</li>
-                    </ul>
-                  ) : <p className="text-gray-600">No scores yet.</p>}
-                </section>
 
                 {/* Top strengths */}
                 <section>
