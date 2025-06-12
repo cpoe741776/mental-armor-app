@@ -14,13 +14,10 @@ import PropTypes from "prop-types";
 const DOMAIN_ORDER = ["emotional", "social", "family", "spiritual"];
 
 const toStatus = (score) => {
-  // Final 0–5 mapping:
-  // 0‑2   → challenged (🥀)
-  // 3     → needsImprovement (🌱)
-  // 4‑5   → thriving (🌸)
-  if (score >= 4) return "thriving";          // 4 – 5
-  if (score >= 3) return "needsImprovement"; // exactly 3
-  return "challenged";                        // 0 – 2
+ 
+  if (score >= 3.5) return "thriving";          
+  if (score >= 2.3) return "needsImprovement"; 
+  return "challenged";                        
 };
 
 const capLeft = (str) => str.charAt(0).toUpperCase() + str.slice(1);
