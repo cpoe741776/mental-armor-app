@@ -14,10 +14,13 @@ import PropTypes from "prop-types";
 const DOMAIN_ORDER = ["emotional", "social", "family", "spiritual"];
 
 const toStatus = (score) => {
-  // MFA is a 0–5 scale (custom cut‑offs)
-  if (score >= 3.5) return "thriving";          // 3.5 – 5
-  if (score >= 2.5) return "needsImprovement"; // 2.5 – 3.4
-  return "challenged";                          // 0 – 2.4
+  // Final 0–5 mapping:
+  // 0‑2   → challenged (🥀)
+  // 3     → needsImprovement (🌱)
+  // 4‑5   → thriving (🌸)
+  if (score >= 4) return "thriving";          // 4 – 5
+  if (score >= 3) return "needsImprovement"; // exactly 3
+  return "challenged";                        // 0 – 2
 };
 
 const capLeft = (str) => str.charAt(0).toUpperCase() + str.slice(1);
