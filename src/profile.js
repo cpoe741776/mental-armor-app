@@ -145,6 +145,9 @@ export default function Profile() {
           <>
             {/* ================= 3-column grid ================= */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="space-y-8">
+                {mfaScores && <MFADials scores={mfaScores} />}
+              </div>
 
               {/* ---------- Left Column ---------- */}
               <div className="space-y-8">
@@ -158,6 +161,16 @@ export default function Profile() {
                     />
                   )}
                   <div><strong>Email:</strong> {user.email}</div>
+                </div>
+                <div className="space-y-8">
+                {/* auth buttons */}
+                <div className="space-y-2">
+                  <button
+                    onClick={handleResetPassword}
+                    className="w-full px-4 py-2 bg-yellow-400 rounded"
+                  >
+                    Reset Password
+                  </button>
                 </div>
 
                 {/* MFA Scores */}
@@ -205,27 +218,9 @@ export default function Profile() {
               </div>
 
               {/* ---------- Center Column ---------- */}
-              <div className="space-y-8">
-                {mfaScores && <MFADials scores={mfaScores} />}
-              </div>
+              
 
               {/* ---------- Right Column ---------- */}
-              <div className="space-y-8">
-                {/* auth buttons */}
-                <div className="space-y-2">
-                  <button
-                    onClick={handleResetPassword}
-                    className="w-full px-4 py-2 bg-yellow-400 rounded"
-                  >
-                    Reset Password
-                  </button>
-                  <button
-                    onClick={() => netlifyIdentity.logout()}
-                    className="w-full px-4 py-2 bg-red-400 rounded"
-                  >
-                    Log Out
-                  </button>
-                </div>
 
                 {/* avatar picker */}
                 <section>
