@@ -3,17 +3,13 @@ import React, { useEffect, useState } from 'react';
 import { Link, NavLink }              from 'react-router-dom';
 import netlifyIdentity                from 'netlify-identity-widget';
 import Logo                           from './Logo';
+import { GardenHeader }               from './components/GardenComponents';
+import useMfaScores                   from './hooks/useMfaScores';
 
-/* ───────────────────────────── NEW IMPORTS ───────────────────────────── */
-import { GardenHeader } from './components/GardenComponents';
-import useMfaScores     from './hooks/useMfaScores';
-/* ─────────────────────────────────────────────────────────────────────── */
-
-const Header = () => {
+export default function Header() {
   const [user, setUser] = useState(null);
-  const scores          = useMfaScores();   // ← NEW: returns null until identity + metadata load
-
-  /* identity subscriptions – unchanged */
+  const scores          = useMfaScores();          // mini garden
+  /* ---------- identity listeners ---------- */
   useEffect(() => {
     const updateUser = () => setUser(netlifyIdentity.currentUser());
     netlifyIdentity.on('init',   updateUser);
@@ -27,48 +23,88 @@ const Header = () => {
     };
   }, []);
 
+  /* ---------- render ---------- */
   return (
-    <header className="bg-gray-800 text-white py-4">
-      <nav className="container mx-auto flex items-center justify-between">
-        {/* Logo & site title */}
-        <Link to="/" className="flex items-center space-x-2">
-          <Logo />
-          <span className="text-xl font-bold">Mental Armor</span>
-        </Link>
+    <header className="bg-gray-800 text-white py-8">  {/* doubled height */}
+      <nav
+        className="
+          container mx-auto
+          flex flex-col md:flex-row
+          md:items-center md:justify-between
+          gap-4 md:gap-0
+        "
+      >
+        {/* Row 1 — Logo + Login/Logout */}
+        <div className="flex items-center justify-between w-full md:w-auto">
+          {/* Logo + title */}
+          <Link to="/" className="flex items-center space-x-3">
+            <Logo />
+            <span className="text-2xl font-bold tracking-wide">
+              Mental&nbsp;Armor
+            </span>
+          </Link>
 
-        {/* Navigation links */}
-        <ul className="flex space-x-6">
-          <li><NavLink to="/"           className={({isActive})=>isActive?'underline':'hover:underline'}>Home</NavLink></li>
-          <li><NavLink to="/library"    className={({isActive})=>isActive?'underline':'hover:underline'}>Library</NavLink></li>
-          <li><NavLink to="/repair-kit" className={({isActive})=>isActive?'underline':'hover:underline'}>Repair Kit</NavLink></li>
-          <li><NavLink to="/enter-scores" className={({isActive})=>isActive?'underline':'hover:underline'}>Enter Scores</NavLink></li>
-          <li><NavLink to="/profile"    className={({isActive})=>isActive?'underline':'hover:underline'}>Profile</NavLink></li>
-        </ul>
-
-        {/* Mini-garden + Login/Logout button */}
-        <div className="flex items-center gap-4">
-          {/* ─── NEW MINI FLOWER ROW ─── */}
-          {scores && <GardenHeader domainScores={scores} />}
-          {/* ─── Auth button ─────────── */}
-          {user ? (
-            <button
-              onClick={() => netlifyIdentity.logout()}
-              className="px-3 py-1 border rounded bg-red-600 hover:bg-red-700"
-            >
-              Log Out&nbsp;({user.user_metadata?.full_name || user.email})
-            </button>
-          ) : (
-            <button
-              onClick={() => netlifyIdentity.open()}
-              className="px-3 py-1 border rounded bg-green-600 hover:bg-green-700"
-            >
-              Log In
-            </button>
+          {/* mini-garden (only on ≥md to avoid crowding small screens) */}
+          {scores && (
+            <span className="hidden md:inline-block ml-4">
+              <GardenHeader domainScores={scores} />
+            </span>
           )}
+
+          {/* Login / Logout — shown as a full-width button on mobile */}
+          <button
+            onClick={() =>
+              user ? netlifyIdentity.logout() : netlifyIdentity.open()
+            }
+            className="
+              md:ml-6
+              px-4 py-2 rounded
+              text-sm
+              bg-green-600 hover:bg-green-700
+              md:bg-transparent md:hover:bg-transparent
+              md:border md:border-green-400
+              w-36 md:w-auto
+            "
+          >
+            {user
+              ? `Log Out${
+                  user.user_metadata?.full_name
+                    ? ` (${user.user_metadata.full_name})`
+                    : ''
+                }`
+              : 'Log In'}
+          </button>
         </div>
+
+        {/* Row 2 — Navigation links (wrap on phones) */}
+        <ul
+          className="
+            flex flex-wrap
+            gap-x-4 gap-y-2
+            md:gap-x-6 md:gap-y-0
+            text-lg md:text-base
+          "
+        >
+          {[
+            ['/', 'Home'],
+            ['/library', 'Library'],
+            ['/repair-kit', 'Repair Kit'],
+            ['/enter-scores', 'Enter Scores'],
+            ['/profile', 'Profile'],
+          ].map(([to, label]) => (
+            <li key={to}>
+              <NavLink
+                to={to}
+                className={({ isActive }) =>
+                  isActive ? 'underline' : 'hover:underline'
+                }
+              >
+                {label}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
       </nav>
     </header>
   );
-};
-
-export default Header;
+}
