@@ -127,7 +127,7 @@ export default function Profile() {
 
   /* ---- render ---- */
   return (
-    <div className="bg-white min-h-screen pb-24">
+    <div className="bg-white min-h-screen pb-24 text-[#003049]">
       <div className="container mx-auto px-4 py-8">
 
         {/* ================= not logged in ================= */}
@@ -268,6 +268,12 @@ export default function Profile() {
 
                 {Object.entries(mfaScores).map(([dim, score]) => {
                   const label     = labelMap[dim];
+                  const bgMap = {
+  emotional: 'bg-red-50',
+  social:    'bg-blue-50',
+  family:    'bg-yellow-50',
+  spiritual: 'bg-purple-50',
+};
                   const skillsFor = suggestedSkills.filter(skill =>
                     Array.isArray(skill.domains) && skill.domains.includes(dim)
                   );
@@ -281,7 +287,7 @@ export default function Profile() {
                   }
 
                   return (
-                    <div key={dim} className="mb-12">
+                    <div key={dim} className={`mb-12 ${bgMap[dim]} rounded-xl p-4`}>
                       <p className="font-semibold mb-3 text-lg text-center">
                         To increase your {label}, we recommend:
                       </p>
