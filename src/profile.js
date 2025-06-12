@@ -145,9 +145,6 @@ export default function Profile() {
           <>
             {/* ================= 3-column grid ================= */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="space-y-8">
-                {mfaScores && <MFADials scores={mfaScores} />}
-              </div>
 
               {/* ---------- Left Column ---------- */}
               <div className="space-y-8">
@@ -218,7 +215,9 @@ export default function Profile() {
               </div>
 
               {/* ---------- Center Column ---------- */}
-              
+              <div className="space-y-8">
+                {mfaScores && <MFADials scores={mfaScores} />}
+              </div>
 
               {/* ---------- Right Column ---------- */}
 
