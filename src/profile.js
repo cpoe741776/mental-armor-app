@@ -1,40 +1,34 @@
-import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { skills } from './skills'
-import MFADials from './components/MFADials'
-import { Garden } from './components/GardenComponents'   // ← NEW
-import netlifyIdentity from 'netlify-identity-widget'
-import { auth } from './auth'
+// src/profile.js
+import React, { useEffect, useState } from 'react';
+import { Link }                       from 'react-router-dom';
+import { skills }                     from './skills';
+import MFADials                       from './components/MFADials';
+import { Garden }                     from './components/GardenComponents';
+import netlifyIdentity                from 'netlify-identity-widget';
+import { auth }                       from './auth';
 
-// Map dimension keys to human-readable labels
+/* ------------------------------------------------------------------ */
+/* helpers                                                             */
+/* ------------------------------------------------------------------ */
 const labelMap = {
   emotional: 'Emotional Fitness',
   social:    'Social Fitness',
   family:    'Family Fitness',
-  spiritual: 'Spiritual Fitness'
-}
+  spiritual: 'Spiritual Fitness',
+};
 
-// Helper: map MFA scores → suggested skills
 function mapScoresToSkills(mfaScores) {
-  if (!mfaScores) return []
-
-  // Find all dimensions where the user score is below 3.5
+  if (!mfaScores) return [];
   const lowDims = Object.entries(mfaScores)
     .filter(([, score]) => score < 3.5)
-    .map(([dim]) => dim)    // ['emotional','social',…]
+    .map(([dim]) => dim);
 
   return skills.filter(skill => {
-    // normalize domains to an array
-    const domains = Array.isArray(skill.domains)
-      ? skill.domains
-      : [skill.domains]
-
-    // include if any of the skill’s domains is in lowDims
-    return domains.some(d => lowDims.includes(d))
-  })
+    const domains = Array.isArray(skill.domains) ? skill.domains : [skill.domains];
+    return domains.some(d => lowDims.includes(d));
+  });
 }
 
-// Eight resilience avatars
 const AVATARS = [
   { id: 'flower',  src: '/avatars/flower.png' },
   { id: 'summit',  src: '/avatars/summit.png' },
@@ -44,288 +38,302 @@ const AVATARS = [
   { id: 'wave',    src: '/avatars/wave.png' },
   { id: 'sunrise', src: '/avatars/sunrise.png' },
   { id: 'trail',   src: '/avatars/trail.png' },
-]
+];
 
+/* ------------------------------------------------------------------ */
+/* component                                                           */
+/* ------------------------------------------------------------------ */
 export default function Profile() {
-  const [user, setUser] = useState(null)
-  const [avatar, setAvatar] = useState('')
-  const [visitedSkillIds, setVisitedSkillIds] = useState([])
-  const [mfaScores, setMfaScores] = useState(null)
-  const [topStrengths, setTopStrengths] = useState({ strength1: null, strength2: null })
-  const [suggestedSkills, setSuggestedSkills] = useState([])
-  const [loading, setLoading] = useState(true)
+  /* ---- state ---- */
+  const [user, setUser]               = useState(null);
+  const [avatar, setAvatar]           = useState('');
+  const [visitedSkillIds, setVisited] = useState([]);
+  const [mfaScores, setMfaScores]     = useState(null);
+  const [topStrengths, setStrengths]  = useState({ strength1: null, strength2: null });
+  const [suggestedSkills, setSuggest] = useState([]);
+  const [loading, setLoading]         = useState(true);
 
-  // Load user metadata into state
+  /* ---- helpers ---- */
   const loadMetadata = (u) => {
-    const { user_metadata = {} } = u
-    const {
-      visitedSkills      = [],
-      mfaScores: rawScores = null ,
-      topStrengths: strengths = {},
-      avatar: avatarId   = '',
-    } = user_metadata
+    const md = u.user_metadata || {};
 
-    // Fallback to localStorage in case metadata isn't updated yet
-    const storedAvatar = localStorage.getItem('selectedAvatar')
-    const finalAvatar = avatarId || storedAvatar || ''
-
-    setVisitedSkillIds(visitedSkills)
-
-    // Parse and set MFA scores
-    const scores = rawScores
+    const scores = md.mfaScores
       ? {
-          emotional: parseFloat(rawScores.emotional),
-          social:    parseFloat(rawScores.social),
-          family:    parseFloat(rawScores.family),
-          spiritual: parseFloat(rawScores.spiritual),
+          emotional: +md.mfaScores.emotional,
+          social:    +md.mfaScores.social,
+          family:    +md.mfaScores.family,
+          spiritual: +md.mfaScores.spiritual,
         }
-      : null
-      // inside loadMetadata, right after you parse `scores`:
-      console.log('rawScores from Netlify:', rawScores);
-      console.log('parsed mfaScores:', scores);
-      console.log('initial suggestedSkills:', mapScoresToSkills(scores));
-   
-setMfaScores(scores)
+      : null;
 
-    setTopStrengths(strengths)
-    setSuggestedSkills(mapScoresToSkills(scores))
-    setAvatar(finalAvatar)
-  }
+    setVisited(md.visitedSkills ?? []);
+    setMfaScores(scores);
+    setStrengths(md.topStrengths ?? {});
+    setSuggest(mapScoresToSkills(scores));
+    setAvatar(md.avatar || localStorage.getItem('selectedAvatar') || '');
+  };
 
-  // Initialize on mount
+  /* ---- effects ---- */
   useEffect(() => {
-    netlifyIdentity.init()
-    const u = netlifyIdentity.currentUser()
-    if (u) {
-      setUser(u)
-      loadMetadata(u)
-    }
-    setLoading(false)
+    netlifyIdentity.init();
+    const u = netlifyIdentity.currentUser();
+    if (u) { setUser(u); loadMetadata(u); }
+    setLoading(false);
 
-    const onLogin = (u) => { setUser(u); loadMetadata(u) }
+    const onLogin  = (u) => { setUser(u); loadMetadata(u); };
     const onLogout = () => {
-      setUser(null)
-      setVisitedSkillIds([])
-      setMfaScores(null)
-      setTopStrengths({ strength1: null, strength2: null })
-      setSuggestedSkills([])
-      setAvatar('')
-      localStorage.removeItem('selectedAvatar')
-    }
+      setUser(null);
+      setVisited([]);
+      setMfaScores(null);
+      setStrengths({ strength1: null, strength2: null });
+      setSuggest([]);
+      setAvatar('');
+      localStorage.removeItem('selectedAvatar');
+    };
 
-    netlifyIdentity.on('login', onLogin)
-    netlifyIdentity.on('logout', onLogout)
+    netlifyIdentity.on('login',  onLogin);
+    netlifyIdentity.on('logout', onLogout);
     return () => {
-      netlifyIdentity.off('login', onLogin)
-      netlifyIdentity.off('logout', onLogout)
-    }
-  }, [])
+      netlifyIdentity.off('login',  onLogin);
+      netlifyIdentity.off('logout', onLogout);
+    };
+  }, []);
 
-  // Reload metadata when user updates (including avatar changes)
-  useEffect(() => {
-    if (user) loadMetadata(user)
-  }, [user])
+  useEffect(() => { if (user) loadMetadata(user); }, [user]);
 
-  const handleLoginClick    = () => netlifyIdentity.open('login')
-  const handleLogoutClick   = () => netlifyIdentity.logout()
-  // Inside your Profile component, alongside your other handlers:
+  /* ---- handlers ---- */
+  const handleResetPassword = () => {
+    if (!user) return alert('Please log in first');
+    auth.requestPasswordRecovery(user.email)
+      .then(() => alert(`Reset email sent to ${user.email}`))
+      .catch(err => alert('Error: ' + err.message));
+  };
 
-// 1) Define the handler, with its own console.log inside:
-const handleResetPassword = () => {
-  console.log('🔑 Reset password clicked');
-  if (!user) {
-    return alert('Please log in first');
+  const updateAvatar = (newAvatar) => {
+    if (!user) return;
+    user.update({ user_metadata: { ...(user.user_metadata || {}), avatar: newAvatar } })
+      .then(u => { setUser(u); setAvatar(newAvatar); localStorage.setItem('selectedAvatar', newAvatar); })
+      .catch(err => alert('Error updating avatar: ' + err.message));
+  };
+
+  /* ---- early loading ---- */
+  if (loading) {
+    return (
+      <div className="py-12 text-center">
+        <p className="text-lg">Loading profile…</p>
+      </div>
+    );
   }
-  auth.requestPasswordRecovery(user.email)
-    .then(() => {
-      alert(`Reset password email sent to ${user.email}`);
-    })
-    .catch(err => {
-      console.error('Password recovery error:', err);
-      alert('❌ Error sending recovery email: ' + err.message);
-    });
-};  // ← only one closing brace here, and a semicolon
 
-// 2) Next handler, no stray braces:
-const updateAvatar = (newAvatar) => {
-  if (!user) return;
-  const metadata = { ...(user.user_metadata || {}), avatar: newAvatar };
-  user.update({ user_metadata: metadata })
-    .then(u => {
-      setUser(u);
-      setAvatar(newAvatar);
-      localStorage.setItem('selectedAvatar', newAvatar);
-    })
-    .catch(err => alert('Error updating avatar: ' + err.message));
-};
-
-// 3) Early return for loading state — still inside Profile():
-if (loading) {
+  /* ---- render ---- */
   return (
-    <div className="py-12 text-center">
-      <p className="text-lg">Loading profile…</p>
-    </div>
-  );
-}
-
-// 4) Main render follows:
-return (
-  <div className="bg-white min-h-screen pb-24">
+    <div className="bg-white min-h-screen pb-24">
       <div className="container mx-auto px-4 py-8">
+
+        {/* ================= not logged in ================= */}
         {!user ? (
           <div className="text-center text-gray-600">
-            <p>Please <button onClick={handleLoginClick} className="text-blue-600 underline">log in</button> to view your profile.</p>
+            <p>
+              Please{' '}
+              <button onClick={() => netlifyIdentity.open('login')} className="text-blue-600 underline">
+                log in
+              </button>{' '}
+              to view your profile.
+            </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <>
+            {/* ================= 3-column grid ================= */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
-            {/* Left Column */}
-            <div className="space-y-8">
-              <div className="flex items-center space-x-3">
-                {avatar && <img src={AVATARS.find(a => a.id===avatar)?.src} alt="Your avatar" className="w-12 h-12 rounded-full" />}
-                <div><strong>Email:</strong> {user.email}</div>
+              {/* ---------- Left Column ---------- */}
+              <div className="space-y-8">
+                {/* avatar + email */}
+                <div className="flex items-center space-x-3">
+                  {avatar && (
+                    <img
+                      src={AVATARS.find(a => a.id === avatar)?.src}
+                      alt="Your avatar"
+                      className="w-12 h-12 rounded-full"
+                    />
+                  )}
+                  <div><strong>Email:</strong> {user.email}</div>
+                </div>
+
+                {/* MFA Scores */}
+                <section>
+                  <h2 className="text-xl font-semibold mb-2">Your MFA Scores</h2>
+                  {mfaScores ? (
+                    <ul className="list-disc list-inside text-gray-700">
+                      <li><strong>Emotional:</strong> {mfaScores.emotional.toFixed(1)}</li>
+                      <li><strong>Social:</strong>    {mfaScores.social.toFixed(1)}</li>
+                      <li><strong>Family:</strong>    {mfaScores.family.toFixed(1)}</li>
+                      <li><strong>Spiritual:</strong> {mfaScores.spiritual.toFixed(1)}</li>
+                    </ul>
+                  ) : <p className="text-gray-600">No scores yet.</p>}
+                </section>
+
+                {/* Top strengths */}
+                <section>
+                  <h2 className="text-xl font-semibold mb-2">Your Top Strengths</h2>
+                  {(topStrengths.strength1 || topStrengths.strength2) ? (
+                    <ul className="list-disc list-inside text-gray-700">
+                      <li><strong>1:</strong> {topStrengths.strength1}</li>
+                      <li><strong>2:</strong> {topStrengths.strength2}</li>
+                    </ul>
+                  ) : <p className="text-gray-600">No strengths selected.</p>}
+                </section>
+
+                {/* Skills viewed */}
+                <section>
+                  <h2 className="text-xl font-semibold mb-2">Skills You’ve Viewed</h2>
+                  {visitedSkillIds.length > 0 ? (
+                    <ul className="list-disc list-inside text-gray-700">
+                      {visitedSkillIds.map(id => {
+                        const skill = skills.find(s => s.id === id);
+                        return skill ? (
+                          <li key={id}>
+                            <Link to={`/skill/${id}`} className="text-blue-600 hover:underline">
+                              {skill.title}
+                            </Link>
+                          </li>
+                        ) : null;
+                      })}
+                    </ul>
+                  ) : <p className="text-gray-600">No skills viewed yet.</p>}
+                </section>
               </div>
-              <section>
-                <h2 className="text-xl font-semibold mb-2">Your MFA Scores</h2>
-                {mfaScores ? (
-                  <ul className="list-disc list-inside text-gray-700">
-                    <li><strong>Emotional:</strong> {mfaScores.emotional.toFixed(1)}</li>
-                    <li><strong>Social:</strong>    {mfaScores.social.toFixed(1)}</li>
-                    <li><strong>Family:</strong>    {mfaScores.family.toFixed(1)}</li>
-                    <li><strong>Spiritual:</strong> {mfaScores.spiritual.toFixed(1)}</li>
-                  </ul>
-                ) : (<p className="text-gray-600">No scores yet. Enter MFA scores.</p>)}
-              </section>
-              <section>
-                <h2 className="text-xl font-semibold mb-2">Your Top Strengths</h2>
-                {(topStrengths.strength1 || topStrengths.strength2) ? (
-                  <ul className="list-disc list-inside text-gray-700">
-                    <li><strong>1:</strong> {topStrengths.strength1}</li>
-                    <li><strong>2:</strong> {topStrengths.strength2}</li>
-                  </ul>
-                ) : (<p className="text-gray-600">No strengths selected.</p>)}
-              </section>
-              <section>
-                <h2 className="text-xl font-semibold mb-2">Skills You’ve Viewed</h2>
-                {visitedSkillIds.length > 0 ? (
-                  <ul className="list-disc list-inside text-gray-700">
-                    {visitedSkillIds.map(id => {
-                      const skill = skills.find(s => s.id===id)
-                      return skill ? (<li key={id}><Link to={`/skill/${id}`} className="text-blue-600 hover:underline">{skill.title}</Link></li>) : null
-                    })}
-                  </ul>
-                ) : (<p className="text-gray-600">No skills viewed yet.</p>)}
-              </section>
-            </div>
-          {/* Center Column */}
-<div className="space-y-8">
-  {mfaScores && <MFADials scores={mfaScores} />}
 
- <section>
-  <h2 className="text-xl font-semibold mb-4">Skills We Suggest</h2>
-  {mfaScores ? (
-    Object.entries(mfaScores).map(([dim, score]) => {
-      const label     = labelMap[dim];
-      const skillsFor = suggestedSkills.filter(skill =>
-        Array.isArray(skill.domains) && skill.domains.includes(dim)
-      );
+              {/* ---------- Center Column ---------- */}
+              <div className="space-y-8">
+                {mfaScores && <MFADials scores={mfaScores} />}
+              </div>
 
-      if (score >= 3.5) {
-        return (
-          <p key={dim} className="text-green-600 mb-6">
-            Your {label} is Thriving! Well done!
-          </p>
-        );
-      }
-
-      return (
-        <div key={dim} className="mb-8">
-          <p className="font-semibold mb-2">
-            To increase your {label}, we recommend:
-          </p>
-
-          {skillsFor.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {skillsFor.map(skill => (
-                <div
-                  key={skill.id}
-                  className="bg-white rounded-xl shadow p-4 flex flex-col"
-                >
-                  <h3 className="text-lg font-medium mb-2">
-                    {skill.title}
-                  </h3>
-
-                  {/* Trainer image + name */}
-                  <div className="flex items-center mb-3">
-                    {skill.trainerImage && (
-                      <img
-                        src={skill.trainerImage}
-                        alt={skill.trainer}
-                        className="w-8 h-8 rounded-full mr-2"
-                      />
-                    )}
-                    <p className="text-sm text-gray-500">
-                      Trainer: {skill.trainer}
-                    </p>
-                  </div>
-
-                  <p className="text-sm text-gray-700 mb-4">
-                    {skill.benefits[0]}
-                  </p>
-
-                  <Link
-                    to={`/skill/${skill.id}`}
-                    className="mt-auto text-blue-600 hover:underline text-sm"
+              {/* ---------- Right Column ---------- */}
+              <div className="space-y-8">
+                {/* auth buttons */}
+                <div className="space-y-2">
+                  <button
+                    onClick={handleResetPassword}
+                    className="w-full px-4 py-2 bg-yellow-400 rounded"
                   >
-                    Learn more
-                  </Link>
+                    Reset Password
+                  </button>
+                  <button
+                    onClick={() => netlifyIdentity.logout()}
+                    className="w-full px-4 py-2 bg-red-400 rounded"
+                  >
+                    Log Out
+                  </button>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-600 ml-4">No recommendations at this time.</p>
-          )}
-        </div>
-      );
-    })
-  ) : (
-    <p className="text-gray-600">Enter your MFA scores to see recommendations.</p>
-  )}
-</section>
-</div>
 
-
-            {/* Right Column */}
-            <div className="space-y-8">
-              <div className="space-y-2">
-                <button onClick={handleResetPassword} className="w-full px-4 py-2 bg-yellow-400 rounded"
->
-  Reset Password
-</button>
-                <button onClick={handleLogoutClick} className="w-full px-4 py-2 bg-red-400 rounded">Log Out</button>
-              </div>
-              <section>
-                <h2 className="text-xl font-semibold mb-2 text-center">Choose your Avatar</h2>
-                <div className="grid grid-cols-2 gap-2 justify-items-center">
-                  {AVATARS.map(a => (
-                    <img key={a.id} src={a.src} alt={a.id} className={`w-16 h-16 rounded-full cursor-pointer border-2 ${avatar===a.id?'border-blue-500':'border-transparent'}`} onClick={()=>updateAvatar(a.id)} />
-                  ))}
-                </div>
-              </section>
-              {/* NEW – Resilience Garden */}
-              {mfaScores && (
+                {/* avatar picker */}
                 <section>
                   <h2 className="text-xl font-semibold mb-2 text-center">
-                  Your Resilience Garden
-                 </h2>
-                  <Garden domainScores={mfaScores} />
+                    Choose your Avatar
+                  </h2>
+                  <div className="grid grid-cols-2 gap-2 justify-items-center">
+                    {AVATARS.map(a => (
+                      <img
+                        key={a.id}
+                        src={a.src}
+                        alt={a.id}
+                        className={`w-16 h-16 rounded-full cursor-pointer border-2 ${
+                          avatar === a.id ? 'border-blue-500' : 'border-transparent'
+                        }`}
+                        onClick={() => updateAvatar(a.id)}
+                      />
+                    ))}
+                  </div>
                 </section>
-              )}
+
+                {/* garden */}
+                {mfaScores && (
+                  <section>
+                    <h2 className="text-xl font-semibold mb-2 text-center">
+                      Your Resilience Garden
+                    </h2>
+                    <Garden domainScores={mfaScores} />
+                  </section>
+                )}
+              </div>
             </div>
 
-          </div>
+            {/* ============ full-width Skills We Suggest ============ */}
+            {mfaScores && (
+              <section className="mt-12">
+                <h2 className="text-2xl font-semibold mb-4 text-center">
+                  Skills We Suggest
+                </h2>
+
+                {Object.entries(mfaScores).map(([dim, score]) => {
+                  const label     = labelMap[dim];
+                  const skillsFor = suggestedSkills.filter(skill =>
+                    Array.isArray(skill.domains) && skill.domains.includes(dim)
+                  );
+
+                  if (score >= 3.5) {
+                    return (
+                      <p key={dim} className="text-green-600 mb-6 text-center">
+                        Your {label} is Thriving! Well done!
+                      </p>
+                    );
+                  }
+
+                  return (
+                    <div key={dim} className="mb-12">
+                      <p className="font-semibold mb-3 text-lg text-center">
+                        To increase your {label}, we recommend:
+                      </p>
+
+                      {skillsFor.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {skillsFor.map(skill => (
+                            <div
+                              key={skill.id}
+                              className="bg-white rounded-xl shadow p-4 flex flex-col"
+                            >
+                              <h3 className="text-lg font-medium mb-2">{skill.title}</h3>
+
+                              <div className="flex items-center mb-3">
+                                {skill.trainerImage && (
+                                  <img
+                                    src={skill.trainerImage}
+                                    alt={skill.trainer}
+                                    className="w-8 h-8 rounded-full mr-2"
+                                  />
+                                )}
+                                <p className="text-sm text-gray-500">
+                                  Trainer: {skill.trainer}
+                                </p>
+                              </div>
+
+                              <p className="text-sm text-gray-700 mb-4">
+                                {skill.benefits[0]}
+                              </p>
+
+                              <Link
+                                to={`/skill/${skill.id}`}
+                                className="mt-auto text-blue-600 hover:underline text-sm"
+                              >
+                                Learn more
+                              </Link>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-gray-600 text-center">
+                          No recommendations at this time.
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </section>
+            )}
+          </>
         )}
       </div>
     </div>
-  )
+  );
 }
