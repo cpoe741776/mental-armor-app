@@ -143,18 +143,7 @@ export default function Profile() {
           </div>
         ) : (
           <>
-          {/* ---------- MFA Dials top-center ---------- */}
-                 {mfaScores && (
-                   <div className="flex justify-center mb-8">
-                    <MFADials scores={mfaScores} />
-                 </div>
-                 )}
-            {/* ================= 3-column grid ================= */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-
-              {/* ---------- Left Column ---------- */}
-              <div className="space-y-8">
-                {/* avatar + email */}
+          {/* avatar + email */}
                 <div className="flex items-center space-x-3">
                   {avatar && (
                     <img
@@ -175,6 +164,18 @@ export default function Profile() {
                     Reset Password
                   </button>
                 </div>
+          {/* ---------- MFA Dials top-center ---------- */}
+                 {mfaScores && (
+                   <div className="flex justify-center mb-8">
+                    <MFADials scores={mfaScores} />
+                 </div>
+                 )}
+            {/* ================= 3-column grid ================= */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+              {/* ---------- Left Column ---------- */}
+              <div className="space-y-8">
+                
 
                 {/* MFA Scores */}
                 <section>
