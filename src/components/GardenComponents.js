@@ -14,8 +14,8 @@ import PropTypes from "prop-types";
 const DOMAIN_ORDER = ["emotional", "social", "family", "spiritual"];
 
 const toStatus = (score) => {
-  if (score >= 4) return "thriving";
-  if (score >= 2) return "needsImprovement";
+  if (score >= 3.5) return "thriving";
+  if (score >= 2.5) return "needsImprovement";
   return "challenged";
 };
 
