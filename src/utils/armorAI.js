@@ -84,15 +84,24 @@ Stay concise, focused, and coach-like. Do not act like a therapist. Offer subtle
     let skillList = '';
     
     skillMatches.forEach(skill => {
+      const skillLink = `https://mental-armor-app.netlify.app/skill/${skill.id}`;
       skillList += `
         - **${skill.title}**: ${skill.trainer} teaches this skill. 
         It involves ${skill.brief}. 
-        <a href="https://mental-armor-app.netlify.app/skill/${skill.id}" target="_blank" rel="noopener noreferrer">Learn more</a>
+        <a href="${skillLink}" target="_blank" rel="noopener noreferrer">Learn more</a>
       `;
     });
 
     // Replace the skills mentioned in the response with the formatted list
-    reply = reply.replace(/(.*\bskills\b.*)/, skillList);
+    // Remove the skills from the original reply before adding them into a list
+    skillMatches.forEach(skill => {
+      reply = reply.replace(new RegExp(`\\b${skill.title}\\b`, 'g'), '');
+    });
+
+    // Add the skill list at the end of the message if skills were mentioned
+    if (skillList) {
+      reply += `\n\nHere are some skills that may help you:\n${skillList}`;
+    }
 
     return reply;
   } catch (err) {
