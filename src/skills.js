@@ -36,73 +36,79 @@ export const skills = [
     ]
   },
 
-  {
-    id: 'flex',
-    title: 'Flex Your Strengths',
-    domains: ['family', 'emotional'] ,
-    category: 'Values & Meaning' ,
-    brief: 'Identify and apply your character strengths in new contexts.',
-    trainer: 'AJ',
-    trainerImage: '/aj.jpg',
-    videoUrl: 'https://videos.files.wordpress.com/HXvYn4pz/fys.mp4',
-    videoThumbnail: 'https://via.placeholder.com/800x450.png?text=Flex+Your+Strengths+Video',
-    goal: 'Identify and apply your strengths at work and home.',
-    when: 'When you want to leverage your unique talents.',
-    benefits: [
-      'Increased confidence',
-      'Better performance',
-      'Enhanced well-being'
-    ],
-    definitions: [
-      { term: 'Signature Strengths', definition: 'Your most prominent personal traits.' },
-      { term: 'Application', definition: 'Using a strength in a new context for impact.' }
-    ],
-    definition:
-      'Signature strengths are your most prominent personal traits. Application means using a strength in a new context for greater impact.',
-    examples: [
-      'If “Creativity” is a signature strength, brainstorm a new hobby that uses creative thinking.',
-      'Notice when a colleague demonstrates “Curiosity,” and ask them about their process.'
-    ],
-    details: [
-      'Identify Strengths: List your top 3 signature strengths from the MFA.',
-      'Notice in Others: Reflect on strengths shown by those around you.',
-      'Apply in New Ways: Plan a novel activity using one strength.',
-      'Reflect on Impact: Journal about outcomes and feelings.'
-    ]
-  },
+ {
+  id: 'flex',
+  title: 'Flex Your Strengths',
+  domains: ['family', 'emotional'],
+  category: 'Values & Meaning',
+  brief: 'Identify and apply your character strengths in new contexts.',
+  trainer: 'AJ',
+  trainerImage: '/aj.jpg',
+  videoUrl: 'https://videos.files.wordpress.com/HXvYn4pz/fys.mp4',
+  videoThumbnail: 'https://via.placeholder.com/800x450.png?text=Flex+Your+Strengths+Video',
+  goal: 'Identify and apply your strengths at work and home.',
+  when: 'When you want to leverage your unique talents.',
+  benefits: [
+    'Increased confidence',
+    'Better performance',
+    'Enhanced well-being'
+  ],
+  definitions: [
+    { term: 'Signature Strengths', definition: 'Your most prominent personal traits.' },
+    { term: 'Application', definition: 'Using a strength in a new context for impact.' }
+  ],
+  definition:
+    'Signature strengths are your most prominent personal traits. Application means using a strength in a new context for greater impact.',
+  examples: [
+    'If “Creativity” is a signature strength, brainstorm a new hobby that uses creative thinking.',
+    'Notice when a colleague demonstrates “Curiosity,” and ask them about their process.'
+  ],
+  details: [
+    'Identify Strengths: List your top 3 signature strengths from the MFA.',
+    'Notice in Others: Reflect on strengths shown by those around you.',
+    'Apply in New Ways: Plan a novel activity using one strength.',
+    'Reflect on Impact: Journal about outcomes and feelings.'
+  ],
+  link: '/skills/flex',           // ✅ string, not array
+  recommendedBy: 'AJ'             // ✅ in the same object, not wrapped in []
+},
 
   {
-    id: 'values_based_living',
-    title: 'Values Based Living',
-    category: 'Values & Meaning',
-    domains: ['spiritual' , 'emotional' , 'family'] ,
-    brief: 'Connect daily actions to core values for purpose.',
-    trainer: 'Terry',
-    trainerImage: '/terry.jpg',
-    goal: 'Focus daily actions on your core values.',
-    when: 'When you need direction or renewal.',
-    benefits: [
-      'Clarity of purpose',
-      'Motivation for goals',
-      'Resilience against distractions'
-    ],
-    definitions: [
-      { term: 'Values', definition: 'Principles guiding choices and actions.' },
-      { term: 'Goals', definition: 'Specific outcomes aligned with your values.' }
-    ],
-    definition:
-      'Values are principles guiding choices and actions. Goals are specific outcomes aligned with those values.',
-    examples: [
-      'If “Integrity” is a core value, decide today to speak honestly in all conversations.',
-      'If “Learning” is a top value, commit to reading one chapter of a book each day.'
-    ],
-    details: [
-      'Define Values: Select your top 3 personal values.',
-      'Set Value-Driven Goals: Create immediate, short-, and long-term goals.',
-      'Plan for Obstacles: Identify challenges and solutions.',
-      'Share Your Plan: Discuss goals and plan with a partner.'
-    ]
-  },
+  id: 'flex',
+  title: 'Flex Your Strengths',
+  domains: ['family', 'emotional'],
+  category: 'Values & Meaning',
+  brief: 'Identify and apply your character strengths in new contexts.',
+  trainer: 'AJ',
+  trainerImage: '/aj.jpg',
+  videoUrl: 'https://videos.files.wordpress.com/HXvYn4pz/fys.mp4',
+  videoThumbnail: 'https://via.placeholder.com/800x450.png?text=Flex+Your+Strengths+Video',
+  goal: 'Identify and apply your strengths at work and home.',
+  when: 'When you want to leverage your unique talents.',
+  benefits: [
+    'Increased confidence',
+    'Better performance',
+    'Enhanced well-being'
+  ],
+  definitions: [
+    { term: 'Signature Strengths', definition: 'Your most prominent personal traits.' },
+    { term: 'Application', definition: 'Using a strength in a new context for impact.' }
+  ],
+  definition:
+    'Signature strengths are your most prominent personal traits. Application means using a strength in a new context for greater impact.',
+  examples: [
+    'If “Creativity” is a signature strength, brainstorm a new hobby that uses creative thinking.',
+    'Notice when a colleague demonstrates “Curiosity,” and ask them about their process.'
+  ],
+  details: [
+    'Identify Strengths: List your top 3 signature strengths from the MFA.',
+    'Notice in Others: Reflect on strengths shown by those around you.',
+    'Apply in New Ways: Plan a novel activity using one strength.',
+    'Reflect on Impact: Journal about outcomes and feelings.'
+  ],
+  link: '/skills/flex',
+  recommendedBy: 'AJ'
+},
 
   {
     id: 'spiritual_resilience',
@@ -134,8 +140,10 @@ export const skills = [
       'Connect to Purpose: Describe how beliefs give life meaning.',
       'Identify Practices: List activities that reinforce beliefs.',
       'Plan Renewal: Schedule one spiritual practice this week.'
-    ]
-  },
+    ],
+  link: '/skills/spiritual_resilience',
+  recommendedBy: 'Chris'
+},
 
   {
     id: 'gratitude',
@@ -167,8 +175,10 @@ export const skills = [
       'Reflection: Answer why it went well, who contributed, and its impact.',
       'Record in Journal: Log the event and reflections.',
       'Review Entries: Revisit entries weekly to reinforce positivity.'
-    ]
-  },
+    ],
+  link: '/skills/gratitude',
+  recommendedBy: 'Scotty'
+},
 
   {
     id: 'mindfulness',
@@ -200,8 +210,10 @@ export const skills = [
       'Formal Practice: Meditate for 5 minutes, focusing on your breath.',
       'In-the-Moment Technique: Do 3 deep breaths and identify five senses.',
       'Reflect & Plan: Note a mindful moment and schedule your next practice.'
-    ]
-  },
+    ],
+  link: '/skills/mindfulness',
+  recommendedBy: 'AJ'
+},
 
   {
     id: 'reframe',
@@ -233,8 +245,10 @@ export const skills = [
       'Identify Reactions: Note automatic thoughts, emotions, and behaviors.',
       'Generate Reframe: Create a realistic, constructive alternate thought.',
       'Practice & Reflect: Apply the reframe and observe outcomes.'
-    ]
-  },
+    ],
+  link: '/skills/reframe',
+  recommendedBy: 'Chris'
+},
 
   {
     id: 'balance_your_thinking',
@@ -269,8 +283,10 @@ export const skills = [
       'Identify Thought: Write down the specific unbalanced thought.',
       'Examine Evidence: List facts for and against that thought.',
       'Formulate Reframe: Create a balanced, evidence-based thought.'
-    ]
-  },
+    ],
+  link: '/skills/balance_your_thinking',
+  recommendedBy: 'Terry'
+},
 
   {
     id: 'whats_most_important',
@@ -304,8 +320,10 @@ export const skills = [
       'Identify Influences: Spot “shoulds” or internal voices driving reactions.',
       "Ask What’s Important: Use your top priority to reframe thoughts.",
       'Implement & Reflect: Apply your new plan and note outcomes.'
-    ]
-  },
+    ],
+  link: '/skills/whats_most_important',
+  recommendedBy: 'Chris'
+},
 
   {
     id: 'interpersonal_problem_solving',
@@ -343,8 +361,10 @@ export const skills = [
       'Ask for Perspective: Listen actively and paraphrase to confirm understanding.',
       'Brainstorm Solutions: Generate options collaboratively.',
       'Agree & Follow-Up: Choose a solution and set next steps.'
-    ]
-  },
+    ],
+  link: '/skills/interpersonal_problem_solving',
+  recommendedBy: 'Terry'
+},
 
   {
     id: 'good_listening_celebrate_news',
@@ -378,6 +398,8 @@ export const skills = [
       'Help Savor: Invite details to extend the positive emotion.',
       'Use Conversations A & B: Celebrate first, then follow up if concerns arise.',
       'Reflect on Patterns: Review how often you celebrate and adjust as needed.'
-    ]
-  }
+    ],
+  link: '/skills/good_listening_celebrate_news',
+  recommendedBy: 'Scotty'
+}
 ];
