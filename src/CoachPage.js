@@ -1,48 +1,43 @@
 import React, { useState } from 'react';
 import CoachArmorChat from './components/CoachArmorChat';
-import Rhonda from '/rhonda.jpg';
-import Jill from '/jill.jpg';
-import AJ from '/aj.jpg';
-import Terry from '/terry.jpg';
-import Scotty from '/scotty.jpg';
-import Chris from '/chris.jpg';
+
 
 const coaches = [
   {
     name: 'Rhonda',
     title: 'Surgeon & General',
     traits: 'Bold · Organized · No Excuses',
-    image: Rhonda,
+    image: '/rhonda.jpg',
   },
   {
     name: 'Jill',
     title: 'Psychologist',
     traits: 'Warm · Insightful · Bridge-Builder',
-    image: Jill,
+    image: '/jill.jpg',
   },
   {
     name: 'AJ',
     title: 'Positive Psychology Expert',
     traits: 'Cheery · Driven · Self-Made',
-    image: AJ,
+    image: '/aj.jpg',
   },
   {
     name: 'Terry',
     title: 'MSW, Irish Bronx Native',
     traits: 'Witty · Tough-Love · Approachable',
-    image: Terry,
+    image: '/terry.jpg',
   },
   {
     name: 'Scotty',
     title: 'Retired Tactical Officer',
     traits: 'Humble · Faith-Filled · Compassionate',
-    image: Scotty,
+    image: '/scotty.jpg',
   },
   {
     name: 'Chris',
     title: 'Infantryman & Resilience Leader',
     traits: 'Reflective · Legacy-Focused · Purpose-Driven',
-    image: Chris,
+    image: '/chris.jpg',
   }
 ];
 
