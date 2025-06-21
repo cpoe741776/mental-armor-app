@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import CoachArmorChat from './components/CoachArmorChat';
 
-
 const coaches = [
   {
     name: 'Rhonda',
@@ -45,33 +44,40 @@ export default function CoachPage() {
   const [selectedCoach, setSelectedCoach] = useState(null);
 
   return (
-    <div className="p-6">
-      <h1 className="text-center text-3xl font-bold mb-4">🛡️ Talk to Coach Armor</h1>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+    <div className="flex flex-col md:flex-row p-6 gap-6">
+      {/* Left: Coach Cards */}
+      <div className="md:w-1/3 space-y-4">
+        <h2 className="text-2xl font-bold mb-2 text-center">Choose Your Coach</h2>
         {coaches.map((coach, index) => (
           <button
             key={index}
-            className={`bg-white rounded-2xl shadow-md p-4 text-center transition transform hover:scale-105 focus:outline-none focus:ring-2 ${selectedCoach?.name === coach.name ? 'ring-2 ring-blue-500' : ''}`}
+            className={`w-full bg-white rounded-2xl shadow-md p-4 text-center transition transform hover:scale-105 focus:outline-none focus:ring-2 ${
+              selectedCoach?.name === coach.name ? 'ring-2 ring-blue-500' : ''
+            }`}
             onClick={() => setSelectedCoach(coach)}
           >
             <img
               src={coach.image}
               alt={coach.name}
-              className="mx-auto mb-3 rounded-full h-24 w-24 object-cover border-2 border-gray-300"
+              className="mx-auto mb-3 rounded-full h-20 w-20 object-cover border-2 border-gray-300"
             />
-            <h3 className="text-xl font-semibold">{coach.name}</h3>
+            <h3 className="text-lg font-semibold">{coach.name}</h3>
             <p className="text-sm text-gray-500">{coach.title}</p>
             <p className="text-sm text-gray-600 mt-1 italic">{coach.traits}</p>
           </button>
         ))}
       </div>
 
-      {selectedCoach ? (
-        <CoachArmorChat selectedCoach={selectedCoach} />
-      ) : (
-        <p className="text-center text-gray-500 italic">Please select a coach to begin chatting.</p>
-      )}
+      {/* Right: Chat Panel */}
+      <div className="md:w-2/3">
+        {selectedCoach ? (
+          <CoachArmorChat selectedCoach={selectedCoach} />
+        ) : (
+          <div className="text-center text-gray-500 italic mt-10 md:mt-0">
+            Please select a coach to begin chatting.
+          </div>
+        )}
+      </div>
     </div>
   );
 }
