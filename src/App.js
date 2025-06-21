@@ -52,4 +52,3 @@ export default function App() {
     </Router>
   )
 }
-console.log("🔐 ENV TEST:", import.meta.env.VITE_OPENAI_API_KEY);

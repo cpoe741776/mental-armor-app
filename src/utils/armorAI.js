@@ -2,8 +2,11 @@
 
 export async function getAIResponse(messages) {
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
-  console.log("🔐 VITE_OPENAI_API_KEY:", apiKey);
-  console.log("📤 Sending messages to OpenAI:", messages);
+
+  if (!apiKey) {
+    console.error("❌ Missing OpenAI API key. Check your .env file and Netlify environment variables.");
+    return "Sorry, there's a configuration error on our end.";
+  }
 
   const systemPrompt = {
     role: "system",
@@ -32,8 +35,6 @@ export async function getAIResponse(messages) {
       body: JSON.stringify(payload),
     });
 
-    console.log("📥 Raw response from OpenAI:", res);
-
     if (!res.ok) {
       const error = await res.json();
       console.error("❌ OpenAI API error:", error);
@@ -41,10 +42,9 @@ export async function getAIResponse(messages) {
     }
 
     const data = await res.json();
-    console.log("✅ AI reply:", data.choices[0].message.content);
     return data.choices[0].message.content.trim();
   } catch (err) {
-    console.error("🔥 Exception:", err);
+    console.error("🔥 AI Fetch Exception:", err);
     return "Sorry, I ran into a problem trying to help you. Try again in a bit.";
   }
 }
