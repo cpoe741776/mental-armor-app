@@ -3,7 +3,7 @@
 import { skills } from '../skills';
 
 const skillNames = skills
-  .map(skill => `- ${skill.title} (id: ${skill.id}, taught by ${skill.trainer})`)
+  .map(skill => `- **${skill.title}** (id: ${skill.id}, taught by ${skill.trainer})`)
   .join('\n');
 
 const personalities = {
@@ -77,7 +77,24 @@ Stay concise, focused, and coach-like. Do not act like a therapist. Offer subtle
     }
 
     const data = await res.json();
-    return data.choices[0].message.content.trim();
+    let reply = data.choices[0].message.content.trim();
+
+    // Split response into list format
+    const skillMatches = skills.filter(skill => reply.includes(skill.title));
+    let skillList = '';
+    
+    skillMatches.forEach(skill => {
+      skillList += `
+        - **${skill.title}**: ${skill.trainer} teaches this skill. 
+        It involves ${skill.brief}. 
+        <a href="https://mental-armor-app.netlify.app/skill/${skill.id}" target="_blank" rel="noopener noreferrer">Learn more</a>
+      `;
+    });
+
+    // Replace the skills mentioned in the response with the formatted list
+    reply = reply.replace(/(.*\bskills\b.*)/, skillList);
+
+    return reply;
   } catch (err) {
     console.error("🔥 AI Fetch Exception:", err);
     return "Sorry, I ran into a problem trying to help you. Try again in a bit.";
