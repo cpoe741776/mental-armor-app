@@ -1,8 +1,7 @@
 // src/utils/armorAI.js
-
 import { skills } from '../skills';
 
-// Define the personalities for each coach
+// Define the personalities object (or import it if it's in another file)
 const personalities = {
   Scotty: "You speak with humble warmth, a Southern kindness, and spiritual insight. You gently guide others using stories and heartfelt care.",
   Rhonda: "You are bold and direct, like a general and a surgeon. You don’t tolerate excuses and reject the word 'can’t' unless it's physically impossible.",
@@ -12,23 +11,20 @@ const personalities = {
   Chris: "You're a resilient soldier and reflective leader who believes deeply in legacy and growth through experience."
 };
 
-// Function to pick a random icon for each skill
-const pickIconForSkill = (skillTitle) => {
-  const iconMap = {
-    'Balance Your Thinking': '⚖️',
-    'Mindfulness': '🧠',
-    'Gratitude': '😊', // Smiley emoji for Gratitude
-    'ReFrame': '🔄',
-    'Spiritual Resilience': '🌱', // New non-religious icon for Spiritual Resilience (representing growth)
-    'Flex Your Strengths': '💪',
-    'The Science of Resilience': '🧪', // Beakers for Science of Resilience
-    'Interpersonal Problem Solving': '🤝'
+// Define the function to pick an appropriate icon for each skill (e.g., brain for mindfulness)
+function pickIconForSkill(skillTitle) {
+  const icons = {
+    Mindfulness: "🧠",
+    "Balance Your Thinking": "⚖️",
+    Gratitude: "😊",
+    "The Science of Resilience": "🧪",
+    "Flex Your Strengths": "💪",
+    "Spiritual Resilience": "🌱",
+    "ReFrame": "🔄",
   };
+  return icons[skillTitle] || "🔧"; // Default icon if no match is found
+}
 
-  return iconMap[skillTitle] || '✨'; // Default icon if no match
-};
-
-// Define the function to get AI response
 async function getAIResponse(messages, coachName = "") {
   const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
 
@@ -42,18 +38,15 @@ async function getAIResponse(messages, coachName = "") {
     content: `
       You are Coach Armor, a compassionate and practical resilience trainer.
       You teach *Mental Armor* skills to help users navigate emotional, social, family, and spiritual challenges.
-      Keep the conversation short and impactful. Offer a few lines at a time, and speak in the tone of the assigned coach.
-
-      Coach personalities:
+      Keep the conversation short and impactful. Offer only a few lines of text at a time, speaking in the tone of the assigned coach.
+      Here are the skills you can use:
+      ${skills.map(skill => `- **${skill.title}** (taught by ${skill.trainer})`).join('\n')}
       ${personalities[coachName] || ""}
 
-      Use these skills only:
-      ${skills.map(skill => `- **${skill.title}** (taught by ${skill.trainer})`).join('\n')}
-      
-      For each skill recommendation:
-      - Use an appropriate icon for each skill (e.g., ⚖️ for Balance Your Thinking, 🧠 for Mindfulness).
+      For each recommendation:
+      - Use an appropriate icon (e.g., 🧠 for Mindfulness, ⚖️ for Balance Your Thinking).
       - Briefly explain the skill with a practical example.
-      - Include a clickable link in this format: <a href="https://mental-armor-app.netlify.app/skill/SKILL_ID" style="color: #003049;" target="_blank" rel="noopener noreferrer">Give it a go!</a>
+      - Include a clickable link in this format: <a href="https://mental-armor-app.netlify.app/skill/SKILL_ID" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>
       - Offer the user the chance to try the skill or suggest another skill.
       Keep the conversation flowing naturally, don’t overwhelm the user.
     `.trim(),
@@ -85,15 +78,31 @@ async function getAIResponse(messages, coachName = "") {
     const data = await res.json();
     let reply = data.choices[0].message.content.trim();
 
-    // Loop through skills and inject them into the response with icons and links
-    skills.forEach((skill) => {
+    // Limit the number of skills and make sure they are injected only when relevant
+    const skillsToSuggest = [];
+
+    // Add a skill only if it was recommended in the conversation
+    if (reply.includes('Mindfulness')) {
+      const skill = skills.find(s => s.title === 'Mindfulness');
       const skillLink = `https://mental-armor-app.netlify.app/skill/${skill.id}`;
-      const skillWithIcon = `${pickIconForSkill(skill.title)} **${skill.title}**: Taught by ${skill.trainer}. ${skill.brief}. <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Learn more</a>`;
-      reply = reply.replace(new RegExp(`\\b${skill.title}\\b`, 'g'), skillWithIcon);
-    });
+      const skillWithIcon = `${pickIconForSkill(skill.title)} **${skill.title}**: Taught by ${skill.trainer}. ${skill.brief}. <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
+      skillsToSuggest.push(skillWithIcon);
+    }
+
+    if (reply.includes('Balance Your Thinking')) {
+      const skill = skills.find(s => s.title === 'Balance Your Thinking');
+      const skillLink = `https://mental-armor-app.netlify.app/skill/${skill.id}`;
+      const skillWithIcon = `${pickIconForSkill(skill.title)} **${skill.title}**: Taught by ${skill.trainer}. ${skill.brief}. <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
+      skillsToSuggest.push(skillWithIcon);
+    }
+
+    // Add a few skills to the response to keep it conversational
+    if (skillsToSuggest.length > 0) {
+      reply += `\n\nHere are some skills that may help you:\n${skillsToSuggest.join('\n')}`;
+    }
 
     // Ask the user if they want to try the skill or suggest another one
-    reply += "\n\nWould you like to try this skill? If not, I can suggest another one."
+    reply += "\n\nWould you like to try any of these skills? Or would you like me to suggest another?"
 
     return reply;
   } catch (err) {
