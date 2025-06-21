@@ -31,7 +31,7 @@ async function getAIResponse(messages, coachName = "") {
       For each recommendation:
       - Recommend **one skill at a time only,
       - Briefly explain the skill with a practical example,
-      - Include a clickable link afterrecommending a skill in this format: <a href="https://mental-armor-app.netlify.app/skill/SKILL_ID" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>
+      - Include a clickable link afterrecommending a skill in this format: <a href="https://mental-armor-app.netlify.app/skill/SKILL_ID" style="color: #003049;" target="_blank" rel="noopener noreferrer"></a>
       - If they say no, continue the conversation and offer another suggestion or ask more questions.
       - Do not act like a therapist. Offer subtle alternative ideas but focus mainly on Mental Armor skills.
     `.trim(),
@@ -69,7 +69,7 @@ async function getAIResponse(messages, coachName = "") {
     if (mentionedSkillTitle) {
       // Construct the skill with a clickable link
       const skillLink = `https://mental-armor-app.netlify.app/skill/${mentionedSkillTitle.id}`;
-      const skillWithLink = `${mentionedSkillTitle.title} skill: ${mentionedSkillTitle.brief}. <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
+      const skillWithLink = `${mentionedSkillTitle.title} <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
 
       // Replace the skill title in the AI response with the full clickable link
       reply = reply.replace(mentionedSkillTitle.title, skillWithLink);
