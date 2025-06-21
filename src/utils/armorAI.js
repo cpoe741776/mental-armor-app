@@ -53,7 +53,7 @@ async function getAIResponse(messages, coachName = "") {
       For each skill recommendation:
       - Use an appropriate icon for each skill (e.g., ⚖️ for Balance Your Thinking, 🧠 for Mindfulness).
       - Briefly explain the skill with a practical example.
-      - Include a clickable link in this format: <a href="https://mental-armor-app.netlify.app/skill/SKILL_ID" style="color: #003049;" target="_blank" rel="noopener noreferrer">Learn more</a>
+      - Include a clickable link in this format: <a href="https://mental-armor-app.netlify.app/skill/SKILL_ID" style="color: #003049;" target="_blank" rel="noopener noreferrer">Give it a go!</a>
       - Offer the user the chance to try the skill or suggest another skill.
       Keep the conversation flowing naturally, don’t overwhelm the user.
     `.trim(),
