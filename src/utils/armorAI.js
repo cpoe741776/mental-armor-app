@@ -21,18 +21,19 @@ async function getAIResponse(messages, coachName = "") {
   const systemPrompt = {
     role: "system",
     content: `
-      You are Coach Armor, a compassionate and practical resilience trainer.
+      You are Coach Armor.
       You teach *Mental Armor* skills to help users navigate emotional, social, family, and spiritual challenges.
       Keep the conversation short and impactful. Offer only a few lines of text at a time, speaking in the tone of the assigned coach.
       Here are the skills you can use:
-      ${skills.map(skill => `- **${skill.title}** (taught by ${skill.trainer})`).join('\n')}
+      ${skills.map(skill => `- ${skill.title} (taught by ${skill.trainer})`).join('\n')}
       ${personalities[coachName] || ""}
 
       For each recommendation:
-      - Recommend **one skill** only,
-      - Briefly explain the skill in your own words,
-      - After recommending the skill, ask if the user would like to try it. If they say no, continue the conversation and offer another suggestion or ask more questions.
-      Stay concise, focused, and coach-like. Do not act like a therapist. Offer subtle alternative ideas but focus on Mental Armor skills.
+      - Recommend **one skill at a time only,
+      - Briefly explain the skill with a practical example,
+      - Include a clickable link afterrecommending a skill in this format: <a href="https://mental-armor-app.netlify.app/skill/SKILL_ID" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>
+      - If they say no, continue the conversation and offer another suggestion or ask more questions.
+      - Do not act like a therapist. Offer subtle alternative ideas but focus mainly on Mental Armor skills.
     `.trim(),
   };
 
@@ -66,9 +67,9 @@ async function getAIResponse(messages, coachName = "") {
     const mentionedSkillTitle = skills.find(skill => reply.includes(skill.title));
 
     if (mentionedSkillTitle) {
-      // Construct the skill with a clickable link and let OpenAI generate the summary
+      // Construct the skill with a clickable link
       const skillLink = `https://mental-armor-app.netlify.app/skill/${mentionedSkillTitle.id}`;
-      const skillWithLink = `${mentionedSkillTitle.title} skill: ${mentionedSkillTitle.brief} <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
+      const skillWithLink = `${mentionedSkillTitle.title} skill: ${mentionedSkillTitle.brief}. <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
 
       // Replace the skill title in the AI response with the full clickable link
       reply = reply.replace(mentionedSkillTitle.title, skillWithLink);
