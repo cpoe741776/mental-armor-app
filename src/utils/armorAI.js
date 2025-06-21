@@ -2,7 +2,9 @@
 
 import { skills } from '../skills';
 
-const skillNames = skills.map(skill => `- ${skill.title}`).join('\n');
+const skillNames = skills
+  .map(skill => `- ${skill.title} (id: ${skill.id}, taught by ${skill.trainer})`)
+  .join('\n');
 
 const personalities = {
   Scotty:
@@ -40,13 +42,12 @@ ${skillNames}
 
 ${personalities[coachName] || ""}
 
-When recommending a skill:
+For each recommendation:
 - Refer to the skill by name in **bold**,
-- Explicitly say who teaches it (e.g., “AJ teaches this one well.”),
+- Mention which coach teaches it,
 - Briefly explain it using practical examples,
-- Include a clickable link using this format: 
-  <a href="https://mental-armor-app.netlify.app/skill/SKILL_ID" target="_blank" rel="noopener noreferrer">Learn more</a>
-- Encourage the user to reflect or try the practice.
+- Include a clickable link in this format: <a href="https://mental-armor-app.netlify.app/skill/SKILL_ID" target="_blank" rel="noopener noreferrer">Learn more</a> — replacing SKILL_ID with the real skill id,
+- Invite the user to reflect or try it.
 
 Stay concise, focused, and coach-like. Do not act like a therapist. Offer subtle alternative ideas but focus on Mental Armor skills.
 `.trim()
