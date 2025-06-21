@@ -79,7 +79,7 @@ Stay concise, focused, and coach-like. Do not act like a therapist. Offer subtle
     const data = await res.json();
     let reply = data.choices[0].message.content.trim();
 
-    // Split response into list format
+    // List of skills mentioned in the response
     const skillMatches = skills.filter(skill => reply.includes(skill.title));
     let skillList = '';
     
@@ -92,7 +92,6 @@ Stay concise, focused, and coach-like. Do not act like a therapist. Offer subtle
       `;
     });
 
-    // Replace the skills mentioned in the response with the formatted list
     // Remove the skills from the original reply before adding them into a list
     skillMatches.forEach(skill => {
       reply = reply.replace(new RegExp(`\\b${skill.title}\\b`, 'g'), '');
