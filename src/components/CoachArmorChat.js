@@ -21,7 +21,20 @@ export default function CoachArmorChat({ selectedCoach }) {
 
     try {
       const aiReply = await getAIResponse(newMessages, systemPrompt);
-      setMessages([...newMessages, { role: 'assistant', content: aiReply }]);
+
+      // Skill mention enhancement
+      const lowerInput = input.toLowerCase();
+      const matchedSkill = skills.find(skill =>
+        skill.title.toLowerCase().includes(lowerInput) ||
+        skill.brief.toLowerCase().includes(lowerInput)
+      );
+
+      let enhancedReply = aiReply;
+      if (matchedSkill) {
+        enhancedReply += `\n\n👉 Why not try **${matchedSkill.title}**? ${matchedSkill.trainer} explains it well. [Learn More](${matchedSkill.link})`;
+      }
+
+      setMessages([...newMessages, { role: 'assistant', content: enhancedReply }]);
     } catch (error) {
       setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
     } finally {
