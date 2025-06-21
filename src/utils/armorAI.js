@@ -38,7 +38,7 @@ export async function getAIResponse(messages) {
     const data = await res.json();
     return data.choices[0].message.content.trim();
   } catch (err) {
-    console.error("OpenAI API error:", err.message);
-    return "Sorry, I ran into a problem trying to help you. Try again in a bit.";
-  }
+  console.error("OpenAI API error:", err);
+  return "Sorry, I ran into a problem trying to help you. Try again in a bit.";
+}
 }
