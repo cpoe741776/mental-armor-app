@@ -1,5 +1,3 @@
-// src/components/CoachArmorChat.js
-
 import React, { useState } from 'react';
 import { skills } from '../skills';
 import { getAIResponse } from '../utils/armorAI';
@@ -8,6 +6,10 @@ export default function CoachArmorChat({ selectedCoach }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isThinking, setIsThinking] = useState(false);
+
+  const systemPrompt = selectedCoach
+    ? `You are ${selectedCoach.name}, a Mental Armor resilience coach. Your background is: ${selectedCoach.title}. Your style is: ${selectedCoach.traits}. Respond as this character while helping the user with their struggles.`
+    : `You are a helpful Mental Armor resilience coach.`;
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -18,7 +20,7 @@ export default function CoachArmorChat({ selectedCoach }) {
     setIsThinking(true);
 
     try {
-      const aiReply = await getAIResponse(newMessages, selectedCoach?.name);
+      const aiReply = await getAIResponse(newMessages, systemPrompt);
       setMessages([...newMessages, { role: 'assistant', content: aiReply }]);
     } catch (error) {
       setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
@@ -32,9 +34,23 @@ export default function CoachArmorChat({ selectedCoach }) {
   };
 
   return (
-    <div style={{ maxWidth: 600, margin: 'auto', padding: 20 }}>
-      <h2>🛡️ {selectedCoach?.name || 'Coach'} is here to help</h2>
+    <div style={{ maxWidth: 700, margin: 'auto', padding: 20 }}>
+      {/* Coach Image */}
+      {selectedCoach && (
+        <div className="flex items-center gap-4 mb-4">
+          <img
+            src={selectedCoach.image}
+            alt={selectedCoach.name}
+            className="h-14 w-14 rounded-full object-cover border border-gray-400"
+          />
+          <div>
+            <h2 className="text-xl font-semibold">{selectedCoach.name}</h2>
+            <p className="text-sm text-gray-600 italic">{selectedCoach.traits}</p>
+          </div>
+        </div>
+      )}
 
+      {/* Chat Box */}
       <div style={{
         border: '1px solid #ccc',
         padding: 10,
@@ -51,21 +67,30 @@ export default function CoachArmorChat({ selectedCoach }) {
         {isThinking && <div><em>{selectedCoach?.name || 'Coach'} is thinking...</em></div>}
       </div>
 
-      <input
-        id="coach-chat-input"
-        name="coachChatInput"
-        type="text"
-        placeholder="How are you feeling today?"
-        autoComplete="on"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyPress={handleKeyPress}
-        style={{ width: '80%', padding: 10, marginTop: 10 }}
-      />
-      <button onClick={handleSend} style={{ padding: '10px 20px', marginLeft: 10 }}>Send</button>
+      {/* Input Field with Outline */}
+      <div className="flex items-center mt-4">
+        <input
+          id="coach-chat-input"
+          name="coachChatInput"
+          type="text"
+          placeholder="How are you feeling today?"
+          autoComplete="on"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyPress={handleKeyPress}
+          className="w-full p-2 border-2 border-blue-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button
+          onClick={handleSend}
+          className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+        >
+          Send
+        </button>
+      </div>
 
+      {/* Skills Panel */}
       <div style={{ marginTop: 20 }}>
-        <h3>🧠 Mental Armor Skills</h3>
+        <h3 className="text-lg font-semibold mb-2">🧠 Mental Armor Skills</h3>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
           {Object.values(skills).map((skill, index) => (
             <button
@@ -86,7 +111,7 @@ export default function CoachArmorChat({ selectedCoach }) {
                 setInput('');
                 setIsThinking(true);
                 try {
-                  const aiReply = await getAIResponse(newMessages, selectedCoach?.name);
+                  const aiReply = await getAIResponse(newMessages, systemPrompt);
                   setMessages([...newMessages, { role: 'assistant', content: aiReply }]);
                 } catch (err) {
                   setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
