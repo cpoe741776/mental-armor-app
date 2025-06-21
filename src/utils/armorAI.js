@@ -3,7 +3,7 @@
 import { skills } from '../skills';
 
 const skillNames = skills
-  .map(skill => `- **${skill.title}** (id: ${skill.id}, taught by ${skill.trainer})`)
+  .map(skill => `- ${skill.title} (id: ${skill.id}, taught by ${skill.trainer})`)
   .join('\n');
 
 const personalities = {
@@ -79,29 +79,12 @@ Stay concise, focused, and coach-like. Do not act like a therapist. Offer subtle
     const data = await res.json();
     let reply = data.choices[0].message.content.trim();
 
-    // Find skills mentioned in the response
-    const skillMatches = skills.filter(skill => reply.includes(skill.title));
-    let skillList = '';
-    
-    // Generate a list of skills with links at the end
-    skillMatches.forEach(skill => {
+    // Replace skills with their clickable links
+    skills.forEach((skill) => {
       const skillLink = `https://mental-armor-app.netlify.app/skill/${skill.id}`;
-      skillList += `
-        - **${skill.title}**: ${skill.trainer} teaches this skill. 
-        It involves ${skill.brief}. 
-        <a href="${skillLink}" target="_blank" rel="noopener noreferrer">Learn more</a>
-      `;
+      const skillReplacement = `**${skill.title}**: Taught by ${skill.trainer}. ${skill.brief}. <a href="${skillLink}" target="_blank" rel="noopener noreferrer">Learn more</a>`;
+      reply = reply.replace(new RegExp(`\\b${skill.title}\\b`, 'g'), skillReplacement);
     });
-
-    // Remove the skills from the original reply before adding them into a list
-    skillMatches.forEach(skill => {
-      reply = reply.replace(new RegExp(`\\b${skill.title}\\b`, 'g'), '');
-    });
-
-    // Add the skill list at the end of the message if skills were mentioned
-    if (skillList) {
-      reply += `\n\nHere are some skills that may help you:\n${skillList}`;
-    }
 
     return reply;
   } catch (err) {
