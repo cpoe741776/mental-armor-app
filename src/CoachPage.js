@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import CoachArmorChat from './components/CoachArmorChat';
-import Rhonda from './rhonda.jpg';
+import Rhonda from '/rhonda.jpg';
 import Jill from '/jill.jpg';
 import AJ from '/aj.jpg';
 import Terry from '/terry.jpg';
