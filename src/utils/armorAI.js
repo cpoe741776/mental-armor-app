@@ -1,148 +1,83 @@
+// src/utils/armorAI.js
 
-import React, { useState } from 'react';
 import { skills } from '../skills';
-import { getAIResponse } from '../utils/armorAI';
 
-export default function CoachArmorChat({ selectedCoach }) {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
-  const [isThinking, setIsThinking] = useState(false);
+const skillNames = skills.map(skill => `- ${skill.title}`).join('\n');
 
-  const systemPrompt = selectedCoach
-    ? `You are ${selectedCoach.name}, a Mental Armor resilience coach. Your background is: ${selectedCoach.title}. Your style is: ${selectedCoach.traits}. Respond as this character while helping the user with their struggles.`
-    : `You are a helpful Mental Armor resilience coach.`;
+const personalities = {
+  Scotty:
+    "You speak with humble warmth, a Southern kindness, and spiritual insight. You gently guide others using stories and heartfelt care.",
+  Rhonda:
+    "You are bold and direct, like a general and a surgeon. You don’t tolerate excuses and reject the word 'can’t' unless it's physically impossible.",
+  Jill:
+    "You are warm, emotionally insightful, and able to hold multiple perspectives. You blend psychology with practicality.",
+  Terry:
+    "You have a dry, witty Bronx humor and a master's in social work. You're compassionate, but always up for a smart remark.",
+  AJ:
+    "You're energetic, upbeat, and goal-driven. You draw strength from your own accomplishments and love helping people grow.",
+  Chris:
+    "You're a resilient soldier and reflective leader who believes deeply in legacy and growth through experience."
+};
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
+async function getAIResponse(messages, coachName = "") {
+  const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
 
-    const newMessages = [...messages, { role: 'user', content: input }];
-    setMessages(newMessages);
-    setInput('');
-    setIsThinking(true);
+  if (!apiKey) {
+    console.error("❌ Missing OpenAI API key. Check your .env file and Netlify environment variables.");
+    return "Sorry, there's a configuration error on our end.";
+  }
 
-    try {
-      const aiReply = await getAIResponse(newMessages, systemPrompt);
-      const updatedReply = replaceSkillLinks(aiReply);
-      setMessages([...newMessages, { role: 'assistant', content: updatedReply }]);
-    } catch (error) {
-      setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
-    } finally {
-      setIsThinking(false);
+  const systemPrompt = {
+    role: "system",
+    content: `
+You are Coach Armor, a compassionate and practical resilience trainer. 
+You teach *Mental Armor* skills to help users navigate emotional, social, family, and spiritual challenges.
+
+ONLY recommend skills from this official list. Do not invent new ones.
+
+Here are the skills:
+${skillNames}
+
+${personalities[coachName] || ""}
+
+For each recommendation:
+- Refer to the skill by name in **bold**,
+- Briefly explain it using practical examples,
+- Include a clickable link in this format: <a href="https://mental-armor-app.netlify.app/skill/SKILL_ID" target="_blank" rel="noopener noreferrer">Learn more</a>
+- Invite the user to reflect or try it.
+
+Do not act like a therapist. Be encouraging, direct, and focused.`.trim()
+  };
+
+  const payload = {
+    model: "gpt-4o",
+    messages: [systemPrompt, ...messages],
+    temperature: 0.7,
+    max_tokens: 800
+  };
+
+  try {
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      console.error("❌ OpenAI API error:", error);
+      throw new Error(error.error.message);
     }
-  };
 
-  const replaceSkillLinks = (text) => {
-    return skills.reduce((acc, skill) => {
-      const pattern = new RegExp(`(**${skill.title}**|<a href=['"]?/skills/${skill.id}['"]?.*?>.*?</a>)`, 'gi');
-      const replacement = `<a href="https://mental-armor-app.netlify.app/skill/${skill.id}" target="_blank" rel="noopener noreferrer"><strong>${skill.title}</strong></a>`;
-      return acc.replace(pattern, replacement);
-    }, text);
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') handleSend();
-  };
-
-  return (
-    <div style={{ maxWidth: 700, margin: 'auto', padding: 20 }}>
-      {/* Coach Image */}
-      {selectedCoach && (
-        <div className="flex items-center gap-4 mb-4">
-          <img
-            src={selectedCoach.image}
-            alt={selectedCoach.name}
-            className="h-14 w-14 rounded-full object-cover border border-gray-400"
-          />
-          <div>
-            <h2 className="text-xl font-semibold">{selectedCoach.name}</h2>
-            <p className="text-sm text-gray-600 italic">{selectedCoach.traits}</p>
-          </div>
-        </div>
-      )}
-
-      {/* Chat Box */}
-      <div style={{
-        border: '1px solid #ccc',
-        padding: 10,
-        height: 400,
-        overflowY: 'auto',
-        borderRadius: 10,
-        background: '#f9f9f9'
-      }}>
-        {messages.map((msg, i) => (
-          <div key={i} style={{ margin: '10px 0', textAlign: msg.role === 'user' ? 'right' : 'left' }}>
-            <strong>{msg.role === 'user' ? 'You' : selectedCoach?.name || 'Coach'}:</strong>{' '}
-            {msg.role === 'assistant' ? (
-              <span dangerouslySetInnerHTML={{ __html: msg.content }} />
-            ) : (
-              msg.content
-            )}
-          </div>
-        ))}
-        {isThinking && <div><em>{selectedCoach?.name || 'Coach'} is thinking...</em></div>}
-      </div>
-
-      {/* Input Field with Outline */}
-      <div className="flex items-center mt-4">
-        <input
-          id="coach-chat-input"
-          name="coachChatInput"
-          type="text"
-          placeholder="How are you feeling today?"
-          autoComplete="on"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyPress={handleKeyPress}
-          className="w-full p-2 border-2 border-blue-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
-          onClick={handleSend}
-          className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-        >
-          Send
-        </button>
-      </div>
-
-      {/* Skills Panel */}
-      <div style={{ marginTop: 20 }}>
-        <h3 className="text-lg font-semibold mb-2">🧠 Mental Armor Skills</h3>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-          {skills.map((skill, index) => (
-            <button
-              key={index}
-              title={skill.brief}
-              style={{
-                padding: '6px 10px',
-                borderRadius: 8,
-                background: '#e6f0ff',
-                border: '1px solid #ccc',
-                cursor: 'pointer',
-                fontSize: '0.85rem'
-              }}
-              onClick={async () => {
-                const newInput = `Tell me more about the skill "${skill.title}".`;
-                const newMessages = [...messages, { role: 'user', content: newInput }];
-                setMessages(newMessages);
-                setInput('');
-                setIsThinking(true);
-                try {
-                  const aiReply = await getAIResponse(newMessages, systemPrompt);
-                  const updatedReply = replaceSkillLinks(aiReply);
-                  setMessages([...newMessages, { role: 'assistant', content: updatedReply }]);
-                } catch (err) {
-                  setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
-                } finally {
-                  setIsThinking(false);
-                }
-              }}
-            >
-              {skill.title}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+    const data = await res.json();
+    return data.choices[0].message.content.trim();
+  } catch (err) {
+    console.error("🔥 AI Fetch Exception:", err);
+    return "Sorry, I ran into a problem trying to help you. Try again in a bit.";
+  }
 }
 
 export { getAIResponse };
