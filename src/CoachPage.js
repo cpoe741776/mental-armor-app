@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import CoachArmorChat from './components/CoachArmorChat';
-import Rhonda from './assets/rhonda.jpg';
-import Jill from './assets/jill.jpg';
-import AJ from './assets/aj.jpg';
-import Terry from './assets/terry.jpg';
-import Scotty from './assets/scotty.jpg';
-import Chris from './assets/chris.jpg';
+import Rhonda from './rhonda.jpg';
+import Jill from '/jill.jpg';
+import AJ from '/aj.jpg';
+import Terry from '/terry.jpg';
+import Scotty from '/scotty.jpg';
+import Chris from '/chris.jpg';
 
 const coaches = [
   {
