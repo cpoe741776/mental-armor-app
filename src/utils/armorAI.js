@@ -1,4 +1,4 @@
-// src/components/CoachArmorChat.js
+
 import React, { useState } from 'react';
 import { skills } from '../skills';
 import { getAIResponse } from '../utils/armorAI';
@@ -144,3 +144,5 @@ export default function CoachArmorChat({ selectedCoach }) {
     </div>
   );
 }
+
+export { getAIResponse };
