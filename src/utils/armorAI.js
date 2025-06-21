@@ -2,6 +2,8 @@
 
 export async function getAIResponse(messages) {
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+  console.log("🔐 VITE_OPENAI_API_KEY:", apiKey);
+  console.log("📤 Sending messages to OpenAI:", messages);
 
   const systemPrompt = {
     role: "system",
@@ -14,31 +16,35 @@ export async function getAIResponse(messages) {
   };
 
   const payload = {
-  model: "gpt-4o", // or "gpt-4" if you don't have access to gpt-4o
-  messages: [systemPrompt, ...messages],
-  temperature: 0.7,
-  max_tokens: 800,
-};
-console.log("🔐 VITE_OPENAI_API_KEY:", apiKey);
+    model: "gpt-4o",
+    messages: [systemPrompt, ...messages],
+    temperature: 0.7,
+    max_tokens: 800,
+  };
+
   try {
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${apiKey}`,
-  },
-  body: JSON.stringify(payload),
-});
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    console.log("📥 Raw response from OpenAI:", res);
 
     if (!res.ok) {
       const error = await res.json();
+      console.error("❌ OpenAI API error:", error);
       throw new Error(error.error.message);
     }
 
     const data = await res.json();
+    console.log("✅ AI reply:", data.choices[0].message.content);
     return data.choices[0].message.content.trim();
   } catch (err) {
-  console.error("🛑 Full OpenAI error object:", err);
-  return "Sorry, I ran into a problem trying to help you. Try again in a bit.";
-}
+    console.error("🔥 Exception:", err);
+    return "Sorry, I ran into a problem trying to help you. Try again in a bit.";
+  }
 }
