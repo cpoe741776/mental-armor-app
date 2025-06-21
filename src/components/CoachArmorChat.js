@@ -62,7 +62,14 @@ export default function CoachArmorChat({ selectedCoach }) {
       }}>
         {messages.map((msg, i) => (
           <div key={i} style={{ margin: '10px 0', textAlign: msg.role === 'user' ? 'right' : 'left' }}>
-            <strong>{msg.role === 'user' ? 'You' : selectedCoach?.name || 'Coach'}:</strong> {msg.content}
+            <div style={{ textAlign: msg.role === 'user' ? 'right' : 'left', margin: '10px 0' }}>
+  <strong>{msg.role === 'user' ? 'You' : selectedCoach?.name || 'Coach'}:</strong>{' '}
+  {msg.role === 'assistant' ? (
+    <span dangerouslySetInnerHTML={{ __html: msg.content }} />
+  ) : (
+    msg.content
+  )}
+</div>
           </div>
         ))}
         {isThinking && <div><em>{selectedCoach?.name || 'Coach'} is thinking...</em></div>}
