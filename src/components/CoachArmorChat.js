@@ -1,3 +1,4 @@
+// src/components/CoachArmorChat.js
 import React, { useState } from 'react';
 import { skills } from '../skills';
 import { getAIResponse } from '../utils/armorAI';
@@ -21,20 +22,7 @@ export default function CoachArmorChat({ selectedCoach }) {
 
     try {
       const aiReply = await getAIResponse(newMessages, systemPrompt);
-
-      // Skill mention enhancement
-      const lowerInput = input.toLowerCase();
-      const matchedSkill = skills.find(skill =>
-        skill.title.toLowerCase().includes(lowerInput) ||
-        skill.brief.toLowerCase().includes(lowerInput)
-      );
-
-      let enhancedReply = aiReply;
-      if (matchedSkill) {
-        enhancedReply += `\n\n👉 Why not try **${matchedSkill.title}**? ${matchedSkill.trainer} explains it well. [Learn More](${matchedSkill.link})`;
-      }
-
-      setMessages([...newMessages, { role: 'assistant', content: enhancedReply }]);
+      setMessages([...newMessages, { role: 'assistant', content: aiReply }]);
     } catch (error) {
       setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
     } finally {
@@ -105,10 +93,10 @@ export default function CoachArmorChat({ selectedCoach }) {
       <div style={{ marginTop: 20 }}>
         <h3 className="text-lg font-semibold mb-2">🧠 Mental Armor Skills</h3>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-          {Object.values(skills).map((skill, index) => (
+          {skills.map((skill, index) => (
             <button
               key={index}
-              title={skill.description}
+              title={skill.brief}
               style={{
                 padding: '6px 10px',
                 borderRadius: 8,
