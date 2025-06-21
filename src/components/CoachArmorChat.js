@@ -1,3 +1,5 @@
+// src/components/CoachArmorChat.js
+
 import React, { useState } from 'react';
 import { skills } from '../skills';
 import { getAIResponse } from '../utils/armorAI';
@@ -6,10 +8,6 @@ export default function CoachArmorChat({ selectedCoach }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isThinking, setIsThinking] = useState(false);
-
-  const systemPrompt = selectedCoach
-    ? `You are ${selectedCoach.name}, a Mental Armor resilience coach. Your background is: ${selectedCoach.title}. Your style is: ${selectedCoach.traits}. Respond as this character while helping the user with their struggles.`
-    : `You are a helpful Mental Armor resilience coach.`;
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -20,7 +18,7 @@ export default function CoachArmorChat({ selectedCoach }) {
     setIsThinking(true);
 
     try {
-      const aiReply = await getAIResponse(newMessages, systemPrompt);
+      const aiReply = await getAIResponse(newMessages, selectedCoach?.name);
       setMessages([...newMessages, { role: 'assistant', content: aiReply }]);
     } catch (error) {
       setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
@@ -66,7 +64,6 @@ export default function CoachArmorChat({ selectedCoach }) {
       />
       <button onClick={handleSend} style={{ padding: '10px 20px', marginLeft: 10 }}>Send</button>
 
-      {/* Skills Panel */}
       <div style={{ marginTop: 20 }}>
         <h3>🧠 Mental Armor Skills</h3>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
@@ -89,7 +86,7 @@ export default function CoachArmorChat({ selectedCoach }) {
                 setInput('');
                 setIsThinking(true);
                 try {
-                  const aiReply = await getAIResponse(newMessages, systemPrompt);
+                  const aiReply = await getAIResponse(newMessages, selectedCoach?.name);
                   setMessages([...newMessages, { role: 'assistant', content: aiReply }]);
                 } catch (err) {
                   setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);

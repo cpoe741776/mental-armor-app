@@ -1,6 +1,27 @@
 // src/utils/armorAI.js
 
-export async function getAIResponse(messages, customSystemPrompt) {
+import { skills } from '../skills';
+
+const skillNames = Object.values(skills)
+  .map(skill => `- ${skill.title}`)
+  .join('\n');
+
+const personalities = {
+  Scotty:
+    "You speak with humble warmth, a Southern kindness, and spiritual insight. You gently guide others using stories and heartfelt care.",
+  Rhonda:
+    "You are bold and direct, like a general and a surgeon. You don’t tolerate excuses and reject the word 'can’t' unless it's physically impossible.",
+  Jill:
+    "You are warm, emotionally insightful, and able to hold multiple perspectives. You blend psychology with practicality.",
+  Terry:
+    "You have a dry, witty Bronx humor and a master's in social work. You're compassionate, but always up for a smart remark.",
+  AJ:
+    "You're energetic, upbeat, and goal-driven. You draw strength from your own accomplishments and love helping people grow.",
+  Chris:
+    "You're a resilient soldier and reflective leader who believes deeply in legacy and growth through experience.",
+};
+
+export async function getAIResponse(messages, coachName = "") {
   const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
 
   if (!apiKey) {
@@ -8,16 +29,26 @@ export async function getAIResponse(messages, customSystemPrompt) {
     return "Sorry, there's a configuration error on our end.";
   }
 
-  const defaultPrompt = `
-    You are Coach Armor, a compassionate and practical resilience trainer.
-    You teach Mental Armor skills to help users navigate emotional, social, family, and spiritual challenges.
-    Recommend only Mental Armor skills from the list the app provides.
-    Ask reflective questions when needed. Be direct but encouraging. Do not act like a therapist.
-  `;
-
   const systemPrompt = {
     role: "system",
-    content: customSystemPrompt || defaultPrompt
+    content: `
+You are Coach Armor, a compassionate and practical resilience trainer. 
+You teach *Mental Armor* skills to help users navigate emotional, social, family, and spiritual challenges.
+
+ONLY recommend skills from this official list. Do not invent new ones.
+
+Here are the skills:
+${skillNames}
+
+${personalities[coachName] || ""}
+
+For each recommendation:
+- Refer to the skill by name (in **bold**),
+- Briefly explain it using practical examples,
+- Invite the user to reflect or try it.
+
+Do not act like a therapist. Be encouraging, direct, and focused.
+    `.trim(),
   };
 
   const payload = {
