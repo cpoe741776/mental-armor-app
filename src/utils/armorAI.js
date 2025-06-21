@@ -10,20 +10,6 @@ const personalities = {
   Chris: "You're a resilient soldier and reflective leader who believes deeply in legacy and growth through experience."
 };
 
-// Define the function to pick an appropriate icon for each skill (e.g., brain for mindfulness)
-function pickIconForSkill(skillTitle) {
-  const icons = {
-    Mindfulness: "🧠",
-    "Balance Your Thinking": "⚖️",
-    Gratitude: "😊",
-    "The Science of Resilience": "🧪",
-    "Flex Your Strengths": "💪",
-    "Spiritual Resilience": "🌱",
-    "ReFrame": "🔄",
-  };
-  return icons[skillTitle] || "🔧"; // Default icon if no match is found
-}
-
 async function getAIResponse(messages, coachName = "") {
   const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
 
@@ -44,7 +30,6 @@ async function getAIResponse(messages, coachName = "") {
 
       For each recommendation:
       - Recommend **one skill** only,
-      - Use an appropriate icon (e.g., 🧠 for Mindfulness, ⚖️ for Balance Your Thinking),
       - Briefly explain the skill with a practical example,
       - Include a clickable link in this format: <a href="https://mental-armor-app.netlify.app/skill/SKILL_ID" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>
       - After recommending the skill, ask if the user wants to try it. If they say no, continue the conversation and offer another suggestion or ask more questions.
@@ -80,11 +65,16 @@ async function getAIResponse(messages, coachName = "") {
 
     // Find a skill that is mentioned in the response, based on keywords
     const mentionedSkillTitle = skills.find(skill => reply.includes(skill.title));
-    if (mentionedSkillTitle) {
-      const skillLink = `https://mental-armor-app.netlify.app/skill/${mentionedSkillTitle.id}`;
-      const skillWithIcon = `${pickIconForSkill(mentionedSkillTitle.title)} ${mentionedSkillTitle.title}: Taught by ${mentionedSkillTitle.trainer}. ${mentionedSkillTitle.brief}. <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer"></a>`;
-      reply = reply.replace(mentionedSkillTitle.title, skillWithIcon);
-    }
+
+   if (mentionedSkillTitle) {
+  // Build the link for the skill
+  const skillLink = `https://mental-armor-app.netlify.app/skill/${mentionedSkillTitle.id}`;
+  // Use backticks for string interpolation
+  const skillWithLink = `${mentionedSkillTitle.title}: ${mentionedSkillTitle.brief}. <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
+
+  // Replace the skill name in the AI response with the full clickable link
+  reply = reply.replace(mentionedSkillTitle.title, skillWithLink);
+}
 
     return reply;
   } catch (err) {
