@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react'
 import netlifyIdentity from 'netlify-identity-widget'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Coach from '/Coach';
+import Coach from '/CoachArmorChat';
 
 // Import your consolidated Header component
 import Header from './Header'
