@@ -82,7 +82,7 @@ async function getAIResponse(messages, coachName = "") {
     const mentionedSkillTitle = skills.find(skill => reply.includes(skill.title));
     if (mentionedSkillTitle) {
       const skillLink = `https://mental-armor-app.netlify.app/skill/${mentionedSkillTitle.id}`;
-      const skillWithIcon = `${pickIconForSkill(mentionedSkillTitle.title)} ${mentionedSkillTitle.title}: Taught by ${mentionedSkillTitle.trainer}. ${mentionedSkillTitle.brief}. <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
+      const skillWithIcon = `${pickIconForSkill(mentionedSkillTitle.title)} ${mentionedSkillTitle.title}: Taught by ${mentionedSkillTitle.trainer}. ${mentionedSkillTitle.brief}. <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer"></a>`;
       reply = reply.replace(mentionedSkillTitle.title, skillWithIcon);
     }
 
