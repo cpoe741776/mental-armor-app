@@ -30,7 +30,7 @@ async function getAIResponse(messages, coachName = "") {
 
       For each recommendation:
       - Recommend **one skill** only,
-      - Briefly explain the skill with a practical example,
+      - Briefly explain the skill in your own words,
       - After recommending the skill, ask if the user would like to try it. If they say no, continue the conversation and offer another suggestion or ask more questions.
       Stay concise, focused, and coach-like. Do not act like a therapist. Offer subtle alternative ideas but focus on Mental Armor skills.
     `.trim(),
@@ -66,7 +66,7 @@ async function getAIResponse(messages, coachName = "") {
     const mentionedSkillTitle = skills.find(skill => reply.includes(skill.title));
 
     if (mentionedSkillTitle) {
-      // Construct the skill with a clickable link
+      // Construct the skill with a clickable link and let OpenAI generate the summary
       const skillLink = `https://mental-armor-app.netlify.app/skill/${mentionedSkillTitle.id}`;
       const skillWithLink = `${mentionedSkillTitle.title} skill: ${mentionedSkillTitle.brief} <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
 
