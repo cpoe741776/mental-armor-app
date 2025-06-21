@@ -82,12 +82,9 @@ async function getAIResponse(messages, coachName = "") {
     const mentionedSkillTitle = skills.find(skill => reply.includes(skill.title));
     if (mentionedSkillTitle) {
       const skillLink = `https://mental-armor-app.netlify.app/skill/${mentionedSkillTitle.id}`;
-      const skillWithIcon = `${pickIconForSkill(mentionedSkillTitle.title)} **${mentionedSkillTitle.title}**: Taught by ${mentionedSkillTitle.trainer}. ${mentionedSkillTitle.brief}. <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
+      const skillWithIcon = `${pickIconForSkill(mentionedSkillTitle.title)} ${mentionedSkillTitle.title}: Taught by ${mentionedSkillTitle.trainer}. ${mentionedSkillTitle.brief}. <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
       reply = reply.replace(mentionedSkillTitle.title, skillWithIcon);
     }
-
-    // Add a prompt for the user to decide whether they want to try the skill
-    reply += "\n\nWould you like to try this skill? Or should I suggest another one?"
 
     return reply;
   } catch (err) {
