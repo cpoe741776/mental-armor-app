@@ -66,18 +66,16 @@ async function getAIResponse(messages, coachName = "") {
     // Find a skill that is mentioned in the response, based on keywords
     const mentionedSkillTitle = skills.find(skill => reply.includes(skill.title));
 
-   if (mentionedSkillTitle) {
-  // Build the link for the skill
-  const skillLink = `https://mental-armor-app.netlify.app/skill/${mentionedSkillTitle.id}`;
-  // Use backticks for string interpolation
-  const skillWithLink = `${mentionedSkillTitle.title}: ${mentionedSkillTitle.brief}. <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
+ 
+  const skillWithLink = `https://mental-armor-app.netlify.app/skill/${mentionedSkillTitle.id}`;
+
 
   // Replace the skill name in the AI response with the full clickable link
   reply = reply.replace(mentionedSkillTitle.title, skillWithLink);
 }
 
-    return reply;
-  } catch (err) {
+ 
+  catch (err) {
     console.error("🔥 AI Fetch Exception:", err);
     return "Sorry, I ran into a problem trying to help you. Try again in a bit.";
   }
