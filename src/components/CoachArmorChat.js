@@ -64,7 +64,9 @@ export default function CoachArmorChat({ selectedCoach }) {
           <div key={i} style={{ margin: '10px 0', textAlign: msg.role === 'user' ? 'right' : 'left' }}>
             <strong>{msg.role === 'user' ? 'You' : selectedCoach?.name || 'Coach'}:</strong>{' '}
             {msg.role === 'assistant' ? (
-              <span dangerouslySetInnerHTML={{ __html: msg.content }} />
+             <div className="prose prose-sm max-w-none">
+  <span dangerouslySetInnerHTML={{ __html: msg.content }} />
+</div>
             ) : (
               msg.content
             )}
