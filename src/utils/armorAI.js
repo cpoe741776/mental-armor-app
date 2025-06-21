@@ -3,7 +3,7 @@
 import { skills } from '../skills';
 
 const skillNames = skills
-  .map(skill => `- **${skill.title}** (taught by ${skill.trainer}, id: ${skill.id})`)
+  .map(skill => `- **${skill.title}** (id: ${skill.id}, taught by ${skill.trainer})`)
   .join('\n');
 
 const personalities = {
@@ -46,7 +46,7 @@ For each recommendation:
 - Refer to the skill by name in **bold**,
 - Mention which coach teaches it,
 - Briefly explain it using practical examples,
-- Include a clickable link in this format: <a href="https://mental-armor-app.netlify.app/skill/${skills[0].id}" target="_blank" rel="noopener noreferrer">Learn more</a> — replacing SKILL_ID with the real skill id,
+- Include a clickable link in this format: <a href="https://mental-armor-app.netlify.app/skill/SKILL_ID" target="_blank" rel="noopener noreferrer">Learn more</a> — replacing SKILL_ID with the real skill id,
 - Invite the user to reflect or try it.
 
 Stay concise, focused, and coach-like. Do not act like a therapist. Offer subtle alternative ideas but focus on Mental Armor skills.
@@ -79,10 +79,11 @@ Stay concise, focused, and coach-like. Do not act like a therapist. Offer subtle
     const data = await res.json();
     let reply = data.choices[0].message.content.trim();
 
-    // List of skills mentioned in the response
+    // Find skills mentioned in the response
     const skillMatches = skills.filter(skill => reply.includes(skill.title));
     let skillList = '';
     
+    // Generate a list of skills with links at the end
     skillMatches.forEach(skill => {
       const skillLink = `https://mental-armor-app.netlify.app/skill/${skill.id}`;
       skillList += `
