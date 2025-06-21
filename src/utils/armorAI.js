@@ -43,13 +43,13 @@ ${skillNames}
 ${personalities[coachName] || ""}
 
 For each recommendation:
-- Refer to the skill by name in **bold**,
-- Mention which coach teaches it,
-- Briefly explain it using practical examples,
-- Include a clickable link in this format: <a href="https://mental-armor-app.netlify.app/skill/SKILL_ID" target="_blank" rel="noopener noreferrer">Learn more</a> — replacing SKILL_ID with the real skill id,
-- Invite the user to reflect or try it.
+- Refer to the skill by name in **bold** with an icon, like this: **Mindfulness** ⭐️
+- Mention which coach teaches it.
+- Briefly explain it using practical examples.
+- Ask if the user would like to try the skill, and offer another if they don’t.
+- Include a clickable link in this format: <a href="https://mental-armor-app.netlify.app/skill/SKILL_ID" target="_blank" rel="noopener noreferrer">Learn more</a> — replacing SKILL_ID with the real skill id.
 
-Stay concise, focused, and coach-like. Do not act like a therapist. Offer subtle alternative ideas but focus on Mental Armor skills.
+Keep it simple and conversational. Avoid overloading the user with too many skills at once.
 `.trim()
   };
 
@@ -79,12 +79,15 @@ Stay concise, focused, and coach-like. Do not act like a therapist. Offer subtle
     const data = await res.json();
     let reply = data.choices[0].message.content.trim();
 
-    // Replace skills with their clickable links
+    // Replace skills with clickable links and icons
     skills.forEach((skill) => {
       const skillLink = `https://mental-armor-app.netlify.app/skill/${skill.id}`;
-      const skillReplacement = `**${skill.title}**: Taught by ${skill.trainer}. ${skill.brief}. <a href="${skillLink}" target="_blank" rel="noopener noreferrer">Learn more</a>`;
+      const skillReplacement = `**${skill.title}** ⭐️: Taught by ${skill.trainer}. ${skill.brief}. <a href="${skillLink}" target="_blank" rel="noopener noreferrer">Learn more</a>`;
       reply = reply.replace(new RegExp(`\\b${skill.title}\\b`, 'g'), skillReplacement);
     });
+
+    // Add a prompt asking if the user wants to try the skill
+    reply += "\n\nWould you like to try this skill? If not, I can suggest something else.";
 
     return reply;
   } catch (err) {
