@@ -3,7 +3,7 @@
 import { skills } from '../skills';
 
 const skillNames = skills
-  .map(skill => `- **${skill.title}** (id: ${skill.id}, taught by ${skill.trainer})`)
+  .map(skill => `- **${skill.title}** (taught by ${skill.trainer}, id: ${skill.id})`)
   .join('\n');
 
 const personalities = {
