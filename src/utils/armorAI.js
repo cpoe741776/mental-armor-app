@@ -1,7 +1,6 @@
 // src/utils/armorAI.js
 import { skills } from '../skills';
 
-// Define the personalities object (or import it if it's in another file)
 const personalities = {
   Scotty: "You speak with humble warmth, a Southern kindness, and spiritual insight. You gently guide others using stories and heartfelt care.",
   Rhonda: "You are bold and direct, like a general and a surgeon. You don’t tolerate excuses and reject the word 'can’t' unless it's physically impossible.",
@@ -44,11 +43,12 @@ async function getAIResponse(messages, coachName = "") {
       ${personalities[coachName] || ""}
 
       For each recommendation:
-      - Use an appropriate icon (e.g., 🧠 for Mindfulness, ⚖️ for Balance Your Thinking).
-      - Briefly explain the skill with a practical example.
+      - Recommend **one skill** only,
+      - Use an appropriate icon (e.g., 🧠 for Mindfulness, ⚖️ for Balance Your Thinking),
+      - Briefly explain the skill with a practical example,
       - Include a clickable link in this format: <a href="https://mental-armor-app.netlify.app/skill/SKILL_ID" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>
-      - Offer the user the chance to try the skill or suggest another skill.
-      Keep the conversation flowing naturally, don’t overwhelm the user.
+      - After recommending the skill, ask if the user wants to try it. If they say no, continue the conversation and offer another suggestion or ask more questions.
+      Stay concise, focused, and coach-like. Do not act like a therapist. Offer subtle alternative ideas but focus on Mental Armor skills.
     `.trim(),
   };
 
@@ -78,31 +78,16 @@ async function getAIResponse(messages, coachName = "") {
     const data = await res.json();
     let reply = data.choices[0].message.content.trim();
 
-    // Limit the number of skills and make sure they are injected only when relevant
-    const skillsToSuggest = [];
-
-    // Add a skill only if it was recommended in the conversation
-    if (reply.includes('Mindfulness')) {
-      const skill = skills.find(s => s.title === 'Mindfulness');
-      const skillLink = `https://mental-armor-app.netlify.app/skill/${skill.id}`;
-      const skillWithIcon = `${pickIconForSkill(skill.title)} **${skill.title}**: Taught by ${skill.trainer}. ${skill.brief}. <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
-      skillsToSuggest.push(skillWithIcon);
+    // Find a skill that is mentioned in the response, based on keywords
+    const mentionedSkillTitle = skills.find(skill => reply.includes(skill.title));
+    if (mentionedSkillTitle) {
+      const skillLink = `https://mental-armor-app.netlify.app/skill/${mentionedSkillTitle.id}`;
+      const skillWithIcon = `${pickIconForSkill(mentionedSkillTitle.title)} **${mentionedSkillTitle.title}**: Taught by ${mentionedSkillTitle.trainer}. ${mentionedSkillTitle.brief}. <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
+      reply = reply.replace(mentionedSkillTitle.title, skillWithIcon);
     }
 
-    if (reply.includes('Balance Your Thinking')) {
-      const skill = skills.find(s => s.title === 'Balance Your Thinking');
-      const skillLink = `https://mental-armor-app.netlify.app/skill/${skill.id}`;
-      const skillWithIcon = `${pickIconForSkill(skill.title)} **${skill.title}**: Taught by ${skill.trainer}. ${skill.brief}. <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
-      skillsToSuggest.push(skillWithIcon);
-    }
-
-    // Add a few skills to the response to keep it conversational
-    if (skillsToSuggest.length > 0) {
-      reply += `\n\nHere are some skills that may help you:\n${skillsToSuggest.join('\n')}`;
-    }
-
-    // Ask the user if they want to try the skill or suggest another one
-    reply += "\n\nWould you like to try any of these skills? Or would you like me to suggest another?"
+    // Add a prompt for the user to decide whether they want to try the skill
+    reply += "\n\nWould you like to try this skill? Or should I suggest another one?"
 
     return reply;
   } catch (err) {
