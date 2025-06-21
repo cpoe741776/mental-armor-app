@@ -1,21 +1,23 @@
 // src/utils/armorAI.js
 
-export async function getAIResponse(messages) {
-  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+export async function getAIResponse(messages, customSystemPrompt) {
+  const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
 
   if (!apiKey) {
     console.error("❌ Missing OpenAI API key. Check your .env file and Netlify environment variables.");
     return "Sorry, there's a configuration error on our end.";
   }
 
+  const defaultPrompt = `
+    You are Coach Armor, a compassionate and practical resilience trainer.
+    You teach Mental Armor skills to help users navigate emotional, social, family, and spiritual challenges.
+    Recommend only Mental Armor skills from the list the app provides.
+    Ask reflective questions when needed. Be direct but encouraging. Do not act like a therapist.
+  `;
+
   const systemPrompt = {
     role: "system",
-    content: `
-      You are Coach Armor, a compassionate and practical resilience trainer.
-      You teach Mental Armor skills to help users navigate emotional, social, family, and spiritual challenges.
-      Recommend only Mental Armor skills from the list the app provides.
-      Ask reflective questions when needed. Be direct but encouraging. Do not act like a therapist.
-    `
+    content: customSystemPrompt || defaultPrompt
   };
 
   const payload = {
