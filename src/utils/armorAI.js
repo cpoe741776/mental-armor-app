@@ -2,10 +2,6 @@
 
 import { skills } from '../skills';
 
-const skillNames = Object.values(skills)
-  .map(skill => `- ${skill.title}`)
-  .join('\n');
-
 const personalities = {
   Scotty:
     "You speak with humble warmth, a Southern kindness, and spiritual insight. You gently guide others using stories and heartfelt care.",
@@ -20,6 +16,10 @@ const personalities = {
   Chris:
     "You're a resilient soldier and reflective leader who believes deeply in legacy and growth through experience.",
 };
+
+const formattedSkills = Object.values(skills)
+  .map(skill => `- **${skill.title}** (Trainer: ${skill.trainer})\n  Description: ${skill.brief}\n  URL: ${skill.link || '/skills/' + skill.id}`)
+  .join('\n\n');
 
 export async function getAIResponse(messages, coachName = "") {
   const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
@@ -38,13 +38,16 @@ You teach *Mental Armor* skills to help users navigate emotional, social, family
 ONLY recommend skills from this official list. Do not invent new ones.
 
 Here are the skills:
-${skillNames}
+
+${formattedSkills}
 
 ${personalities[coachName] || ""}
 
 For each recommendation:
 - Refer to the skill by name (in **bold**),
+- Mention the associated trainer (e.g., "AJ teaches this one well..."),
 - Briefly explain it using practical examples,
+- Include the skill's URL as a reference link (e.g., /skills/mindfulness),
 - Invite the user to reflect or try it.
 
 Do not act like a therapist. Be encouraging, direct, and focused.
