@@ -52,13 +52,16 @@ export default function CoachArmorChat() {
       </div>
 
       <input
-        type="text"
-        placeholder="How are you feeling today?"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyPress={handleKeyPress}
-        style={{ width: '80%', padding: 10, marginTop: 10 }}
-      />
+  id="coach-chat-input"
+  name="coachChatInput"
+  type="text"
+  placeholder="How are you feeling today?"
+  autoComplete="on"
+  value={input}
+  onChange={(e) => setInput(e.target.value)}
+  onKeyPress={handleKeyPress}
+  style={{ width: '80%', padding: 10, marginTop: 10 }}
+/>
       <button onClick={handleSend} style={{ padding: '10px 20px', marginLeft: 10 }}>Send</button>
 
       {/* Skills Panel — This was the part that was outside the return */}

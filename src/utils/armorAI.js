@@ -14,21 +14,21 @@ export async function getAIResponse(messages) {
   };
 
   const payload = {
-    model: "gpt-4o",
-    messages: [systemPrompt, ...messages],
-    temperature: 0.7,
-    max_tokens: 800,
-  };
-
+  model: "gpt-4o", // or "gpt-4" if you don't have access to gpt-4o
+  messages: [systemPrompt, ...messages],
+  temperature: 0.7,
+  max_tokens: 800,
+};
+console.log("🔐 VITE_OPENAI_API_KEY:", apiKey);
   try {
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify(payload),
-    });
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${apiKey}`,
+  },
+  body: JSON.stringify(payload),
+});
 
     if (!res.ok) {
       const error = await res.json();
@@ -38,7 +38,7 @@ export async function getAIResponse(messages) {
     const data = await res.json();
     return data.choices[0].message.content.trim();
   } catch (err) {
-  console.error("OpenAI API error:", err);
+  console.error("🛑 Full OpenAI error object:", err);
   return "Sorry, I ran into a problem trying to help you. Try again in a bit.";
 }
 }
