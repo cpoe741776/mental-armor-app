@@ -6,7 +6,7 @@ const personalities = {
   Jill: "You are warm, emotionally insightful, and able to hold multiple perspectives. You blend psychology with practicality.",
   Terry: "You have a dry, witty Bronx humor and a master's in social work. You're compassionate, but always up for a smart remark.",
   AJ: "You're energetic, upbeat, and goal-driven. You draw strength from your own accomplishments and love helping people grow. You have a Master's in Applied Positive Psychology, which helps you focus on positive emotions and strengths to build resilience. Your approach is practical, science-backed, and all about empowering others to thrive.",
-  Chris: "You're a resilient soldier and reflective leader who believes deeply in legacy and growth through experience.",
+  Chris: "You're a resilient soldier and reflective leader who believes deeply in legacy and growth through experience."
 };
 
 async function getAIResponse(messages, coachName = "") {
@@ -17,19 +17,20 @@ async function getAIResponse(messages, coachName = "") {
     role: "system",
     content: `
       Commit your full personality to memory before speaking, 
-       Speak in the tone of the assigned coach personality:
+      Speak in the tone of the assigned coach personality:
       ${personalities[coachName] || ""}
+
       You teach *Mental Armor* skills to help users navigate emotional, social, family, and spiritual challenges, 
       Keep the conversation flowing. Offer only a few lines of text at a time,
 
       Here are the skills you can use:
-      ${skills.map(skill => `- ${skill.title}*(taught by ${skill.trainer}) <a href="/skill/${skills.id}" style="color: #3498db; font-weight: bold; font-style: italic; text-decoration: underline;"></a>
-`).join('\n')}
+      ${skills.map(skill => `- **${skill.title}** (taught by ${skill.trainer}) <a href="/skill/${skill.id}" style="color: #3498db; font-weight: bold; font-style: italic; text-decoration: underline;">Try it</a>`).join('\n')}
 
       For each recommendation:
-      - Recommend one skill in any response,
+      - Recommend **one skill** only in any response,
       - Briefly explain the skill with a practical example,
-      - Mention the trainer for the skill and their personality in teaching it
+      - After recommending the skill, ask if they want to try it. If they say no, continue the conversation and offer another suggestion or ask more questions.
+      - Provide an internal link to the skill directly within the message using the format: <a href="/skill/${skills.id}" style="color: #003049;">Try it</a>.
     `.trim(),
   };
 
@@ -59,16 +60,27 @@ async function getAIResponse(messages, coachName = "") {
     const data = await res.json();
     let reply = data.choices[0].message.content.trim();
 
-    // Find a skill that is mentioned in the response, based on keywords
-    const mentionedSkillTitle = skills.find(skill => reply.includes(skill.title));
+    // Find the skill mentioned in the response
+    const mentionedSkill = skills.find(skill => reply.includes(skill.title));
 
-    if (mentionedSkillTitle) {
-      const skillLink = `/skill/${mentionedSkillTitle.id}`;
-      const skillWithLink = `<a href="${skillLink}" style="color: #3498db; font-weight: bold; font-style: italic; text-decoration: underline;" rel="noopener noreferrer">${mentionedSkillTitle.title}</a>`;
-      
-      // Replace the skill name in the AI response with the full clickable link
-      reply = reply.replace(mentionedSkillTitle.title, skillWithLink);
+    if (mentionedSkill) {
+      const skillLink = `/skill/${mentionedSkill.id}`;
+      const skillWithLink = `<a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">${mentionedSkill.title}</a>`;
 
+      // Check if the coach is recommending their own skill
+      const isCoachRecommendingOwnSkill = mentionedSkill.trainer.toLowerCase() === coachName.toLowerCase();
+
+      // If the coach is recommending their own skill, make it sound more natural
+      if (isCoachRecommendingOwnSkill) {
+        reply = reply.replace(mentionedSkill.title, `${mentionedSkill.title} skill, which I teach.`);
+      } else {
+        // Replace the skill name in the AI response with the clickable link
+        reply = reply.replace(mentionedSkill.title, skillWithLink);
+      }
+
+      // Optionally, you can append the skill brief summary to the response
+      const skillSummary = `${mentionedSkill.brief} <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
+      reply += ` ${skillSummary}`;
     }
 
     return reply;
