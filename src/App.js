@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react'
 import netlifyIdentity from 'netlify-identity-widget'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import CoachPage from './CoachPage';
+
 
 // Import your consolidated Header component
 import Header from './Header'
@@ -46,7 +46,6 @@ export default function App() {
           <Route path="/enter-scores" element={<EnterScores />} />
           <Route path="/repair-kit" element={<RepairKit />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/coach" element={<CoachPage />} />
         </Routes>
       </main>
     </Router>
