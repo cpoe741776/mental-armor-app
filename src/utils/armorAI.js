@@ -27,7 +27,7 @@ async function getAIResponse(messages, coachName = "") {
       
       For each recommendation:
       - Recommend one skill only in any response,
-      - Mention the trainer and their training personality
+      - Mention the trainer and their training personality even if the trainer is also the selected coach,
       - Briefly explain the skill with a practical example,
       - Provide an internal link to the skill directly within the message using the format: <a href="/skill/${skills.id}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;" rel="noopener noreferrer"></a>.
     `.trim(),
