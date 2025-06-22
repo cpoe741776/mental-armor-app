@@ -1,7 +1,6 @@
-// src/components/CoachArmorChat.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { skills } from '../skills';
-import { personalities } from '../utils/armorAI';
+import { personalities } from '../utils/armorAI';  // Ensure the correct import
 import { getAIResponse } from '../utils/armorAI';
 
 export default function CoachArmorChat({ selectedCoach }) {
@@ -9,9 +8,16 @@ export default function CoachArmorChat({ selectedCoach }) {
   const [input, setInput] = useState('');
   const [isThinking, setIsThinking] = useState(false);
 
+  // Clear the chat when the coach changes
+  useEffect(() => {
+    setMessages([]); // Clear the chat messages when selectedCoach changes
+    console.log("Selected coach changed:", selectedCoach);  // Debugging step
+  }, [selectedCoach]);
+
+  // Prepare system prompt based on selectedCoach
   const systemPrompt = selectedCoach
-  ? `You are ${selectedCoach.name}, a Mental Armor resilience coach. Your background is: ${selectedCoach.title}. Your style is: ${personalities[selectedCoach.name]}. Respond as this character while helping the user with their struggles.`
-  : `You are a helpful Mental Armor resilience coach.`;
+    ? `You are ${selectedCoach.name}, a Mental Armor resilience coach. Your background is: ${selectedCoach.title}. Your style is: ${personalities[selectedCoach.name]}. Respond as this character while helping the user with their struggles.`
+    : `You are a helpful Mental Armor resilience coach.`;
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -22,14 +28,15 @@ export default function CoachArmorChat({ selectedCoach }) {
     setIsThinking(true);
 
     try {
-      const aiReply = await getAIResponse(newMessages, systemPrompt);
+      console.log("Calling AI with selectedCoach:", selectedCoach); // Debugging step
+      const aiReply = await getAIResponse(newMessages, systemPrompt);  // Pass systemPrompt here
       setMessages([...newMessages, { role: 'assistant', content: aiReply }]);
     } catch (error) {
       setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
     } finally {
       setIsThinking(false);
     }
-  };
+};
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') handleSend();
@@ -95,6 +102,16 @@ export default function CoachArmorChat({ selectedCoach }) {
         </button>
       </div>
 
+      {/* Clear Chat Button */}
+      <div className="flex justify-end mt-2">
+        <button
+          onClick={() => setMessages([])}
+          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+        >
+          Clear Chat
+        </button>
+      </div>
+
       {/* Skills Panel */}
       <div style={{ marginTop: 20 }}>
         <h3 className="text-lg font-semibold mb-2">🧠 Mental Armor Skills</h3>
@@ -118,7 +135,7 @@ export default function CoachArmorChat({ selectedCoach }) {
                 setInput('');
                 setIsThinking(true);
                 try {
-                  const aiReply = await getAIResponse(newMessages, systemPrompt);
+                  const aiReply = await getAIResponse(newMessages, selectedCoach);  // Use systemPrompt here
                   setMessages([...newMessages, { role: 'assistant', content: aiReply }]);
                 } catch (err) {
                   setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
