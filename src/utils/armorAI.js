@@ -67,23 +67,27 @@ async function getAIResponse(messages, coachName = "") {
     const data = await res.json();
     let reply = data.choices[0].message.content.trim();
 
-    // Find the skill mentioned in the response
-   const mentionedSkillTitle = skills.find(skill => reply.includes(skill.title));
+   // Find the skill mentioned in the response
+    const mentionedSkill = skills.find(skill => reply.includes(skill.title));
 
-    if (mentionedSkillTitle) {
-      const skillLink = `/skill/${mentionedSkillTitle.id}`;
-      const skillWithLink = `<a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">${mentionedSkillTitle.title}</a>`;
-      
+    if (mentionedSkill) {
+      const skillLink = `/skill/${mentionedSkill.id}`;
+      const skillWithLink = `<a href="${skillLink}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;" rel="noopener noreferrer">${mentionedSkill.title}</a>`;
+
       // Check if the coach is recommending their own skill
-      const isCoachRecommendingOwnSkill = mentionedSkillTitle.trainer.toLowerCase() === coachName.toLowerCase();
+      const isCoachRecommendingOwnSkill = mentionedSkill.trainer.toLowerCase() === coachName.toLowerCase();
 
       // If the coach is recommending their own skill, make it sound more natural
       if (isCoachRecommendingOwnSkill) {
-        reply = reply.replace(mentionedSkillTitle.title, `${mentionedSkillTitle.title} skill, which I teach.`);
+        reply = reply.replace(mentionedSkill.title, `${mentionedSkill.title} skill, which I teach.`);
       } else {
         // Replace the skill name in the AI response with the clickable link
-        reply = reply.replace(mentionedSkillTitle.title, skillWithLink);
+        reply = reply.replace(mentionedSkill.title, skillWithLink);
       }
+
+      // Optionally, you can append the skill brief summary to the response
+      const skillSummary = `${mentionedSkill.brief} <a href="${skillLink}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;"  rel="noopener noreferrer">Try it</a>`;
+      reply += ` ${skillSummary}`;
     }
     return reply;
   } catch (err) {
