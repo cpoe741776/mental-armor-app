@@ -87,7 +87,11 @@ export default function CoachArmorChat({ selectedCoach }) {
             )}
           </div>
         ))}
-        {isThinking && <div><em>{selectedCoach?.name || 'Coach'} is thinking...</em></div>}
+        {isThinking && (
+          <div style={{ fontStyle: 'italic', color: '#888' }}>
+            {selectedCoach?.name || 'Coach'} is typing<span className="typing-dots">...</span>
+          </div>
+        )}
       </div>
 
       {/* Input Field with Outline */}
