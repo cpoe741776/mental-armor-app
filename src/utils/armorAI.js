@@ -12,11 +12,6 @@ const personalities = {
 async function getAIResponse(messages, coachName = "") {
   const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
 
-  if (!apiKey) {
-    console.error("❌ Missing OpenAI API key. Check your .env file and Netlify environment variables.");
-    return "Sorry, there's a configuration error on our end.";
-  }
-
   // Ensure skills are used in the prompt correctly
   const systemPrompt = {
     role: "system",
