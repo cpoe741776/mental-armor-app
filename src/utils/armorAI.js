@@ -23,7 +23,8 @@ async function getAIResponse(messages, coachName = "") {
       Keep the conversation flowing. Offer only a few lines of text at a time,
 
       Here are the skills you can use:
-      ${skills.map(skill => `- ${skill.title}*(taught by ${skill.trainer}) <strong><bold><i><a href="/skill/${skills.id}" style="color: #003049;"></a></i></bold></strong>`).join('\n')}
+      ${skills.map(skill => `- ${skill.title}*(taught by ${skill.trainer}) <a href="/skill/${skills.id}" style="color: #3498db; font-weight: bold; font-style: italic; text-decoration: underline;"></a>
+`).join('\n')}
 
       For each recommendation:
       - Recommend one skill in any response,
