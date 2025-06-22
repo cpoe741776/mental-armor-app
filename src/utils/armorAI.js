@@ -12,13 +12,12 @@ export const personalities = {
 async function getAIResponse(messages, selectedCoach) {
   const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
 
-  // Ensure skills are used in the prompt correctly
   const systemPrompt = {
     role: "system",
     content: `
       Commit your full personality to memory before speaking, 
       Speak in the tone of the assigned coach personality:
-      ${personalities[selectedCoach?.name] || ""}  // Use selectedCoach.name here
+      ${personalities[selectedCoach?.name] || ""} 
       You teach *Mental Armor* skills to help users navigate emotional, social, family, and spiritual challenges, 
       Keep the conversation flowing. Offer only a few lines of text at a time,
       
@@ -28,7 +27,7 @@ async function getAIResponse(messages, selectedCoach) {
       For each recommendation:
       - Recommend **one skill** only in any response,
       - Briefly explain the skill with a practical example,
-      - After recommending the skill, ask if they want to try it. If they say no, continue the conversation and offer another suggestion or ask more questions.
+      - Mention the Coach and their personality when teaching the skill
       - Provide an internal link to the skill directly within the message using the format: <a href="/skill/${skills.id}" style="color: #003049;">Try it</a>.
     `.trim(),
   };
@@ -62,26 +61,35 @@ async function getAIResponse(messages, selectedCoach) {
     // Find the skill mentioned in the response
     const mentionedSkill = skills.find(skill => reply.includes(skill.title));
 
-    if (mentionedSkill) {
-      const skillLink = `/skill/${mentionedSkill.id}`;
-      const skillWithLink = `<a href="${skillLink}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;" rel="noopener noreferrer">${mentionedSkill.title}</a>`;
-
-      // Check if the coach is recommending their own skill based on the "trainer" field
-      const isCoachRecommendingOwnSkill = mentionedSkill.trainer.toLowerCase() === selectedCoach.name.toLowerCase();
-
-      // If the coach is recommending their own skill, make it sound more natural
-      if (isCoachRecommendingOwnSkill) {
-        // Replace the skill title with a more natural phrasing when the coach recommends their own skill
-        reply = reply.replace(mentionedSkill.title, `${mentionedSkill.title} skill, which I teach.`);
-      } else {
-        // Replace the skill name in the AI response with the clickable link
-        reply = reply.replace(mentionedSkill.title, skillWithLink);
-      }
-
-      // Optionally, you can append the skill brief summary to the response
-      const skillSummary = `${mentionedSkill.brief} <a href="${skillLink}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;"  rel="noopener noreferrer">Try it</a>`;
-      reply += ` ${skillSummary}`;
+    // Ensure the skill was found
+    if (!mentionedSkill) {
+      console.error("Error: No matching skill found in the response");
+      return;
     }
+
+    const skillLink = `/skill/${mentionedSkill.id}`;
+    const skillWithLink = `<a href="${skillLink}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;" rel="noopener noreferrer">${mentionedSkill.title}</a>`;
+
+    // Ensure selectedCoach is defined and has a name property
+    if (!selectedCoach || !selectedCoach.name) {
+      console.error("Error: No selected coach found");
+      return;
+    }
+
+    // Check if the coach is recommending their own skill based on the "trainer" field
+    const isCoachRecommendingOwnSkill = mentionedSkill.trainer.toLowerCase() === selectedCoach.name.toLowerCase();
+
+    // If the coach is recommending their own skill, make it sound more natural
+    if (isCoachRecommendingOwnSkill) {
+      reply = reply.replace(mentionedSkill.title, `${mentionedSkill.title} skill, which I teach.`);
+    } else {
+      // Replace the skill name in the AI response with the clickable link
+      reply = reply.replace(mentionedSkill.title, skillWithLink);
+    }
+
+    // Optionally, you can append the skill brief summary to the response
+    const skillSummary = `${mentionedSkill.brief} <a href="${skillLink}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;" rel="noopener noreferrer">Try it</a>`;
+    reply += ` ${skillSummary}`;
 
     return reply;
   } catch (err) {
