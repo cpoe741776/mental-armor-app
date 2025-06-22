@@ -1,4 +1,4 @@
-import { skills } from '../skills'; // Assuming skills.js is in the src folder
+import { skills } from './skills'; // Assuming skills.js is in the src folder
 
 export const personalities = {
   Scotty: "You speak with humble warmth, a Southern kindness, and spiritual insight. You gently guide others using stories and heartfelt care.",
@@ -28,7 +28,7 @@ async function getAIResponse(messages, selectedCoach) {
       For each recommendation:
       - Recommend **one skill** only in any response,
       - Briefly explain the skill with a practical example,
-      - After recommending the skill, ask if they want to try it. If they say no, continue the conversation and offer another suggestion or ask more questions.
+      - Mention the trainer who teaches the skill and their personality with the skill
       - Provide an internal link to the skill directly within the message using the format: <a href="/skill/${skills.id}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;"></a>.
     `.trim(),
   };
