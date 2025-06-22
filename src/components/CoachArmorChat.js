@@ -1,22 +1,17 @@
-import React, { useState, useEffect } from 'react';
+// src/components/CoachArmorChat.js
+import React, { useState } from 'react';
 import { skills } from '../skills';
 import { personalities } from '../utils/armorAI';
 import { getAIResponse } from '../utils/armorAI';
-
 
 export default function CoachArmorChat({ selectedCoach }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isThinking, setIsThinking] = useState(false);
 
-  // Clear the chat when the coach changes
-  useEffect(() => {
-    setMessages([]); // Clear the chat messages when selectedCoach changes
-  }, [selectedCoach]);
-
   const systemPrompt = selectedCoach
-    ? `You are ${selectedCoach.name}, a Mental Armor resilience coach. Your background is: ${selectedCoach.title}. Your style is: ${selectedCoach.personalities}. Respond as this character while helping the user with their struggles.`
-    : `You are a helpful Mental Armor resilience coach.`;
+  ? `You are ${selectedCoach.name}, a Mental Armor resilience coach. Your background is: ${selectedCoach.title}. Your style is: ${personalities[selectedCoach.name]}. Respond as this character while helping the user with their struggles.`
+  : `You are a helpful Mental Armor resilience coach.`;
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -40,10 +35,6 @@ export default function CoachArmorChat({ selectedCoach }) {
     if (e.key === 'Enter') handleSend();
   };
 
-  const handleClearChat = () => {
-    setMessages([]);  // This will clear the chat
-  };
-
   return (
     <div style={{ maxWidth: 700, margin: 'auto', padding: 20 }}>
       {/* Coach Image */}
@@ -56,31 +47,10 @@ export default function CoachArmorChat({ selectedCoach }) {
           />
           <div>
             <h2 className="text-xl font-semibold">{selectedCoach.name}</h2>
-            <p className="text-sm text-gray-600 italic">{personalities[selectedCoach.name]}</p>
+            <p className="text-sm text-gray-600 italic">{selectedCoach.traits}</p>
           </div>
         </div>
       )}
-{/* Coach's response with space after their name */}
-      <div style={{ marginBottom: '20px' }}>
-        {selectedCoach && (
-          <p style={{ fontSize: '18px', fontWeight: 'bold' }}>
-            {selectedCoach.name}: {/* Space before response */}
-          </p>
-        )}
-        {/* Add space between name and response */}
-        <div style={{ marginTop: '10px' }}>
-          {messages.map((msg, i) => (
-            <div key={i} style={{ margin: '10px 0', textAlign: msg.role === 'user' ? 'right' : 'left' }}>
-              <strong>{msg.role === 'user' ? 'You' : selectedCoach?.name || 'Coach'}:</strong>
-              {msg.role === 'assistant' ? (
-                <span dangerouslySetInnerHTML={{ __html: msg.content }} />
-              ) : (
-                msg.content
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
 
       {/* Chat Box */}
       <div style={{
@@ -93,9 +63,8 @@ export default function CoachArmorChat({ selectedCoach }) {
       }}>
         {messages.map((msg, i) => (
           <div key={i} style={{ margin: '10px 0', textAlign: msg.role === 'user' ? 'right' : 'left' }}>
-            <strong>{msg.role === 'user' ? 'You' : selectedCoach?.name || 'Coach'}:</strong> 
+            <strong>{msg.role === 'user' ? 'You' : selectedCoach?.name || 'Coach'}:</strong>{' '}
             {msg.role === 'assistant' ? (
-              // Render HTML using dangerouslySetInnerHTML
               <span dangerouslySetInnerHTML={{ __html: msg.content }} />
             ) : (
               msg.content
@@ -123,16 +92,6 @@ export default function CoachArmorChat({ selectedCoach }) {
           className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
         >
           Send
-        </button>
-      </div>
-
-      {/* Clear Chat Button */}
-      <div className="flex justify-end mt-2">
-        <button
-          onClick={handleClearChat}
-          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-        >
-          Clear Chat
         </button>
       </div>
 
