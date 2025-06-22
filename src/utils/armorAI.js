@@ -21,7 +21,6 @@ async function getAIResponse(messages, coachName = "") {
   const systemPrompt = {
     role: "system",
     content: `
-      You are Coach Armor
       You teach *Mental Armor* skills to help users navigate emotional, social, family, and spiritual challenges.
       Keep the conversation flowing. Offer only a few lines of text at a time,
       Speak in the tone of the assigned coach personality:
