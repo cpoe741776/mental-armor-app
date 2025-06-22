@@ -135,7 +135,7 @@ export default function CoachArmorChat({ selectedCoach }) {
                 setInput('');
                 setIsThinking(true);
                 try {
-                  const aiReply = await getAIResponse(newMessages, selectedCoach);  // Use systemPrompt here
+                  const aiReply = await getAIResponse(newMessages, selectedCoach, systemPrompt);  // Use systemPrompt here
                   setMessages([...newMessages, { role: 'assistant', content: aiReply }]);
                 } catch (err) {
                   setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
