@@ -29,9 +29,10 @@ async function getAIResponse(messages, coachName = "") {
       ${personalities[coachName] || ""}
 
       For each recommendation:
-      - Recommend **one skill at a time only,
+      - Recommend one skill at a time only in any response,
+      - Mention the name of the trainer for the recommended skill and their personalities
       - Briefly explain the skill with a practical example,
-      - Offer subtle alternative ideas but focus mainly on Mental Armor skills.
+      - Ask if they want to give the skill a try but if not you can offer another,
     `.trim(),
   };
 
@@ -67,7 +68,7 @@ async function getAIResponse(messages, coachName = "") {
     if (mentionedSkillTitle) {
       // Construct the skill with a clickable link
       const skillLink = `https://mental-armor-app.netlify.app/skill/${mentionedSkillTitle.id}`;
-      const skillWithLink = `${mentionedSkillTitle.title} <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
+      const skillWithLink = `${mentionedSkillTitle.title} <a href="${skillLink}" style="color: #003049;" rel="noopener noreferrer">Try it</a>`;
 
       // Replace the skill title in the AI response with the full clickable link
       reply = reply.replace(mentionedSkillTitle.title, skillWithLink);
