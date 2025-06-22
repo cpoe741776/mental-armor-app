@@ -1,85 +1,83 @@
-import { skills } from './skills'; // Assuming skills.js is in the src folder
-import { personalities } from './utils/armorAI';
+import React, { useState } from 'react';
+import CoachArmorChat from './components/CoachArmorChat';
 
-async function getAIResponse(messages, selectedCoach) {
-  const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
-
-  // Ensure skills are used in the prompt correctly
-  const systemPrompt = {
-    role: "system",
-    content: `
-      Commit your full personality to memory before speaking, 
-      Speak in the tone of the assigned coach personality:
-      ${personalities[selectedCoach?.name] || ""}  // Use selectedCoach.name here
-      You teach *Mental Armor* skills to help users navigate emotional, social, family, and spiritual challenges, 
-      Keep the conversation flowing. Offer only a few lines of text at a time,
-      
-      Here are the skills you can use:
-      ${skills.map(skill => `- **${skill.title}** (taught by ${skill.trainer}) <a href="/skill/${skill.id}" style="color: #3498db; font-weight: bold; font-style: italic; text-decoration: underline;">Try it</a>`).join('\n')}
-      
-      For each recommendation:
-      - Recommend **one skill** only in any response,
-      - Briefly explain the skill with a practical example,
-      - Mention the trainer who teaches the skill and their personality with the skill
-      - Provide an internal link to the skill directly within the message using the format: <a href="/skill/${skills.id}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;"></a>.
-    `.trim(),
-  };
-
-  const payload = {
-    model: "gpt-4o",
-    messages: [systemPrompt, ...messages],
-    temperature: 0.7,
-    max_tokens: 600
-  };
-
-  try {
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (!res.ok) {
-      const error = await res.json();
-      console.error("❌ OpenAI API error:", error);
-      throw new Error(error.error.message);
-    }
-
-    const data = await res.json();
-    let reply = data.choices[0].message.content.trim();
-
-    // Find the skill mentioned in the response
-    const mentionedSkill = skills.find(skill => reply.includes(skill.title));
-
-    if (mentionedSkill) {
-      const skillLink = `/skill/${mentionedSkill.id}`;
-      const skillWithLink = `<a href="${skillLink}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;" rel="noopener noreferrer">${mentionedSkill.title}</a>`;
-
-      // Check if the coach is recommending their own skill based on the "trainer" field
-      const isCoachRecommendingOwnSkill = mentionedSkill.trainer.toLowerCase() === selectedCoach.name.toLowerCase();
-
-      // If the coach is recommending their own skill, make it sound more natural
-      if (isCoachRecommendingOwnSkill) {
-        // Replace the skill title with a more natural phrasing when the coach recommends their own skill
-        reply = reply.replace(mentionedSkill.title, `${mentionedSkill.title} skill, which I teach.`);
-      } else {
-        // Replace the skill name in the AI response with the clickable link
-        reply = reply.replace(mentionedSkill.title, skillWithLink);
-      }
-
-      // Optionally, you can append the skill brief summary to the response
-      const skillSummary = `${mentionedSkill.brief} <a href="${skillLink}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;" rel="noopener noreferrer">Try it</a>`;
-      reply += ` ${skillSummary}`;
-    }
-
-    return reply;
-  } catch (err) {
-    console.error("🔥 AI Fetch Exception:", err);
-    return "Sorry, I ran into a problem trying to help you. Try again in a bit.";
+const coaches = [
+  {
+    name: 'Rhonda',
+    title: 'Surgeon & General',
+    traits: 'Bold · Organized · No Excuses',
+    image: '/rhonda.jpg',
+  },
+  {
+    name: 'Jill',
+    title: 'Psychologist',
+    traits: 'Warm · Insightful · Bridge-Builder',
+    image: '/jill.jpg',
+  },
+  {
+    name: 'AJ',
+    title: 'Positive Psychology Expert',
+    traits: 'Cheery · Driven · Self-Made',
+    image: '/aj.jpg',
+  },
+  {
+    name: 'Terry',
+    title: 'MSW, Irish Bronx Native',
+    traits: 'Witty · Tough-Love · Approachable',
+    image: '/terry.jpg',
+  },
+  {
+    name: 'Scotty',
+    title: 'Retired Tactical Officer',
+    traits: 'Humble · Faith-Filled · Compassionate',
+    image: '/scotty.jpg',
+  },
+  {
+    name: 'Chris',
+    title: 'Infantryman & Resilience Leader',
+    traits: 'Reflective · Legacy-Focused · Purpose-Driven',
+    image: '/chris.jpg',
   }
-}
+];
 
-export { getAIResponse };
+export default function CoachPage() {
+  const [selectedCoach, setSelectedCoach] = useState(null);
+
+  return (
+    <div className="flex flex-col md:flex-row p-6 gap-6">
+      {/* Left: Coach Cards */}
+      <div className="md:w-1/3 space-y-4">
+        <h2 className="text-2xl font-bold mb-2 text-center">Choose Your Coach</h2>
+        {coaches.map((coach, index) => (
+          <button
+            key={index}
+            className={`w-full bg-white rounded-2xl shadow-md p-4 text-center transition transform hover:scale-105 focus:outline-none focus:ring-2 ${
+              selectedCoach?.name === coach.name ? 'ring-2 ring-blue-500' : ''
+            }`}
+            onClick={() => setSelectedCoach(coach)}
+          >
+            <img
+              src={coach.image}
+              alt={coach.name}
+              className="mx-auto mb-3 rounded-full h-20 w-20 object-cover border-2 border-gray-300"
+            />
+            <h3 className="text-lg font-semibold">{coach.name}</h3>
+            <p className="text-sm text-gray-500">{coach.title}</p>
+            <p className="text-sm text-gray-600 mt-1 italic">{coach.traits}</p>
+          </button>
+        ))}
+      </div>
+
+      {/* Right: Chat Panel */}
+      <div className="md:w-2/3">
+        {selectedCoach ? (
+          <CoachArmorChat selectedCoach={selectedCoach} />
+        ) : (
+          <div className="text-center text-gray-500 italic mt-10 md:mt-0">
+            Please select a coach to begin chatting.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
