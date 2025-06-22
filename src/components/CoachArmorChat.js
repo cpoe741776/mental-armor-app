@@ -20,22 +20,22 @@ export default function CoachArmorChat({ selectedCoach }) {
     : `You are a helpful Mental Armor resilience coach.`;
 
   const handleSend = async () => {
-    if (!input.trim()) return;
+  if (!input.trim()) return;
 
-    const newMessages = [...messages, { role: 'user', content: input }];
-    setMessages(newMessages);
-    setInput('');
-    setIsThinking(true);
+  const newMessages = [...messages, { role: 'user', content: input }];
+  setMessages(newMessages);
+  setInput('');
+  setIsThinking(true);
 
-    try {
-      console.log("Calling AI with selectedCoach:", selectedCoach); // Debugging step
-      const aiReply = await getAIResponse(newMessages, systemPrompt);  // Pass systemPrompt here
-      setMessages([...newMessages, { role: 'assistant', content: aiReply }]);
-    } catch (error) {
-      setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
-    } finally {
-      setIsThinking(false);
-    }
+  try {
+    console.log("Calling AI with selectedCoach:", selectedCoach); // Debugging step
+    const aiReply = await getAIResponse(newMessages, selectedCoach);  // Passing selectedCoach to AI
+    setMessages([...newMessages, { role: 'assistant', content: aiReply }]);
+  } catch (error) {
+    setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
+  } finally {
+    setIsThinking(false);
+  }
 };
 
   const handleKeyPress = (e) => {
