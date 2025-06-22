@@ -33,7 +33,7 @@ async function getAIResponse(messages, coachName = "") {
       For each recommendation:
       - Recommend **one skill** only in any response,
       - Briefly explain the skill with a practical example,
-      - Provide an internal link to the skill in this format: <a href="/skill/${skills.id}" style="color: #003049;">Try it</a> — replacing SKILL_ID with the real skill ID.
+      - Provide an internal link to the skill in this format: <a href="/skill/${skills.id}" style="color: #003049;"></a> — replacing SKILL_ID with the real skill ID.
       - After providing the link, if they say no, continue the conversation and offer another skill,
     `.trim(),
   };
@@ -69,10 +69,10 @@ async function getAIResponse(messages, coachName = "") {
 
     if (mentionedSkill) {
       // Build the internal link for the skill
-      const skillLink = `/skill/${mentionedSkill.id}`;
+      const skillLink = `/skills/${mentionedSkill.id}`;
 
       // Replace the skill name in the AI response with the full clickable link
-      const skillWithLink = `${mentionedSkill.title}: ${mentionedSkill.brief}. <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
+      const skillWithLink = `${mentionedSkill.title} <a href="${skillLink}" style="color: #003049;" rel="noopener noreferrer"></a>`;
       reply = reply.replace(mentionedSkill.title, skillWithLink);
     }
 
