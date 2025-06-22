@@ -88,8 +88,9 @@ export default function CoachArmorChat({ selectedCoach }) {
           </div>
         ))}
         {isThinking && (
-          <div style={{ fontStyle: 'italic', color: '#888' }}>
-            {selectedCoach?.name || 'Coach'} is typing<span className="typing-dots">...</span>
+          <div className="italic text-gray-500">
+            {selectedCoach?.name || 'Coach'} is typing
+            <span className="animate-pulse">...</span> {/* Tailwind animation for typing dots */}
           </div>
         )}
       </div>
