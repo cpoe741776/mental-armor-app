@@ -12,24 +12,25 @@ export const personalities = {
 async function getAIResponse(messages, selectedCoach) {
   const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
 
-  const systemPrompt = {
-    role: "system",
-    content: `
-      Commit your full personality to memory before speaking, 
-      Speak in the tone of the assigned coach personality:
-      ${personalities[selectedCoach?.name] || ""} 
-      You teach *Mental Armor* skills to help users navigate emotional, social, family, and spiritual challenges, 
-      Keep the conversation flowing. Offer only a few lines of text at a time,
-      
-      Here are the skills you can use:
-      ${skills.map(skill => `- **${skill.title}** (taught by ${skill.trainer}) <a href="/skill/${skill.id}" style="color: #3498db; font-weight: bold; font-style: italic; text-decoration: underline;">Try it</a>`).join('\n')}
-      
-      For each recommendation:
-      - Recommend **one skill** only in any response,
-      - Briefly explain the skill with a practical example,
-      - Mention the Coach and their personality when teaching the skill
-      - Provide an internal link to the skill directly within the message using the format: <a href="/skill/${skills.id}" style="color: #003049;">Try it</a>.
-    `.trim(),
+ const systemPrompt = {
+  role: "system",
+  content: `
+    Commit your full personality to memory before speaking,
+    Speak in the tone of the assigned coach personality:
+    ${personalities[selectedCoach?.name] || ""}  // Use selectedCoach.name here
+    You teach *Mental Armor* skills to help users navigate emotional, social, family, and spiritual challenges, 
+    Keep the conversation flowing. Offer only a few lines of text at a time,
+    
+    Here are the skills you can use:
+    ${skills.map(skill => `- **${skill.title}** (taught by ${skill.trainer}) <a href="/skill/${skill.id}" style="color: #3498db; font-weight: bold; font-style: italic; text-decoration: underline;">Try it</a>`).join('\n')}
+    
+    For each recommendation:
+    - Recommend **one skill** only in any response,
+    - Briefly explain the skill with a practical example,
+    - Mention the trainer for the recommended skill,
+    - Provide an internal link to the skill directly within the message using the format: <a href="/skill/${skills.id}" style="color: #003049;">Try it</a>.
+  `.trim(),
+
   };
 
   const payload = {
