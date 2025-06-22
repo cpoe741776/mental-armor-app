@@ -20,23 +20,32 @@ export default function CoachArmorChat({ selectedCoach }) {
     : `You are a helpful Mental Armor resilience coach.`;
 
   const handleSend = async () => {
-  if (!input.trim()) return;
+    if (!input.trim()) return;
 
-  const newMessages = [...messages, { role: 'user', content: input }];
-  setMessages(newMessages);
-  setInput('');
-  setIsThinking(true);
+    const newMessages = [...messages, { role: 'user', content: input }];
+    setMessages(newMessages);
+    setInput('');
+    setIsThinking(true);
 
-  try {
-    console.log("Calling AI with selectedCoach:", selectedCoach); // Debugging step
-    const aiReply = await getAIResponse(newMessages, selectedCoach);  // Passing selectedCoach to AI
-    setMessages([...newMessages, { role: 'assistant', content: aiReply }]);
-  } catch (error) {
-    setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
-  } finally {
-    setIsThinking(false);
-  }
-};
+    try {
+      console.log("Calling AI with selectedCoach:", selectedCoach); // Debugging step
+      const aiReply = await getAIResponse(newMessages, selectedCoach);  // Passing selectedCoach to AI
+      
+      // If no matching skill is found, provide an upbeat fallback message
+      if (!aiReply || aiReply.trim() === '') {
+        const fallbackReply = selectedCoach?.name === 'Terry'
+          ? "Life in the Bronx? It's tough, but you've gotta find the humor in the hard times. Now, what else can I help with?"
+          : "That’s a great question! While I don’t have a skill that fits right now, I’m happy to chat about anything else!";
+        setMessages([...newMessages, { role: 'assistant', content: fallbackReply }]);
+      } else {
+        setMessages([...newMessages, { role: 'assistant', content: aiReply }]);
+      }
+    } catch (error) {
+      setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
+    } finally {
+      setIsThinking(false);
+    }
+  };
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') handleSend();
