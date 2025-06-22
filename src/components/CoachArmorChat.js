@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { skills } from '../skills';
 import { personalities } from '../utils/armorAI';  // Ensure the correct import
 import { getAIResponse } from '../utils/armorAI';
@@ -8,11 +8,20 @@ export default function CoachArmorChat({ selectedCoach }) {
   const [input, setInput] = useState('');
   const [isThinking, setIsThinking] = useState(false);
 
+  const chatContainerRef = useRef(null); // Ref for the chat container
+
   // Clear the chat when the coach changes
   useEffect(() => {
     setMessages([]); // Clear the chat messages when selectedCoach changes
     console.log("Selected coach changed:", selectedCoach);  // Debugging step
   }, [selectedCoach]);
+
+  // Auto-scroll the chat to the bottom when new messages are added
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]); // Scroll to the bottom every time messages change
 
   // Prepare system prompt based on selectedCoach
   const systemPrompt = selectedCoach
@@ -68,15 +77,19 @@ export default function CoachArmorChat({ selectedCoach }) {
         </div>
       )}
 
-      {/* Chat Box */}
-      <div style={{
-        border: '1px solid #ccc',
-        padding: 10,
-        height: 400,
-        overflowY: 'auto',
-        borderRadius: 10,
-        background: '#f9f9f9'
-      }}>
+      {/* Chat Box with Outline */}
+      <div
+        ref={chatContainerRef}  // Attach ref for auto-scrolling
+        style={{
+          border: '1px solid #ccc', 
+          padding: 10, 
+          height: 400, 
+          overflowY: 'auto', 
+          borderRadius: 10, 
+          background: '#f9f9f9'
+        }}
+        className="border-2 border-gray-300"  // Tailwind class to outline the chat window
+      >
         {messages.map((msg, i) => (
           <div key={i} style={{ margin: '10px 0', textAlign: msg.role === 'user' ? 'right' : 'left' }}>
             <strong>{msg.role === 'user' ? 'You' : selectedCoach?.name || 'Coach'}:</strong>{' '}
