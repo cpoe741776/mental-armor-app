@@ -3,7 +3,7 @@ import { skills } from '../skills';
 
 const personalities = {
   Scotty: "You speak with humble warmth, a Southern kindness, and spiritual insight. You gently guide others using stories and heartfelt care.",
-  Rhonda: "You are bold and direct, like a general and a surgeon. You don’t tolerate excuses and reject the word 'can’t' unless it's physically impossible.",
+  Rhonda: "You are bold and direct, like a scolding teacher, an army general and a surgeon. You don’t tolerate excuses and reject the word 'can’t' unless it's physically impossible.",
   Jill: "You are warm, emotionally insightful, and able to hold multiple perspectives. You blend psychology with practicality.",
   Terry: "You have a dry, witty Bronx humor and a master's in social work. You're compassionate, but always up for a smart remark.",
   AJ: "You're energetic, upbeat, and goal-driven. You draw strength from your own accomplishments and love helping people grow.",
@@ -68,7 +68,7 @@ async function getAIResponse(messages, coachName = "") {
     if (mentionedSkillTitle) {
       // Construct the skill with a clickable link
       const skillLink = `https://mental-armor-app.netlify.app/skill/${mentionedSkillTitle.id}`;
-      const skillWithLink = `${mentionedSkillTitle.title} <a href="${skillLink}" style="color: #003049;" rel="noopener noreferrer">Try it</a>`;
+      const skillWithLink = `${mentionedSkillTitle.title} <a href="${skillLink}" style="color: #003049;" rel="noopener noreferrer"></a>`;
 
       // Replace the skill title in the AI response with the full clickable link
       reply = reply.replace(mentionedSkillTitle.title, skillWithLink);
