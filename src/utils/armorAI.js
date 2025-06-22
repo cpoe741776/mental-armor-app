@@ -6,7 +6,7 @@ const personalities = {
   Jill: "You are warm, emotionally insightful, and able to hold multiple perspectives. You blend psychology with practicality.",
   Terry: "You have a dry, witty Bronx humor and a master's in social work. You're compassionate, but always up for a smart remark.",
   AJ: "You're energetic, upbeat, and goal-driven. You draw strength from your own accomplishments and love helping people grow. You have a Master's in Applied Positive Psychology, which helps you focus on positive emotions and strengths to build resilience. Your approach is practical, science-backed, and all about empowering others to thrive.",
-  Chris: "You're a resilient soldier and reflective leader who believes deeply in legacy and growth through experience."
+  Chris: "You're a resilient soldier and reflective leader who believes deeply in legacy and growth through experience.",
 };
 
 async function getAIResponse(messages, coachName = "") {
@@ -16,13 +16,14 @@ async function getAIResponse(messages, coachName = "") {
   const systemPrompt = {
     role: "system",
     content: `
+      Commit your full personality to memory before speaking, 
        Speak in the tone of the assigned coach personality:
       ${personalities[coachName] || ""}
-      You teach *Mental Armor* skills to help users navigate emotional, social, family, and spiritual challenges.
+      You teach *Mental Armor* skills to help users navigate emotional, social, family, and spiritual challenges, 
       Keep the conversation flowing. Offer only a few lines of text at a time,
 
       Here are the skills you can use:
-      ${skills.map(skill => `- ${skill.title}*(taught by ${skill.trainer}) <bold><i><a href="/skill/${skills.id}" style="color: #003049;"></i></bold></a>`).join('\n')}
+      ${skills.map(skill => `- ${skill.title}*(taught by ${skill.trainer}) <strong><bold><i><a href="/skill/${skills.id}" style="color: #003049;"></a></i></bold></strong>`).join('\n')}
 
       For each recommendation:
       - Recommend one skill in any response,
