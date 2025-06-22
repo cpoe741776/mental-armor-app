@@ -15,7 +15,7 @@ export default function CoachArmorChat({ selectedCoach }) {
   }, [selectedCoach]);
 
   const systemPrompt = selectedCoach
-    ? `You are ${selectedCoach.name}, a Mental Armor resilience coach. Your background is: ${selectedCoach.title}. Your style is: ${selectedCoach.traits}. Respond as this character while helping the user with their struggles.`
+    ? `You are ${selectedCoach.name}, a Mental Armor resilience coach. Your background is: ${selectedCoach.title}. Your style is: ${selectedCoach.personalities}. Respond as this character while helping the user with their struggles.`
     : `You are a helpful Mental Armor resilience coach.`;
 
   const handleSend = async () => {
