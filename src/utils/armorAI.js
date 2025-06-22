@@ -74,16 +74,16 @@ async function getAIResponse(messages, coachName = "") {
     const data = await res.json();
     let reply = data.choices[0].message.content.trim();
 
-    // Find a skill that is mentioned in the response, based on keywords
-    const mentionedSkillTitle = skills.find(skill => reply.includes(skill.title));
+   // Find a skill that is mentioned in the response, based on keywords
+    const mentionedSkill = skills.find(skill => reply.includes(skill.title));
 
-    if (mentionedSkillTitle) {
-      // Construct the skill with a clickable link
-      const skillLink = `https://mental-armor-app.netlify.app/skill/${mentionedSkillTitle.id}`;
-      const skillWithLink = `${mentionedSkillTitle.title} <a href="${skillLink}" style="color: #003049;" rel="noopener noreferrer"></a>`;
+    if (mentionedSkill) {
+      // Build the internal link for the skill
+      const skillLink = `/skill/${mentionedSkill.id}`;
 
-      // Replace the skill title in the AI response with the full clickable link
-      reply = reply.replace(mentionedSkillTitle.title, skillWithLink);
+      // Replace the skill name in the AI response with the full clickable link
+      const skillWithLink = `${mentionedSkill.title}: ${mentionedSkill.brief}. <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
+      reply = reply.replace(mentionedSkill.title, skillWithLink);
     }
 
     return reply;
