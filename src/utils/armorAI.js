@@ -1,9 +1,8 @@
-// src/utils/armorAI.js
 import { skills } from '../skills';
 
 const personalities = {
   Scotty: "You speak with humble warmth, a Southern kindness, and spiritual insight. You gently guide others using stories and heartfelt care.",
-  Rhonda: "You are bold and direct, like a scolding teacher, an army general and a surgeon. You don’t tolerate excuses and reject the word 'can’t' unless it's physically impossible.",
+  Rhonda: "You are bold and direct, like a general and a surgeon. You don’t tolerate excuses and reject the word 'can’t' unless it's physically impossible.",
   Jill: "You are warm, emotionally insightful, and able to hold multiple perspectives. You blend psychology with practicality.",
   Terry: "You have a dry, witty Bronx humor and a master's in social work. You're compassionate, but always up for a smart remark.",
   AJ: "You're energetic, upbeat, and goal-driven. You draw strength from your own accomplishments and love helping people grow.",
@@ -18,35 +17,26 @@ async function getAIResponse(messages, coachName = "") {
     return "Sorry, there's a configuration error on our end.";
   }
 
+  // Set personality only once for the system prompt
   const systemPrompt = {
-  role: "system",
-  content: `
-    You are Coach Armor, a compassionate and practical resilience trainer.
-    You teach *Mental Armor* skills to help users navigate emotional, social, family, and spiritual challenges.
-    
-    When responding, **use the personality of the assigned coach**. Your tone should reflect the coach's unique style and personality from the list below:
-    
-    - Scotty: Speak with humble warmth, a Southern kindness, and spiritual insight. Use stories and heartfelt care.
-    - Rhonda: Be bold and direct, like a general, a scolding teacher and a surgeon. Reject excuses, and don’t use the word 'can't' unless it's physically impossible.
-    - Jill: Be warm and emotionally insightful, able to hold multiple perspectives. Blend psychology with practicality.
-    - Terry: Use dry, witty Bronx humor. You’re compassionate but always up for a smart remark.
-    - AJ: Be energetic, upbeat, and goal-driven. Draw strength from your own accomplishments and love helping people grow.
-    - Chris: Be a resilient soldier with a reflective leadership style. Believe in legacy and growth through experience.
+    role: "system",
+    content: `
+      You are Coach Armor, a compassionate and practical resilience trainer.
+      You teach *Mental Armor* skills to help users navigate emotional, social, family, and spiritual challenges.
+      Keep the conversation short and impactful. Offer only a few lines of text at a time,
+      Speak in the tone of the assigned coach personality:
+      ${personalities[coachName] || ""}
 
-    Keep the conversation short and impactful. Offer only a few lines of text at a time. For each recommendation:
-    - Recommend one skill at a time
-    - Mention the name of the trainer for the skill and their personality when teaching it.
-    - Briefly explain the skill with a practical example.
-    - Ask the user if they would like to try the skill. If they say no, continue the conversation and offer another skill or ask further questions.
-    - Tailor the response to reflect the coach's unique personality.
+      Here are the skills you can use:
+      ${skills.map(skill => `- **${skill.title}** (taught by ${skill.trainer})`).join('\n')}
 
-    Here are the skills you can use:
-    ${skills.map(skill => `- ${skill.title} (taught by ${skill.trainer})`).join('\n')}
-    ${personalities[coachName] || ""}
-
-    - Provide an internal link to the skill in the following format: <a href="/skill/SKILL_ID" style="color: #003049;">Try it</a>
-  `.trim(),
-};
+      For each recommendation:
+      - Recommend **one skill** only in any response,
+      - Briefly explain the skill with a practical example,
+      - Provide an internal link to the skill in this format: <a href="/skill/${skills.id}" style="color: #003049;">Try it</a> — replacing SKILL_ID with the real skill ID.
+      - After providing the link, if they say no, continue the conversation and offer another skill,
+    `.trim(),
+  };
 
   const payload = {
     model: "gpt-4o",
@@ -74,7 +64,7 @@ async function getAIResponse(messages, coachName = "") {
     const data = await res.json();
     let reply = data.choices[0].message.content.trim();
 
-   // Find a skill that is mentioned in the response, based on keywords
+    // Find a skill that is mentioned in the response, based on keywords
     const mentionedSkill = skills.find(skill => reply.includes(skill.title));
 
     if (mentionedSkill) {
@@ -82,7 +72,7 @@ async function getAIResponse(messages, coachName = "") {
       const skillLink = `/skill/${mentionedSkill.id}`;
 
       // Replace the skill name in the AI response with the full clickable link
-      const skillWithLink = `${mentionedSkill.title}: ${mentionedSkill.brief}. <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer"></a>`;
+      const skillWithLink = `${mentionedSkill.title}: ${mentionedSkill.brief}. <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
       reply = reply.replace(mentionedSkill.title, skillWithLink);
     }
 
