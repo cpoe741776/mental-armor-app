@@ -6,7 +6,7 @@ export const skills = [
     title: 'The Science of Resilience',
     category: 'Foundation',
     brief: 'Understand core resilience principles and mindset.',
-    trainer: 'Brigadier General Rhonda Cornum',
+    trainer: 'Rhonda',
     trainerImage: '/rhonda.jpg',
     goal:
       'Provide a psychological foundation of what resilience is and how individuals define it through personal characteristics.',
