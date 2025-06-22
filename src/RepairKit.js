@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import CoachArmorChat from './components/CoachArmorChat';
 import { skills } from './skills';
@@ -43,21 +43,22 @@ const coaches = [
 ];
 
 export default function RepairKit() {
-  const [mode, setMode] = React.useState('emotion');
-  const [selected, setSelected] = React.useState(null);
-  const [selectedCoach, setSelectedCoach] = useState(null);  // New state for selected coach
+  const [mode, setMode] = useState('emotion');
+  const [selected, setSelected] = useState(null);
+  const [selectedCoach, setSelectedCoach] = useState(null);
 
-  const options = React.useMemo(
-    () => Object.keys(repairMappings[mode]),
-    [mode]
+  // Ensure that options are correctly assigned based on the selected mode (emotion or event)
+  const options = useMemo(
+    () => Object.keys(repairMappings[mode]), // Options will be the categories based on the selected mode (emotion/event)
+    [mode] // Recalculate when 'mode' changes
   );
 
-  const suggestedSkills = React.useMemo(() => {
+  const suggestedSkills = useMemo(() => {
     const ids = selected ? repairMappings[mode][selected] : [];
     return ids
       .map((id) => skills.find((s) => s.id === id))
       .filter(Boolean);
-  }, [mode, selected]);
+  }, [mode, selected]); // Recalculate when 'mode' or 'selected' changes
 
   return (
     <div className="bg-white min-h-screen overflow-y-auto pb-24 p-4">
@@ -94,6 +95,23 @@ export default function RepairKit() {
             >
               Event
             </button>
+          </div>
+
+          {/* Repair Option Buttons (from options) */}
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-4">
+              {options.map((opt) => (
+                <button
+                  key={opt}
+                  onClick={() => setSelected(opt)}
+                  className={`p-4 bg-white rounded shadow text-center text-gray-700 hover:bg-gray-50 ${
+                    selected === opt ? 'border-2 border-[#003049]' : ''
+                  }`}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Suggested Skills */}
