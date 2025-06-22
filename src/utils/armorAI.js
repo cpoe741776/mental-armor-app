@@ -67,16 +67,19 @@ async function getAIResponse(messages, coachName = "") {
       const skillWithLink = `<a href="${skillLink}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;" rel="noopener noreferrer">${mentionedSkill.title}</a>`;
 
       // Check if the coach is recommending their own skill
-      const isCoachRecommendingOwnSkill = mentionedSkill.trainer.toLowerCase() === coachName.toLowerCase();
+      const isCoachRecommendingOwnSkill = mentionedSkill.recommendedBy.toLowerCase() === coachName.toLowerCase();
 
       // If the coach is recommending their own skill, make it sound more natural
       if (isCoachRecommendingOwnSkill) {
         // Replace the skill title with a more natural phrasing when the coach recommends their own skill
-        reply = reply.replace(mentionedSkill.title, `${skillWithLink} skill, which I teach.`);
+        reply = reply.replace(mentionedSkill.title, `${mentionedSkill.title} skill, which I teach.`);
+      } else {
+        // Replace the skill name in the AI response with the clickable link
+        reply = reply.replace(mentionedSkill.title, skillWithLink);
       }
 
       // Optionally, you can append the skill brief summary to the response
-      const skillSummary = `${mentionedSkill.brief} <a href="${skillLink}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;"  rel="noopener noreferrer">Try it</a>`;
+      const skillSummary = `${mentionedSkill.brief} <a href="${skillLink}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;"  rel="noopener noreferrer"></a>`;
       reply += ` ${skillSummary}`;
     }
 

@@ -33,7 +33,9 @@ export const skills = [
       'Watch Introduction: View Dr. Cornum’s resilience story.',
       'Define Resilience: Write your own definition based on the video.',
       'Action Planning: Choose one resilience trait to strengthen.'
-    ]
+    ],
+      link: '/skills/science_of_resilience', // ✅ string, not array
+      recommendedBy: 'Brigadier General Rhonda Cornum',             // ✅ in the same object, not wrapped in []
   },
 
  {
