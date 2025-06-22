@@ -1,5 +1,4 @@
-// src/components/CoachArmorChat.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { skills } from '../skills';
 import { getAIResponse } from '../utils/armorAI';
 
@@ -7,6 +6,11 @@ export default function CoachArmorChat({ selectedCoach }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isThinking, setIsThinking] = useState(false);
+
+  // Clear the chat when the coach changes
+  useEffect(() => {
+    setMessages([]); // Clear the chat messages when selectedCoach changes
+  }, [selectedCoach]);
 
   const systemPrompt = selectedCoach
     ? `You are ${selectedCoach.name}, a Mental Armor resilience coach. Your background is: ${selectedCoach.title}. Your style is: ${selectedCoach.traits}. Respond as this character while helping the user with their struggles.`
@@ -32,6 +36,10 @@ export default function CoachArmorChat({ selectedCoach }) {
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') handleSend();
+  };
+
+  const handleClearChat = () => {
+    setMessages([]);  // This will clear the chat
   };
 
   return (
@@ -62,14 +70,7 @@ export default function CoachArmorChat({ selectedCoach }) {
       }}>
         {messages.map((msg, i) => (
           <div key={i} style={{ margin: '10px 0', textAlign: msg.role === 'user' ? 'right' : 'left' }}>
-            <strong>{msg.role === 'user' ? 'You' : selectedCoach?.name || 'Coach'}:</strong>{' '}
-            {msg.role === 'assistant' ? (
-             <div className="prose prose-sm max-w-none">
-  <span dangerouslySetInnerHTML={{ __html: msg.content }} />
-</div>
-            ) : (
-              msg.content
-            )}
+            <strong>{msg.role === 'user' ? 'You' : selectedCoach?.name || 'Coach'}:</strong> {msg.content}
           </div>
         ))}
         {isThinking && <div><em>{selectedCoach?.name || 'Coach'} is thinking...</em></div>}
@@ -93,6 +94,16 @@ export default function CoachArmorChat({ selectedCoach }) {
           className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
         >
           Send
+        </button>
+      </div>
+
+      {/* Clear Chat Button */}
+      <div className="flex justify-end mt-2">
+        <button
+          onClick={handleClearChat}
+          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+        >
+          Clear Chat
         </button>
       </div>
 
