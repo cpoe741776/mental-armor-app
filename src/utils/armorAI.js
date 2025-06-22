@@ -9,6 +9,7 @@ const personalities = {
   Chris: "You're a resilient soldier and reflective leader who believes deeply in legacy and growth through experience."
 };
 
+
 async function getAIResponse(messages, coachName = "") {
   const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
 
@@ -65,7 +66,7 @@ async function getAIResponse(messages, coachName = "") {
 
     if (mentionedSkill) {
       const skillLink = `/skill/${mentionedSkill.id}`;
-      const skillWithLink = `<a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">${mentionedSkill.title}</a>`;
+      const skillWithLink = `<a href="${skillLink}" style="color: #003049; style="color: #3498db; font-weight: bold; font-style: italic; text-decoration: underline;"  rel="noopener noreferrer">${mentionedSkill.title}</a>`;
 
       // Check if the coach is recommending their own skill
       const isCoachRecommendingOwnSkill = mentionedSkill.trainer.toLowerCase() === coachName.toLowerCase();
@@ -79,7 +80,7 @@ async function getAIResponse(messages, coachName = "") {
       }
 
       // Optionally, you can append the skill brief summary to the response
-      const skillSummary = `${mentionedSkill.brief} <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
+      const skillSummary = `${mentionedSkill.brief} <a href="${skillLink}" style="color: #003049; style="color: #3498db; font-weight: bold; font-style: italic; text-decoration: underline;"  rel="noopener noreferrer"></a>`;
       reply += ` ${skillSummary}`;
     }
 

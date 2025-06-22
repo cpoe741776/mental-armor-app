@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { skills } from '../skills';
 import { getAIResponse } from '../utils/armorAI';
+import { personalities } from '../utils/armorAI';
 
 export default function CoachArmorChat({ selectedCoach }) {
   const [messages, setMessages] = useState([]);
@@ -54,10 +55,31 @@ export default function CoachArmorChat({ selectedCoach }) {
           />
           <div>
             <h2 className="text-xl font-semibold">{selectedCoach.name}</h2>
-            <p className="text-sm text-gray-600 italic">{selectedCoach.traits}</p>
+            <p className="text-sm text-gray-600 italic">{personalities[selectedCoach.name]}</p>
           </div>
         </div>
       )}
+{/* Coach's response with space after their name */}
+      <div style={{ marginBottom: '20px' }}>
+        {selectedCoach && (
+          <p style={{ fontSize: '18px', fontWeight: 'bold' }}>
+            {selectedCoach.name}: {/* Space before response */}
+          </p>
+        )}
+        {/* Add space between name and response */}
+        <div style={{ marginTop: '10px' }}>
+          {messages.map((msg, i) => (
+            <div key={i} style={{ margin: '10px 0', textAlign: msg.role === 'user' ? 'right' : 'left' }}>
+              <strong>{msg.role === 'user' ? 'You' : selectedCoach?.name || 'Coach'}:</strong>
+              {msg.role === 'assistant' ? (
+                <span dangerouslySetInnerHTML={{ __html: msg.content }} />
+              ) : (
+                msg.content
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* Chat Box */}
       <div style={{
