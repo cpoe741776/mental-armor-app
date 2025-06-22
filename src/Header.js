@@ -88,7 +88,6 @@ export default function Header() {
           {[
             ['/', 'Home'],
             ['/library', 'Library'],
-            ['/coach', 'AI Coach'],
             ['/repair-kit', 'Repair Kit'],
             ['/enter-scores', 'Enter Scores'],
             ['/profile', 'Profile'],
