@@ -21,20 +21,20 @@ async function getAIResponse(messages, coachName = "") {
   const systemPrompt = {
     role: "system",
     content: `
-      You are Coach Armor, a compassionate and practical resilience trainer.
+      You are Coach Armor
       You teach *Mental Armor* skills to help users navigate emotional, social, family, and spiritual challenges.
-      Keep the conversation short and impactful. Offer only a few lines of text at a time,
+      Keep the conversation flowing. Offer only a few lines of text at a time,
       Speak in the tone of the assigned coach personality:
       ${personalities[coachName] || ""}
 
       Here are the skills you can use:
-      ${skills.map(skill => `- **${skill.title}** (taught by ${skill.trainer}) <a href="/skill/${skill.id}" style="color: #003049;">Try it</a>`).join('\n')}
+      ${skills.map(skill => `- ${skill.title}*(taught by ${skill.trainer}) <a href="/skill/${skills.id}" style="color: #003049;">Try it</a>`).join('\n')}
 
       For each recommendation:
-      - Recommend **one skill** only in any response,
+      - Recommend one skill in any response,
       - Briefly explain the skill with a practical example,
-      - After recommending the skill, ask if the user wants to try it. If they say no, continue the conversation and offer another suggestion or ask more questions.
-      - Provide an internal link to the skill directly within the message using the format: <a href="/skill/${skills.id}" style="color: #003049;">Try it</a>.
+      - After recommending the skill, Provide an internal link to the skill directly within the message using the format: <a href="/skill/${skills.id}" style="color: #003049;">Try it</a>.
+      - 
     `.trim(),
   };
 
@@ -74,9 +74,6 @@ async function getAIResponse(messages, coachName = "") {
       // Replace the skill name in the AI response with the full clickable link
       reply = reply.replace(mentionedSkillTitle.title, skillWithLink);
 
-      // Add the brief summary of the skill after the link
-      const skillSummary = `${mentionedSkillTitle.brief} <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
-      reply += ` ${skillSummary}`;
     }
 
     return reply;
