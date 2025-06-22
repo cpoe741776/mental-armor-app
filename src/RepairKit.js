@@ -1,5 +1,6 @@
-import React, { useState } from 'react';  // This is the correct import
+import React from 'react';
 import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
 import CoachArmorChat from './components/CoachArmorChat';
 import { skills } from './skills';
 
@@ -66,99 +67,64 @@ export default function RepairKit() {
         <h1 className="text-2xl font-semibold text-[#003049]">Repair Kit</h1>
       </div>
 
-      {/* Mode Selection (Emotion/Event) */}
-      <div className="flex mt-4 space-x-2">
-        <button
-          onClick={() => {
-            setMode('emotion');
-            setSelected(null);
-          }}
-          className={`flex-1 p-2 border rounded ${
-            mode === 'emotion' ? 'bg-[#003049] text-white' : ''
-          }`}
-        >
-          Emotion
-        </button>
-        <button
-          onClick={() => {
-            setMode('event');
-            setSelected(null);
-          }}
-          className={`flex-1 p-2 border rounded ${
-            mode === 'event' ? 'bg-[#003049] text-white' : ''
-          }`}
-        >
-          Event
-        </button>
-      </div>
-
       {/* 3-Column Layout */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-        {/* Left Column: Repair Options */}
+        {/* First Column: Repair Kit Options (Emotion/Event) */}
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Select a Category</h3>
-          <div className="grid grid-cols-1 gap-4">
-            {options.map((opt) => (
-              <button
-                key={opt}
-                onClick={() => setSelected(opt)}
-                className={`p-4 bg-white rounded shadow text-center text-gray-700 hover:bg-gray-50 ${
-                  selected === opt ? 'border-2 border-[#003049]' : ''
-                }`}
-              >
-                {opt}
-              </button>
-            ))}
+          {/* Mode Selection (Emotion/Event) */}
+          <div className="flex mt-4 space-x-2">
+            <button
+              onClick={() => {
+                setMode('emotion');
+                setSelected(null);
+              }}
+              className={`flex-1 p-2 border rounded ${
+                mode === 'emotion' ? 'bg-[#003049] text-white' : ''
+              }`}
+            >
+              Emotion
+            </button>
+            <button
+              onClick={() => {
+                setMode('event');
+                setSelected(null);
+              }}
+              className={`flex-1 p-2 border rounded ${
+                mode === 'event' ? 'bg-[#003049] text-white' : ''
+              }`}
+            >
+              Event
+            </button>
+          </div>
+
+          {/* Suggested Skills */}
+          <div className="space-y-4">
+            {selected && (
+              <div className="mt-6">
+                <h3 className="font-semibold text-[#003049] mb-2">Suggested Skills</h3>
+                <div className="space-y-2">
+                  {suggestedSkills.length > 0 ? (
+                    suggestedSkills.map((skill) => (
+                      <Link
+                        key={skill.id}
+                        to={`/skill/${skill.id}`}
+                        className="block p-4 bg-white rounded-2xl shadow-md hover:shadow-lg transform hover:scale-105 transition"
+                      >
+                        <div className="font-semibold text-[#003049]">{skill.title}</div>
+                        <div className="text-sm text-gray-700 mt-1">{skill.brief}</div>
+                      </Link>
+                    ))
+                  ) : (
+                    <div className="text-gray-500">No suggestions available.</div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Middle Column: Suggested Skills */}
+        {/* Second Column: Chat Panel */}
         <div className="space-y-4">
-          {selected && (
-            <div className="mt-6">
-              <h3 className="font-semibold text-[#003049] mb-2">Suggested Skills</h3>
-              <div className="space-y-2">
-                {suggestedSkills.length > 0 ? (
-                  suggestedSkills.map((skill) => (
-                    <Link
-                      key={skill.id}
-                      to={`/skill/${skill.id}`}
-                      className="block p-4 bg-white rounded-2xl shadow-md hover:shadow-lg transform hover:scale-105 transition"
-                    >
-                      <div className="font-semibold text-[#003049]">{skill.title}</div>
-                      <div className="text-sm text-gray-700 mt-1">{skill.brief}</div>
-                    </Link>
-                  ))
-                ) : (
-                  <div className="text-gray-500">No suggestions available.</div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Right Column: Coach Selection and Chat Panel */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Choose Your Coach</h3>
-          {coaches.map((coach, index) => (
-            <button
-              key={index}
-              className={`w-full bg-white rounded-2xl shadow-md p-4 text-center transition transform hover:scale-105 focus:outline-none focus:ring-2 ${
-                selectedCoach?.name === coach.name ? 'ring-2 ring-blue-500' : ''
-              }`}
-              onClick={() => setSelectedCoach(coach)}
-            >
-              <img
-                src={coach.image}
-                alt={coach.name}
-                className="mx-auto mb-3 rounded-full h-20 w-20 object-cover border-2 border-gray-300"
-              />
-              <h3 className="text-lg font-semibold">{coach.name}</h3>
-              <p className="text-sm text-gray-500">{coach.title}</p>
-              <p className="text-sm text-gray-600 mt-1 italic">{coach.traits}</p>
-            </button>
-          ))}
-
           {selectedCoach ? (
             <CoachArmorChat selectedCoach={selectedCoach} />
           ) : (
@@ -166,6 +132,29 @@ export default function RepairKit() {
               Please select a coach to begin chatting.
             </div>
           )}
+        </div>
+
+        {/* Third Column: Coach Cards */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Choose Your Coach</h3>
+          {coaches.map((coach, index) => (
+            <button
+              key={index}
+              className={`w-full bg-white rounded-2xl shadow-md p-3 text-center transition transform hover:scale-105 focus:outline-none focus:ring-2 ${
+                selectedCoach?.name === coach.name ? 'ring-2 ring-blue-500' : ''
+              }`}
+              onClick={() => setSelectedCoach(coach)}
+            >
+              <img
+                src={coach.image}
+                alt={coach.name}
+                className="mx-auto mb-3 rounded-full h-16 w-16 object-cover border-2 border-gray-300"
+              />
+              <h3 className="text-sm font-semibold">{coach.name}</h3>
+              <p className="text-xs text-gray-500">{coach.title}</p>
+              <p className="text-xs text-gray-600 mt-1 italic">{coach.traits}</p>
+            </button>
+          ))}
         </div>
       </div>
     </div>
