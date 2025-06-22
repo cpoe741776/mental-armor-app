@@ -82,7 +82,7 @@ async function getAIResponse(messages, coachName = "") {
       const skillLink = `/skill/${mentionedSkill.id}`;
 
       // Replace the skill name in the AI response with the full clickable link
-      const skillWithLink = `${mentionedSkill.title}: ${mentionedSkill.brief}. <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
+      const skillWithLink = `${mentionedSkill.title}: ${mentionedSkill.brief}. <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer"></a>`;
       reply = reply.replace(mentionedSkill.title, skillWithLink);
     }
 
