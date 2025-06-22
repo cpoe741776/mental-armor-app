@@ -1,4 +1,4 @@
-import { skills } from '../skills';
+import { skills } from '../skills'; // Assuming skills.js is in the src folder
 
 const personalities = {
   Scotty: "You speak with humble warmth, a Southern kindness, and spiritual insight. You gently guide others using stories and heartfelt care.",
@@ -17,7 +17,7 @@ async function getAIResponse(messages, coachName = "") {
     return "Sorry, there's a configuration error on our end.";
   }
 
-  // Set personality only once for the system prompt
+  // Ensure skills are used in the prompt correctly
   const systemPrompt = {
     role: "system",
     content: `
@@ -28,13 +28,13 @@ async function getAIResponse(messages, coachName = "") {
       ${personalities[coachName] || ""}
 
       Here are the skills you can use:
-      ${skills.map(skill => `- **${skill.title}** (taught by ${skill.trainer})`).join('\n')}
+      ${skills.map(skill => `- **${skill.title}** (taught by ${skill.trainer}) <a href="/skill/${skill.id}" style="color: #003049;">Try it</a>`).join('\n')}
 
       For each recommendation:
       - Recommend **one skill** only in any response,
       - Briefly explain the skill with a practical example,
-      - Provide an internal link to the skill in this format: <a href="/skill/${skills.id}" style="color: #003049;">Try it</a> — replacing SKILL_ID with the real skill ID.
-      - After providing the link, if they say no, continue the conversation and offer another skill,
+      - After recommending the skill, ask if the user wants to try it. If they say no, continue the conversation and offer another suggestion or ask more questions.
+      - Provide an internal link to the skill directly within the message using the format: <a href="/skill/${skills.id}" style="color: #003049;">Try it</a>.
     `.trim(),
   };
 
@@ -65,16 +65,19 @@ async function getAIResponse(messages, coachName = "") {
     let reply = data.choices[0].message.content.trim();
 
     // Find a skill that is mentioned in the response, based on keywords
-    const mentionedSkill = skills.find(skill => reply.includes(skill.title));
+    const mentionedSkillTitle = skills.find(skill => reply.includes(skill.title));
 
-if (mentionedSkill) {
-  // Build the internal link using the skill's id
-  const skillLink = `/skill/${mentionedSkill.id}`;
+    if (mentionedSkillTitle) {
+      const skillLink = `/skill/${mentionedSkillTitle.id}`;
+      const skillWithLink = `<a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">${mentionedSkillTitle.title}</a>`;
+      
+      // Replace the skill name in the AI response with the full clickable link
+      reply = reply.replace(mentionedSkillTitle.title, skillWithLink);
 
-  // Replace the skill name in the AI response with the full clickable link
-  const skillWithLink = `${mentionedSkill.title}<a href="${skillLink}" style="color: #003049;" rel="noopener noreferrer"></a>`;
-  reply = reply.replace(mentionedSkill.title, skillWithLink);
-}
+      // Add the brief summary of the skill after the link
+      const skillSummary = `${mentionedSkillTitle.brief} <a href="${skillLink}" style="color: #003049;" target="_blank" rel="noopener noreferrer">Try it</a>`;
+      reply += ` ${skillSummary}`;
+    }
 
     return reply;
   } catch (err) {
