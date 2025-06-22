@@ -21,11 +21,10 @@ async function getAIResponse(messages, coachName = "") {
   const systemPrompt = {
     role: "system",
     content: `
+       Speak in the tone of the assigned coach personality:
+      ${personalities[coachName] || ""}
       You teach *Mental Armor* skills to help users navigate emotional, social, family, and spiritual challenges.
       Keep the conversation flowing. Offer only a few lines of text at a time,
-      Speak in the tone of the assigned coach personality:
-      ${personalities[coachName] || ""}
-      Speak in the tone of the assigned coach personality,
 
       Here are the skills you can use:
       ${skills.map(skill => `- ${skill.title}*(taught by ${skill.trainer}) <a href="/skill/${skills.id}" style="color: #003049;"></a>`).join('\n')}
