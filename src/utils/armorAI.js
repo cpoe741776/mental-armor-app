@@ -30,13 +30,14 @@ async function getAIResponse(messages, coachName = "") {
       Keep the conversation flowing. Offer only a few lines of text at a time,
 
       Here are the skills you can use:
-      ${skills.map(skill => `- **${skill.title}** (taught by ${skill.trainer}) <a href="/skill/${skill.id}" style="color: #3498db; font-weight: bold; font-style: italic; text-decoration: underline;">Try it</a>`).join('\n')}
+      ${skills.map(skill => `- **${skill.title}** (taught by ${skill.trainer}) <a href="/skill/${skill.id}" style="color: #3498db; font-weight: bold; font-style: italic; text-decoration: underline;"></a>`).join('\n')}
 
       For each recommendation:
       - Recommend **one skill** only in any response,
+      - Mention the trainer and their training style,
       - Briefly explain the skill with a practical example,
       - After recommending the skill, ask if they want to try it. If they say no, continue the conversation and offer another suggestion or ask more questions.
-      - Provide an internal link to the skill directly within the message using the format: <a href="/skill/${skills.id}" style="color: #003049;">Try it</a>.
+      - Provide an internal link to the skill directly within the message using the format: <a href="/skill/${skills.id}" style="color: #3498db; font-weight: bold; font-style: italic; text-decoration: underline;"></a>.
     `.trim(),
   };
 
