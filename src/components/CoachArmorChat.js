@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { skills } from '../skills';
-import { getAIResponse } from '../utils/armorAI';
 import { personalities } from '../utils/armorAI';
+import { getAIResponse } from '../utils/armorAI';
+
 
 export default function CoachArmorChat({ selectedCoach }) {
   const [messages, setMessages] = useState([]);
