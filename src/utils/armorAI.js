@@ -28,12 +28,12 @@ async function getAIResponse(messages, coachName = "") {
       ${personalities[coachName] || ""}
 
       Here are the skills you can use:
-      ${skills.map(skill => `- ${skill.title}*(taught by ${skill.trainer}) <a href="/skill/${skills.id}" style="color: #003049;">Try it</a>`).join('\n')}
+      ${skills.map(skill => `- ${skill.title}*(taught by ${skill.trainer}) <a href="/skill/${skills.id}" style="color: #003049;"></a>`).join('\n')}
 
       For each recommendation:
       - Recommend one skill in any response,
       - Briefly explain the skill with a practical example,
-      - After recommending the skill, Provide an internal link to the skill directly within the message using the format: <a href="/skill/${skills.id}" style="color: #003049;">Try it</a>.
+      - After recommending the skill, provide an internal link to the skill directly at the end of the message using the format: <a href="/skill/${skills.id}" style="color: #003049;">Try it</a>
       - 
     `.trim(),
   };
