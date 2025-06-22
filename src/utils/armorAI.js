@@ -26,10 +26,10 @@ async function getAIResponse(messages, coachName = "") {
       ${skills.map(skill => `- **${skill.title}** (taught by ${skill.trainer}) <a href="/skill/${skill.id}" style="color: #3498db; font-weight: bold; font-style: italic; text-decoration: underline;">Try it</a>`).join('\n')}
       
       For each recommendation:
-      - Recommend **one skill** only in any response,
+      - Recommend one skill only in any response,
+      - Mention the trainer and their training personality
       - Briefly explain the skill with a practical example,
-      - After recommending the skill, ask if they want to try it. If they say no, continue the conversation and offer another suggestion or ask more questions.
-      - Provide an internal link to the skill directly within the message using the format: <a href="/skill/${skills.id}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;" rel="noopener noreferrer">"</a>.
+      - Provide an internal link to the skill directly within the message using the format: <a href="/skill/${skills.id}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;" rel="noopener noreferrer"></a>.
     `.trim(),
   };
 
@@ -72,10 +72,7 @@ async function getAIResponse(messages, coachName = "") {
       // If the coach is recommending their own skill, make it sound more natural
       if (isCoachRecommendingOwnSkill) {
         // Replace the skill title with a more natural phrasing when the coach recommends their own skill
-        reply = reply.replace(mentionedSkill.title, `${mentionedSkill.title} skill, which I teach.`);
-      } else {
-        // Replace the skill name in the AI response with the clickable link
-        reply = reply.replace(mentionedSkill.title, skillWithLink);
+        reply = reply.replace(mentionedSkill.title, `${skillWithLink} skill, which I teach.`);
       }
 
       // Optionally, you can append the skill brief summary to the response
