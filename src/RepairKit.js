@@ -1,6 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import CoachArmorChat from './components/CoachArmorChat';
 import { skills } from './skills';
 
