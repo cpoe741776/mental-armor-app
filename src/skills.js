@@ -159,72 +159,116 @@ export const skills = [
   recommendedBy: 'Chris'
 },
 
-  {
-    id: 'gratitude',
-    title: 'Gratitude',
-    category: 'Values & Meaning',
-    domains: ['emotional' , 'family'] ,
-    brief: 'Cultivate positive emotions by reflecting.',
-    trainer: 'Scotty',
-    trainerImage: '/scotty.jpg',
-    goal: 'Pay attention to good things deliberately.',
-    when: 'On a regular basis or when facing challenges.',
-    benefits: [
-      'Improved sleep',
-      'Stronger relationships',
-      'Reduced anxiety'
-    ],
-    definitions: [
-      { term: 'Gratitude', definition: 'Thankfulness and appreciation.' },
-      { term: 'Upward Spiral', definition: 'Cycle where positivity builds.' }
-    ],
-    definition:
-      'Gratitude is thankfulness and appreciation. Upward spiral refers to the cycle where positivity builds and reinforces itself.',
-    examples: [
-      'Each night, write three things you were grateful for and why.',
-      'Express thanks directly to someone who helped you during the day.'
-    ],
-    details: [
-      'Recall Positive Event: Think of one good thing from the last 24 hours.',
-      'Reflection: Answer why it went well, who contributed, and its impact.',
-      'Record in Journal: Log the event and reflections.',
-      'Review Entries: Revisit entries weekly to reinforce positivity.'
-    ],
+  { id: 'gratitude',
+  title: 'Cultivate Gratitude',
+  category: 'Values & Meaning',
+  domains: ['emotional', 'family'],
+  brief: 'Gratitude helps us build positive emotions. It’s a habit of noticing the little blessings — and those blessings add up and build resilience.',
+  trainer: 'Scotty',
+  trainerImage: '/scotty.jpg',
+  goal: 'To build optimism and positive emotions by deliberately paying attention to good things',
+  when: 'On a regular basis or when facing challenges.',
+  benefits: [
+    'Improved sleep',
+    'Contributes to progress on goals',
+    'Helps build social relationships',
+    'Decreases the likelihood of depression, anxiety, and loneliness',
+    'Helps you cope with daily hassles and stress'
+  ],
+  definitions: [
+    {
+      term: 'Gratitude',
+      definition: 'A sense of wonder, thankfulness, and appreciation for life — even during challenges. (Dr. Robert Emmons)'
+    },
+    {
+      term: 'Broaden and Build / Upward Spiral',
+      definition: 'A scientific theory that positive emotions expand our thinking, help us build lasting inner resources like resilience, and create an upward spiral of well-being. (Dr. Barbara Fredrickson)'
+    },
+    {
+      term: 'Negativity Bias',
+      definition: 'The brain’s natural tendency to focus more on what’s wrong or threatening than what’s good — a survival mechanism that gratitude can help balance.'
+    },
+    {
+      term: 'Positive Emotions',
+      definition: 'Feelings like joy, gratitude, and kindness that boost our ability to handle stress, recover from adversity, and build well-being over time.'
+    },
+    {
+      term: 'Reflection',
+      definition: 'The process of thinking deeply about why something went well, why it matters, and how you or others contributed to it — a key step that enhances positive emotion and makes gratitude more meaningful.'
+    }
+  ],
+  examples: [
+    "After dinner with friends in Lexington, Scotty reflected on more than just the food. He felt grateful for the atmosphere — a place that made connection possible. As a retired Border Patrol agent, those moments of purpose and belonging matter. Being surrounded by people who care reminded him he’s still part of something bigger — and that’s what he’s truly thankful for.",
+    "Rhonda shares that she’s grateful for her decades-long friendship with Sylvia — a connection that began in Germany in 2003 over a shared love of Gordon Setters. What started as a simple plan to breed two dogs became a lifelong friendship filled with travel, teamwork, and six generations of champion dogs. For Rhonda, gratitude shows up in relationships that grow stronger with purpose and time."
+  ],
+  how: [
+    'Notice the Good: Think of one thing that went well in the last 24 hours — even if it was something small.',
+    'Reflect: Ask yourself why it went well, why it mattered, and how you or others contributed to it.',
+    'Make It a Habit: Practice this daily or weekly to train your brain to focus on what’s good.',
+    'Optional – Write It Down: Record the event and your reflections in a journal or gratitude app.',
+    'Optional – Review Your Wins: Revisit past entries to lift your mood and remind yourself of what’s working.'
+  ],
+  videoThumbnail: 'https://mymentalarmor.com/wp-content/uploads/2024/06/30CM_GRAT_FLOOR_CIRCLE_DOG-copy.jpg',
   link: '/skills/gratitude',
   recommendedBy: 'Scotty'
 },
 
-  {
-    id: 'mindfulness',
-    title: 'Mindfulness',
-    category: 'Resilient Thinking',
-    domains: ['emotional' , 'spiritual'] ,
-    brief: 'Practice present-moment awareness.',
-    trainer: 'AJ',
-    trainerImage: '/aj.jpg',
-    goal: 'Reduce stress and remain focused.',
-    when: 'When you feel overwhelmed or disconnected.',
-    benefits: [
-      'Greater confidence',
-      'Improved well-being',
-      'Enhanced attention'
-    ],
-    definitions: [
-      { term: 'Mindfulness', definition: 'Purposeful, present-moment attention.' },
-      { term: 'Grounding Technique', definition: 'Methods to bring attention back to the present.' }
-    ],
-    definition:
-      'Mindfulness is purposeful, present-moment attention. Grounding techniques help bring attention back to the present.',
-    examples: [
-      'Spend 2 minutes focusing solely on the sensation of your breath.',
-      'During a break, notice and name three things you see, hear, and feel.'
-    ],
-    details: [
-      'Informal Practice: Engage fully in a simple activity for 1–2 minutes.',
-      'Formal Practice: Meditate for 5 minutes, focusing on your breath.',
-      'In-the-Moment Technique: Do 3 deep breaths and identify five senses.',
-      'Reflect & Plan: Note a mindful moment and schedule your next practice.'
-    ],
+ {
+  id: 'mindfulness',
+  title: 'Mindfulness',
+  category: 'Resilient Thinking',
+  domains: ['emotional', 'spiritual'],
+  brief: 'Mindfulness helps you stay calm, focused, and engaged — especially when life feels overwhelming. It’s a practice of clearing your thoughts or bringing your attention back to what matters most in the moment.',
+  trainer: 'AJ',
+  trainerImage: '/aj.jpg',
+  goal: 'To reduce stress and distraction and to remain focused, calm and engaged with the task at hand.',
+  when: 'On a regular basis; when you are distracted and need to refocus your attention; when you feel stressed or overwhelmed.',
+  benefits: [
+    'Greater optimism and confidence',
+    'Stronger relationships',
+    'Higher life satisfaction and well-being',
+    'Better physical health'
+  ],
+  definitions: [
+    {
+      term: 'Mindfulness',
+      definition: 'Paying attention to the present moment on purpose. It means being fully engaged with what you’re doing — without distraction — and it takes practice.'
+    },
+    {
+      term: 'Formal Practice',
+      definition: 'Mindfulness exercises done intentionally for a set time, like sitting meditation or focused breathing. Can also include guided visualization.'
+    },
+    {
+      term: 'Informal Practice',
+      definition: 'Being mindful during everyday activities like walking, eating, or doing chores — using the moment as your focus.'
+    },
+    {
+      term: 'Mindfulness in the Moment',
+      definition: 'Using mindfulness right when you need it — like during stress or distraction — to reset and refocus. Can include grounding techniques.'
+    },
+    {
+      term: 'Mindful Grounding',
+      definition: 'A mindfulness-in-the-moment technique that uses your five senses or breath to bring attention back to the present.'
+    },
+    {
+      term: 'Progressive Muscle Relaxation',
+      definition: 'A technique where you tense and relax different muscle groups to release physical tension and calm the mind.'
+    },
+    {
+      term: 'Visualization Script',
+      definition: 'A guided mental journey — often imagining a peaceful place — to promote relaxation and focus.'
+    }
+  ],
+  examples: [
+    "Mindfulness is a go-to skill for people in high-stakes roles — like athletes, first responders, pilots, and medical staff — because it helps them stay focused, calm, and aware during moments that require their best. Being fully present can mean the difference between reaction and purposeful action.",
+    "Chris remembers a time before giving an important presentation. Nerves were kicking in, so he stepped outside, took five slow breaths, and focused on the feeling of his feet on the ground. That mindful pause helped him walk back in calm, steady, and fully present."
+  ],
+  how: [
+    'Practice Informally: Be present and fully engaged during everyday activities like eating, walking, or doing chores.',
+    'Practice Formally: Set aside time to meditate or follow a short visualization script — even 2 to 5 minutes of focused breathing helps build the habit.',
+    'Use Mindfulness in the Moment: When distracted or stressed, pause and refocus using deep breaths or grounding techniques like naming what you see, hear, and feel.'
+  ],
+  videoThumbnail: 'https://mymentalarmor.com/wp-content/uploads/2024/06/30CM_MIND_FLOOR_CIRCLE_ARCH-copy.jpg',
   link: '/skills/mindfulness',
   recommendedBy: 'AJ'
 },
