@@ -1,12 +1,31 @@
 // src/utils/tts.js
 
 const coachVoices = {
-  Rhonda: "en-US-Wavenet-C", // Bold, female
-  Jill: "en-US-Wavenet-F",   // Warm, thoughtful
-  Scotty: "en-US-Wavenet-B", // Southern-friendly male
-  Terry: "en-US-Wavenet-A",  // Slight edge, Bronx-y
-  AJ: "en-US-Wavenet-E",     // Energetic, clear
+  Rhonda: "en-US-Wavenet-C",
+  Jill: "en-US-Wavenet-F",
+  Scotty: "en-US-Wavenet-B",
+  Terry: "en-US-Wavenet-A",
+  AJ: "en-US-Wavenet-E"
 };
+
+function formatCoachSpeech(text, coachName) {
+  const clean = text.replace(/<[^>]*>?/gm, '');
+
+  switch (coachName) {
+    case "Rhonda":
+      return `<speak><emphasis level="strong">${clean}</emphasis></speak>`;
+    case "Jill":
+      return `<speak><prosody rate="slow" pitch="+2%">${clean}</prosody></speak>`;
+    case "Scotty":
+      return `<speak><prosody rate="slow" pitch="-1%">${clean}</prosody></speak>`;
+    case "Terry":
+      return `<speak><prosody rate="medium">${clean}</prosody><break time="400ms"/></speak>`;
+    case "AJ":
+      return `<speak><prosody rate="fast" pitch="+2%">${clean}</prosody></speak>`;
+    default:
+      return `<speak>${clean}</speak>`;
+  }
+}
 
 export async function speakResponse(text, coachName) {
   if (!coachName || !coachVoices[coachName]) {
@@ -15,7 +34,7 @@ export async function speakResponse(text, coachName) {
   }
 
   const voice = coachVoices[coachName];
-  const plainText = text.replace(/<[^>]*>?/gm, ''); // Strip all HTML tags
+  const ssml = formatCoachSpeech(text, coachName);
 
   try {
     const response = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=AIzaSyB2qxr51EP6_bmCVzD4nq2SATWUQefbMeM`, {
@@ -24,7 +43,7 @@ export async function speakResponse(text, coachName) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        input: { text: plainText },
+        input: { ssml },
         voice: {
           languageCode: "en-US",
           name: voice
