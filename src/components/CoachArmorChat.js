@@ -27,40 +27,62 @@ export default function CoachArmorChat({ selectedCoach }) {
     ? `You are ${selectedCoach.name}, a Mental Armor resilience coach. Your background is: ${selectedCoach.title}. Your style is: ${personalities[selectedCoach.name]}. Respond as this character while helping the user with their struggles.`
     : `You are a helpful Mental Armor resilience coach.`;
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
+ const handleSend = async () => {
+  if (!input.trim()) return;
 
-    const newMessages = [...messages, { role: 'user', content: input }];
-    setMessages(newMessages);
-    setInput('');
-    setIsThinking(true);
+  const newMessages = [...messages, { role: 'user', content: input }];
+  setMessages(newMessages);
+  setInput('');
+  setIsThinking(true);
 
-    try {
-      console.log("Calling AI with selectedCoach:", selectedCoach);
-      const aiReply = await getAIResponse(newMessages, selectedCoach);
+  try {
+    const aiReply = await getAIResponse(newMessages, selectedCoach);
 
-      let coachMessage;
-
-      if (!aiReply || aiReply.trim() === '') {
-        coachMessage = selectedCoach?.name === 'Terry'
-          ? "Life in the Bronx? It's tough, but you've gotta find the humor in the hard times. Now, what else can I help with?"
-          : "That’s a great question! While I don’t have a skill that fits right now, I’m happy to chat about anything else!";
-      } else {
-        coachMessage = aiReply;
-      }
-
-      setMessages([...newMessages, { role: 'assistant', content: coachMessage }]);
-
-      if (voiceEnabled) {
-        await speakResponse(coachMessage, selectedCoach?.name);
-      }
-
-    } catch (error) {
-      setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
-    } finally {
-      setIsThinking(false);
+    let coachMessage = aiReply?.trim();
+    if (!coachMessage) {
+      coachMessage = selectedCoach?.name === 'Terry'
+        ? "Life in the Bronx? It's tough, but you've gotta find the humor in the hard times. Now, what else can I help with?"
+        : "That’s a great question! While I don’t have a skill that fits right now, I’m happy to chat about anything else!";
     }
-  };
+
+    let audio;
+    if (voiceEnabled && selectedCoach?.name) {
+      const voice = selectedCoach.name;
+      const cleanedText = coachMessage.replace(/<[^>]*>?/gm, '').replace(/\*/g, '');
+      const response = await fetch("https://api.elevenlabs.io/v1/text-to-speech/" + voice, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "xi-api-key": process.env.REACT_APP_ELEVENLABS_TTS_KEY
+        },
+        body: JSON.stringify({
+          text: cleanedText,
+          model_id: "eleven_monolingual_v1",
+          voice_settings: {
+            stability: 0.4,
+            similarity_boost: 0.75
+          }
+        })
+      });
+
+      const blob = await response.blob();
+      const audioUrl = URL.createObjectURL(blob);
+      audio = new Audio(audioUrl);
+    }
+
+    // 👇 Show message now
+    setMessages([...newMessages, { role: 'assistant', content: coachMessage }]);
+
+    // 🔊 Play voice after setting
+    if (audio) audio.play();
+
+  } catch (error) {
+    console.error("AI or TTS Error:", error);
+    setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
+  } finally {
+    setIsThinking(false);
+  }
+};
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') handleSend();

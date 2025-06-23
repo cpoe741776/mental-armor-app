@@ -1,11 +1,11 @@
 // src/utils/tts-elevenlabs.js
 
 const coachVoices = {
-  Rhonda: "ZT9u07TYPVl83ejeLakq",
-  Jill: "Clyde2qfp6zPuviqeCOZIE9RZ",
-  Scotty: "YXpFCvM1S3JbWEJhoskW",
+  Rhonda: "x9leqCOAXOcmC5jtkq65",
+  Jill: "2qfp6zPuviqeCOZIE9RZ",
+  Scotty: "8kvxG72xUMYnIFhZYwWj",
   Terry: "UgBBYS2sOqTuMpoF3BR0",
-  AJ: "CyHwTRKhXEYuSd7CbMwI",
+  AJ: "ZT9u07TYPVl83ejeLakq",
   Chris: "gUABw7pXQjhjt0kNFBTF"
 };
 
