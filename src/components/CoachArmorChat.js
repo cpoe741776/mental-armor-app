@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { skills } from '../skills';
 import { personalities } from '../utils/armorAI';
 import { getAIResponse } from '../utils/armorAI';
-import { speakResponse } from '../utils/elevenlabs-tts';
+import { speakResponse } from '../utils/elevenlabs_tts';
 
 export default function CoachArmorChat({ selectedCoach }) {
   const [messages, setMessages] = useState([]);
