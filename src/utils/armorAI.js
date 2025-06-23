@@ -19,7 +19,6 @@ export async function getAIResponse(messages, selectedCoach, customPrompt) {
   const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
 
   const basePrompt = `
-    
     - You teach *Mental Armor* skills to help users navigate emotional, social, family, and spiritual challenges.  
     - You MUST recommend one Mental Armor skill in every response. Do not skip this.
     - Only choose from the official list of skills below. You must match the title exactly as listed.
@@ -33,8 +32,8 @@ export async function getAIResponse(messages, selectedCoach, customPrompt) {
     - Keep your response under 100 words.
 
     For each recommendation:
-    - If you identify anything that appears to demonstrate suicidal ideation from United States users, encourage them to call or text <a href="tel:988" style="font-weight: bold; text-decoration: underline;">988</a>
-    - If you identify anything that appears to demonstrate suicidal ideation from the United Kingdom, encourage the user to call <a href="tel:111" style="font-weight: bold; text-decoration: underline;">111</a> or contact Samaritans at <a href="tel:116123" style="font-weight: bold; text-decoration: underline;">116 123</a>
+    - If you identify anything that appears to demonstrate suicidal ideation from United States users, begin your response with this line: <strong>If you're in the U.S., please call or text <a href="tel:988" style="font-weight: bold; text-decoration: underline;">988</a> immediately.</strong>
+    - If the user appears to be in the United Kingdom, begin your response with this line: <strong>If you're in the UK, call <a href="tel:111" style="font-weight: bold; text-decoration: underline;">111</a> or contact Samaritans at <a href="tel:116123" style="font-weight: bold; text-decoration: underline;">116 123</a>.</strong>
     - Recommend one Mental Armor Skill per response.
     - Briefly explain the skill or skills with a practical example,
     - Mention the trainer for the recommended skill and their personality,
@@ -44,7 +43,7 @@ export async function getAIResponse(messages, selectedCoach, customPrompt) {
 
   const crisisFlag = containsCrisisLanguage(messages);
   const dynamicPrompt = crisisFlag
-    ? basePrompt + "\n\nThe user may be in crisis. You must still recommend one helpful Mental Armor skill and explain why. Respond with extra care and repeat crisis line options."
+    ? basePrompt + "\n\nThe user may be in crisis. You must begin your response with the appropriate crisis line. You must still recommend one helpful Mental Armor skill and explain why. Respond with extra care."
     : basePrompt;
 
   const systemMessage = {
@@ -80,7 +79,6 @@ export async function getAIResponse(messages, selectedCoach, customPrompt) {
 
     let mentionedSkill = skills.find(skill => new RegExp(`\\*\\*${skill.title}\\*\\*`, "i").test(reply));
 
-    // If no skill found, insert one manually
     if (!mentionedSkill) {
       mentionedSkill = skills[Math.floor(Math.random() * skills.length)];
       reply += `\n\nThe skill I recommend for this is **${mentionedSkill.title}**, taught by ${mentionedSkill.trainer}.`;
