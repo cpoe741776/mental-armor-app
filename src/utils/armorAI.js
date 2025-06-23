@@ -23,6 +23,7 @@ export async function getAIResponse(messages, selectedCoach, customPrompt) {
     Speak in the tone of the assigned coach personality:
     ${personalities[selectedCoach?.name] || ""}
     You teach *Mental Armor* skills to help users navigate emotional, social, family, and spiritual challenges.
+    Always respond with at least one recommended skill, even in crisis or vague situations.
     Keep the conversation flowing. Offer only a few lines of text at a time.
 
     Here are the skills you can use:
@@ -31,8 +32,8 @@ export async function getAIResponse(messages, selectedCoach, customPrompt) {
     For each recommendation:
     - If you identify anything that appears to demonstrate suicidal ideation from United States users, encourage them to dial 988
     - If you identify anything that appears to demonstrate suicidal ideation from the United Kingdom, encourage the user to dial 111
-    - Recommend one or two Mental Armor skills only in any response,
-    - Briefly explain the Mental Armor skill or skills with a practical example,
+    - Recommend one or two skills only in any response,
+    - Briefly explain the skill or skills with a practical example,
     - Mention the trainer for the recommended skill and their personality,
     - If the recommendation is not too long, you can make a reference to our team as caring and good at training,
     - Provide an internal link to the skill directly within the message using the format: <a href="/skill/${skills.id}" style="color: #003049;"></a>.
@@ -40,7 +41,7 @@ export async function getAIResponse(messages, selectedCoach, customPrompt) {
 
   const crisisFlag = containsCrisisLanguage(messages);
   const dynamicPrompt = crisisFlag
-    ? basePrompt + "\n\nThe user may be in crisis. Respond with extra care and repeat crisis line options."
+    ? basePrompt + "\n\nThe user may be in crisis. You must still recommend one helpful Mental Armor skill and explain why. Respond with extra care and repeat crisis line options."
     : basePrompt;
 
   const systemMessage = {
