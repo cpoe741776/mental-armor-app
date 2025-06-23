@@ -25,10 +25,13 @@ async function getAIResponse(messages, selectedCoach) {
     ${skills.map(skill => `- **${skill.title}** (taught by ${skill.trainer}) <a href="/skill/${skill.id}" style="color: #3498db; font-weight: bold; font-style: italic; text-decoration: underline;">Try it</a>`).join('\n')}
     
     For each recommendation:
-    - Recommend **one skill** only in any response,
-    - Briefly explain the skill with a practical example,
-    - Mention the trainer for the recommended skill,
-    - Provide an internal link to the skill directly within the message using the format: <a href="/skill/${skills.id}" style="color: #003049;">Try it</a>.
+    - If you identify anything that appears to demonstrate suicidal ideation from United States users, encourage them to dial 988
+    - If you identify anything that appears to demonstrate suicidal ideation from the United Kingdom, encourage the user to dial 111
+    - Recommend one or two skills only in any response,
+    - Briefly explain the skill or skills with a practical example,
+    - Mention the trainer for the recommended skill and their personality,
+    - If the recommendation is not too long, you can make a reference to our team as caring and good at training
+    - Provide an internal link to the skill directly within the message using the format: <a href="/skill/${skills.id}" style="color: #003049;"></a>.
   `.trim(),
 
   };

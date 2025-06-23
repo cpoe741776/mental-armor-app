@@ -22,12 +22,30 @@ export default function CoachArmorChat({ selectedCoach }) {
     }
   }, [messages]);
 
-  const systemPrompt = selectedCoach
-    ? `You are ${selectedCoach.name}, a Mental Armor resilience coach. Your background is: ${selectedCoach.title}. Your style is: ${personalities[selectedCoach.name]}. Respond as this character while helping the user with their struggles.`
-    : `You are a helpful Mental Armor resilience coach.`;
+ const systemPrompt = selectedCoach
+    ? `You are ${selectedCoach.name}, a Mental Armor resilience coach. Your background is: ${selectedCoach.title}. Your style is: ${personalities[selectedCoach.name]}. Respond as this character while helping the user with their struggles.
+
+If you identify anything that appears to demonstrate suicidal ideation from users in the United States, gently encourage them to call or text 988 (Suicide & Crisis Lifeline).
+If it appears the user is in the United Kingdom, encourage them to call 111 or contact Samaritans at 116 123.`
+    : `You are a helpful Mental Armor resilience coach.
+
+If you identify anything that appears to demonstrate suicidal ideation from users in the United States, gently encourage them to call or text 988 (Suicide & Crisis Lifeline).
+If it appears the user is in the United Kingdom, encourage them to call 111 or contact Samaritans at 116 123.`;
+
 
   const handleSend = async () => {
     if (!input.trim()) return;
+    // Keyword detection logic
+const riskKeywords = ['suicide', 'kill myself', 'end it all', 'to die', 'have nothing left', "shoot myself"];
+const inputLower = input.toLowerCase();
+const containsRisk = riskKeywords.some(keyword => inputLower.includes(keyword));
+const dynamicPrompt = containsRisk
+  ? systemPrompt + "\n\nThe user may be in crisis. Respond with extra care and repeat crisis line options."
+  : systemPrompt;
+if (containsRisk) {
+  console.warn("🚨 Risk keyword detected:", input);
+  // Optional: you can log, notify, or auto-augment the systemPrompt
+}
 
     const newMessages = [...messages, { role: 'user', content: input }];
     setMessages(newMessages);
@@ -35,7 +53,7 @@ export default function CoachArmorChat({ selectedCoach }) {
     setIsThinking(true);
 
     try {
-      const aiReply = await getAIResponse(newMessages, selectedCoach);
+      const aiReply = await getAIResponse(newMessages, selectedCoach, dynamicPrompt);
 
       let coachMessage = aiReply?.trim();
       if (!coachMessage) {
