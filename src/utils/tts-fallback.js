@@ -1,17 +1,16 @@
-import { speakResponse as speakWithElevenLabs } from './elevenlabs_tts';
 import { speakResponse as speakWithGoogle } from './tts';
+import { speakResponse as speakWithEleven } from './elevenlabs_tts';
 
-const elevenLabsVoices = ['Rhonda', 'Scotty', 'Jill'];
+const elevenLabsCoaches = ['Rhonda', 'Scotty', 'Jill'];
 
 export async function speakResponse(text, coachName) {
-  if (elevenLabsVoices.includes(coachName)) {
-    try {
-      await speakWithElevenLabs(text, coachName);
-      return;
-    } catch (err) {
-      console.warn("ElevenLabs failed, falling back to Google:", err);
+  try {
+    if (elevenLabsCoaches.includes(coachName)) {
+      await speakWithEleven(text, coachName);
+    } else {
+      await speakWithGoogle(text, coachName);
     }
+  } catch (error) {
+    console.error("TTS fallback error:", error);
   }
-
-  await speakWithGoogle(text, coachName);
 }

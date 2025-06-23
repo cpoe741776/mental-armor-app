@@ -12,12 +12,6 @@ function formatCoachSpeech(text, coachName) {
     .replace(/\*/g, '');       // Remove asterisks
 
   switch (coachName) {
-    case "Rhonda":
-      return `<speak><emphasis level="strong">${clean}</emphasis></speak>`;
-    case "Jill":
-      return `<speak><prosody rate="slow" pitch="+2%">${clean}</prosody></speak>`;
-    case "Scotty":
-      return `<speak><prosody rate="slow" pitch="-4%" volume="soft">${clean}</prosody><break time="600ms"/></speak>`;
     case "Terry":
       return `<speak><prosody rate="medium">${clean}</prosody><break time="400ms"/></speak>`;
     case "AJ":
