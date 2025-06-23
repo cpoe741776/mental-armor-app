@@ -10,7 +10,7 @@ export const personalities = {
 };
 
 function containsCrisisLanguage(messages) {
-  const crisisKeywords = ["suicide", "kill myself", "end my life", "want to die", "hurt myself", "can’t go on", "overdose", "no reason to live"];
+  const crisisKeywords = ["suicide", "kill myself", "end my life", "want to die", "hurt myself", "can’t go on", "overdose", "no reason to live", "wish i could die"];
   const combined = messages.map(m => m.content.toLowerCase()).join(" ");
   return crisisKeywords.some(keyword => combined.includes(keyword));
 }
@@ -18,30 +18,33 @@ function containsCrisisLanguage(messages) {
 export async function getAIResponse(messages, selectedCoach, customPrompt) {
   const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
 
+  const crisisFlag = containsCrisisLanguage(messages);
+
   const basePrompt = `
     - You teach *Mental Armor* skills to help users navigate emotional, social, family, and spiritual challenges.  
-    - You MUST recommend one Mental Armor skill in a response unless the user is in crisis. Do not skip this.
+    - You MUST recommend one Mental Armor skill in every response **unless the user is in crisis**.
     - Only choose from the official list of skills below. You must match the title exactly as listed.
     - Here are the skills you can use:
-       ${skills.map(skill => `- **${skill.title}** (taught by ${skill.trainer}) <a href="/skill/${skill.id}" style="color: #3498db; font-weight: bold; font-style: italic; text-decoration: underline;"></a>`).join('\n')}
-    - Use this exact phrasing: "The skill I recommend for this is **[Skill Title]**."
+       ${skills.map(skill => `- **${skill.title}** (taught by ${skill.trainer}) <a href="/skill/${skill.id}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;"></a>`).join('\n')}
+    - Use this exact phrasing: "The skill I recommend for this is **[Skill Title]**, taught by [Trainer]."
     - Commit your full personality to memory before speaking.
     - Speak in the tone of the assigned coach personality:
       ${personalities[selectedCoach?.name] || ""}
-    - Force your response to under 100 words. Do not skip this. 
+    - Keep the conversation flowing. Offer only a few lines of text at a time.
+    - Keep your response under 100 words.
 
     For each recommendation:
-    - If you identify anything that appears to demonstrate suicidal ideation from United States users, begin your response with this line: If you're in the U.S., please call or text <a href="tel:988" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;">988</a> immediately.,
-    - If the identify anything that appears to demonstrate suicidal ideation from the United Kingdom, begin your response with this line: If you're in the UK, call <a href="tel:111" style="font-weight: bold; text-decoration: underline;">111</a> or contact Samaritans at <a href="tel:116123" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;">116 123</a>,
-    - Recommend one Mental Armor Skill per response unless the user is in crisis,
-    - Briefly explain the skill or skills with a practical example,
-    - Mention the trainer for the recommended skill and their personality,
+    - If you identify anything that appears to demonstrate suicidal ideation from United States users, begin your response with this line: <strong>If you're in the U.S., please call or text <a href="tel:988" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;">988</a> immediately.</strong>
+    - If the user appears to be in the United Kingdom, begin your response with this line: <strong>If you're in the UK, call <a href="tel:111" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;">111</a> or contact Samaritans at <a href="tel:116123" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;">116 123</a>.</strong>
+    - Recommend one Mental Armor Skill per response **only if the user is not in crisis**.
+    - Briefly explain the skill or skills with a practical example.
+    - Mention the trainer for the recommended skill and their personality.
+    - If the recommendation is not too long, you can make a reference to our team as caring and good at training.
     - Provide an internal link to the skill directly within the message using the format: <a href="/skill/${skills.id}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;" rel="noopener noreferrer"></a>.
   `.trim();
 
-  const crisisFlag = containsCrisisLanguage(messages);
   const dynamicPrompt = crisisFlag
-    ? basePrompt + '\n\nThe user may be in crisis. You must begin and end your response with the appropriate crisis line. Use this format:\n\n- For U.S.: <a href="tel:988" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;">988</a>\n- For UK: <a href="tel:111" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;">111</a> or <a href="tel:116123" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;">116 123</a>\n\nRespond with extra care.'
+    ? basePrompt + "\n\nThe user may be in crisis. Do not recommend a skill. Focus only on emotional support and repeat the crisis line at the end of your response."
     : basePrompt;
 
   const systemMessage = {
@@ -75,32 +78,16 @@ export async function getAIResponse(messages, selectedCoach, customPrompt) {
     const data = await res.json();
     let reply = data.choices[0].message.content.trim();
 
+    if (crisisFlag) {
+      return reply;
+    }
+
     let mentionedSkill = skills.find(skill => new RegExp(`\\*\\*${skill.title}\\*\\*`, "i").test(reply));
 
-    if (!crisisFlag) {
-  if (!mentionedSkill) {
-    mentionedSkill = skills[Math.floor(Math.random() * skills.length)];
-    reply += `\n\nThe skill I recommend for this is **${mentionedSkill.title}**, taught by ${mentionedSkill.trainer}.`;
-  }
-
-  if (reply.includes("Let me recommend one of our Mental Armor skills")) {
-    reply = reply.replace(/Let me recommend.*?\n?/gi, '');
-  }
-
-  const skillLink = `/skill/${mentionedSkill.id}`;
-  const skillWithLink = `<a href="${skillLink}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;" rel="noopener noreferrer">${mentionedSkill.title}</a>`;
-
-  const isCoachRecommendingOwnSkill = mentionedSkill.trainer.toLowerCase() === selectedCoach.name.toLowerCase();
-
-  if (isCoachRecommendingOwnSkill) {
-    reply = reply.replace(mentionedSkill.title, `${mentionedSkill.title} skill, which I teach.`);
-  } else {
-    reply = reply.replace(mentionedSkill.title, skillWithLink);
-  }
-
-  const skillSummary = `${mentionedSkill.brief} <a href="${skillLink}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;" rel="noopener noreferrer">Try it</a>`;
-  reply += ` ${skillSummary}`;
-}
+    if (!mentionedSkill) {
+      mentionedSkill = skills[Math.floor(Math.random() * skills.length)];
+      reply += `\n\nThe skill I recommend for this is **${mentionedSkill.title}**, taught by ${mentionedSkill.trainer}.`;
+    }
     if (reply.includes("Let me recommend one of our Mental Armor skills")) {
       reply = reply.replace(/Let me recommend.*?\n?/gi, '');
     }
