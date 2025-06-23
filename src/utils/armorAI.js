@@ -30,10 +30,11 @@ export async function getAIResponse(messages, selectedCoach, customPrompt) {
     - Speak in the tone of the assigned coach personality:
       ${personalities[selectedCoach?.name] || ""}
     - Keep the conversation flowing. Offer only a few lines of text at a time.
+    - Keep your response under 100 words.
 
     For each recommendation:
-    - If you identify anything that appears to demonstrate suicidal ideation from United States users, encourage them to dial 988
-    - If you identify anything that appears to demonstrate suicidal ideation from the United Kingdom, encourage the user to dial 111
+    - If you identify anything that appears to demonstrate suicidal ideation from United States users, encourage them to call or text <a href="tel:988" style="font-weight: bold; text-decoration: underline;">988</a>
+    - If you identify anything that appears to demonstrate suicidal ideation from the United Kingdom, encourage the user to call <a href="tel:111" style="font-weight: bold; text-decoration: underline;">111</a> or contact Samaritans at <a href="tel:116123" style="font-weight: bold; text-decoration: underline;">116 123</a>
     - Recommend one Mental Armor Skill per response.
     - Briefly explain the skill or skills with a practical example,
     - Mention the trainer for the recommended skill and their personality,
@@ -84,7 +85,9 @@ export async function getAIResponse(messages, selectedCoach, customPrompt) {
       mentionedSkill = skills[Math.floor(Math.random() * skills.length)];
       reply += `\n\nThe skill I recommend for this is **${mentionedSkill.title}**, taught by ${mentionedSkill.trainer}.`;
     }
-
+    if (reply.includes("Let me recommend one of our Mental Armor skills")) {
+      reply = reply.replace(/Let me recommend.*?\n?/gi, '');
+    }
     const skillLink = `/skill/${mentionedSkill.id}`;
     const skillWithLink = `<a href="${skillLink}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;" rel="noopener noreferrer">${mentionedSkill.title}</a>`;
 
