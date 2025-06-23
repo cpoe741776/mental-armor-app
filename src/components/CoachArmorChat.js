@@ -1,6 +1,6 @@
+// src/components/CoachArmorChat.js
 import React, { useState, useEffect, useRef } from 'react';
 import { skills } from '../skills';
-import { personalities } from '../utils/armorAI';
 import { getAIResponse } from '../utils/armorAI';
 import { speakResponse as speakWithFallback } from '../utils/tts-fallback';
 
@@ -13,7 +13,6 @@ export default function CoachArmorChat({ selectedCoach }) {
 
   useEffect(() => {
     setMessages([]);
-    console.log("Selected coach changed:", selectedCoach);
   }, [selectedCoach]);
 
   useEffect(() => {
@@ -21,16 +20,6 @@ export default function CoachArmorChat({ selectedCoach }) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
-
-  const systemPrompt = selectedCoach
-  ? `You are ${selectedCoach.name}, a Mental Armor resilience coach. Your background is: ${selectedCoach.title}. Your style is: ${personalities[selectedCoach.name]}. Respond as this character while helping the user with their struggles.
-
-- If you identify anything that appears to demonstrate suicidal ideation from United States users, begin your response with this line: If you're in the U.S., please call or text <a href="tel:988" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;">988</a> immediately.
-- If it appears the user is in the United Kingdom, begin your response with this line: If you're in the U.K., please call or text <a href="tel:111" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;">111</a> or Samaritans at <a href="tel:116123" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;">116 123</a> immediately.`
-  : `You are a helpful Mental Armor resilience coach. 
-
-- If you identify anything that appears to demonstrate suicidal ideation from United States users, begin your response with this line: If you're in the U.S., please call or text <a href="tel:988" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;">988</a> immediately.
-- If it appears the user is in the United Kingdom, begin your response with this line: If you're in the U.K., please call or text <a href="tel:111" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;">111</a> or Samaritans at <a href="tel:116123" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;">116 123</a> immediately.`;
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -40,30 +29,15 @@ export default function CoachArmorChat({ selectedCoach }) {
     setInput('');
     setIsThinking(true);
 
-    const riskKeywords = ['suicide', 'kill myself', 'end it all', 'hopeless', 'worthless'];
-    const inputLower = input.toLowerCase();
-    const containsRisk = riskKeywords.some(keyword => inputLower.includes(keyword));
-
-    const dynamicPrompt = containsRisk
-      ? systemPrompt + "\n\nThe user may be in crisis. Respond with extra care and repeat crisis line options."
-      : systemPrompt;
-
     try {
-      const aiReply = await getAIResponse(newMessages, selectedCoach, dynamicPrompt);
-
-      let coachMessage = aiReply?.trim();
-      if (!coachMessage) {
-        coachMessage = selectedCoach?.name === 'Terry'
-          ? "Life in the Bronx? It's tough, but you've gotta find the humor in the hard times. Now, what else can I help with?"
-          : "That’s a great question! While I don’t have a skill that fits right now, I’m happy to chat about anything else!";
-      }
+      const aiReply = await getAIResponse(newMessages, selectedCoach);
+      const coachMessage = aiReply?.trim() || "I'm not sure how to answer that, but I’m here for you.";
 
       if (voiceEnabled && selectedCoach?.name) {
         await speakWithFallback(coachMessage, selectedCoach.name);
       }
 
       setMessages([...newMessages, { role: 'assistant', content: coachMessage }]);
-
     } catch (error) {
       console.error("AI or TTS Error:", error);
       setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
@@ -76,8 +50,28 @@ export default function CoachArmorChat({ selectedCoach }) {
     if (e.key === 'Enter') handleSend();
   };
 
+  const handleSkillClick = async (skill) => {
+    const query = `Tell me more about the skill "${skill.title}".`;
+    const newMessages = [...messages, { role: 'user', content: query }];
+    setMessages(newMessages);
+    setInput('');
+    setIsThinking(true);
+
+    try {
+      const aiReply = await getAIResponse(newMessages, selectedCoach);
+      if (voiceEnabled && selectedCoach?.name) {
+        await speakWithFallback(aiReply, selectedCoach.name);
+      }
+      setMessages([...newMessages, { role: 'assistant', content: aiReply }]);
+    } catch (err) {
+      setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
+    } finally {
+      setIsThinking(false);
+    }
+  };
+
   return (
-    <div style={{ maxWidth: 700, margin: 'auto', padding: 20 }}>
+    <div className="max-w-3xl mx-auto p-4">
       {selectedCoach && (
         <div className="flex items-center gap-4 mb-4">
           <img
@@ -109,11 +103,10 @@ export default function CoachArmorChat({ selectedCoach }) {
 
       <div
         ref={chatContainerRef}
-        style={{ border: '1px solid #ccc', padding: 10, height: 400, overflowY: 'auto', borderRadius: 10, background: '#f9f9f9' }}
-        className="border-2 border-gray-300"
+        className="border-2 border-gray-300 p-3 h-96 overflow-y-auto rounded-xl bg-gray-50"
       >
         {messages.map((msg, i) => (
-          <div key={i} style={{ margin: '10px 0', textAlign: msg.role === 'user' ? 'right' : 'left' }}>
+          <div key={i} className={`my-2 text-sm ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
             <strong>{msg.role === 'user' ? 'You' : selectedCoach?.name || 'Coach'}:</strong>{' '}
             {msg.role === 'assistant' ? (
               <span dangerouslySetInnerHTML={{ __html: msg.content }} />
@@ -123,7 +116,7 @@ export default function CoachArmorChat({ selectedCoach }) {
           </div>
         ))}
         {isThinking && (
-          <div className="italic text-gray-500">
+          <div className="italic text-gray-500 mt-2">
             {selectedCoach?.name || 'Coach'} is typing
             <span className="animate-pulse">...</span>
           </div>
@@ -132,11 +125,8 @@ export default function CoachArmorChat({ selectedCoach }) {
 
       <div className="flex items-center mt-4">
         <input
-          id="coach-chat-input"
-          name="coachChatInput"
           type="text"
           placeholder="How are you feeling today?"
-          autoComplete="on"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
@@ -159,50 +149,15 @@ export default function CoachArmorChat({ selectedCoach }) {
         </button>
       </div>
 
-      <div style={{ marginTop: 20 }}>
+      <div className="mt-6">
         <h3 className="text-lg font-semibold mb-2">🧠 Mental Armor Skills</h3>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-          {skills.map((skill, index) => (
+        <div className="flex flex-wrap gap-2">
+          {skills.map((skill) => (
             <button
-              key={index}
+              key={skill.id}
+              onClick={() => handleSkillClick(skill)}
               title={skill.brief}
-              style={{
-                padding: '6px 10px',
-                borderRadius: 8,
-                background: '#e6f0ff',
-                border: '1px solid #ccc',
-                cursor: 'pointer',
-                fontSize: '0.85rem'
-              }}
-              onClick={async () => {
-                const newInput = `Tell me more about the skill "${skill.title}".`;
-                const newMessages = [...messages, { role: 'user', content: newInput }];
-                setMessages(newMessages);
-                setInput('');
-                setIsThinking(true);
-
-                const riskKeywords = ['suicide', 'kill myself', 'end it all', 'hopeless', 'worthless'];
-                const inputLower = newInput.toLowerCase();
-                const containsRisk = riskKeywords.some(keyword => inputLower.includes(keyword));
-
-                const dynamicPrompt = containsRisk
-                  ? systemPrompt + "\n\nThe user may be in crisis. Respond with extra care and repeat crisis line options."
-                  : systemPrompt;
-
-                try {
-                  const aiReply = await getAIResponse(newMessages, selectedCoach, dynamicPrompt);
-
-                  if (voiceEnabled && selectedCoach?.name) {
-                    await speakWithFallback(aiReply, selectedCoach.name);
-                  }
-
-                  setMessages([...newMessages, { role: 'assistant', content: aiReply }]);
-                } catch (err) {
-                  setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
-                } finally {
-                  setIsThinking(false);
-                }
-              }}
+              className="px-3 py-1 text-sm bg-indigo-100 border border-gray-300 rounded hover:bg-indigo-200 transition"
             >
               {skill.title}
             </button>

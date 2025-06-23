@@ -76,43 +76,6 @@ export const skills = [
 },
 
   {
-  id: 'flex',
-  title: 'Flex Your Strengths',
-  domains: ['family', 'emotional'],
-  category: 'Values & Meaning',
-  brief: 'Identify and apply your character strengths in new contexts.',
-  trainer: 'AJ',
-  trainerImage: '/aj.jpg',
-  videoUrl: 'https://videos.files.wordpress.com/HXvYn4pz/fys.mp4',
-  videoThumbnail: 'https://via.placeholder.com/800x450.png?text=Flex+Your+Strengths+Video',
-  goal: 'Identify and apply your strengths at work and home.',
-  when: 'When you want to leverage your unique talents.',
-  benefits: [
-    'Increased confidence',
-    'Better performance',
-    'Enhanced well-being'
-  ],
-  definitions: [
-    { term: 'Signature Strengths', definition: 'Your most prominent personal traits.' },
-    { term: 'Application', definition: 'Using a strength in a new context for impact.' }
-  ],
-  definition:
-    'Signature strengths are your most prominent personal traits. Application means using a strength in a new context for greater impact.',
-  examples: [
-    'If “Creativity” is a signature strength, brainstorm a new hobby that uses creative thinking.',
-    'Notice when a colleague demonstrates “Curiosity,” and ask them about their process.'
-  ],
-  details: [
-    'Identify Strengths: List your top 3 signature strengths from the MFA.',
-    'Notice in Others: Reflect on strengths shown by those around you.',
-    'Apply in New Ways: Plan a novel activity using one strength.',
-    'Reflect on Impact: Journal about outcomes and feelings.'
-  ],
-  link: '/skills/flex',
-  recommendedBy: 'AJ'
-},
-
-  {
     id: 'spiritual_resilience',
     title: 'Spiritual Resilience',
     category: 'Values & Meaning',

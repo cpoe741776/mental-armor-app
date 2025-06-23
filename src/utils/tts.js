@@ -3,13 +3,20 @@
 const coachVoices = {
   Terry: "en-US-Wavenet-A",
   AJ: "en-US-Wavenet-E",
-  Chris: "en-US-Wavenet-D"
+  Chris: "en-US-Wavenet-D",
+  Rhonda: "en-US-Wavenet-C",
+  Scotty: "en-US-Wavenet-F",
+  Jill: "en-US-Wavenet-B"
 };
 
+// 🔄 Shared utility to strip HTML and special formatting
+export function cleanText(text) {
+  return text.replace(/<[^>]*>?/gm, '').replace(/\*/g, '');
+}
+
+// 🗣️ Adjust voice style based on coach
 function formatCoachSpeech(text, coachName) {
-  const clean = text
-    .replace(/<[^>]*>?/gm, '')  // Strip HTML
-    .replace(/\*/g, '');       // Remove asterisks
+  const clean = cleanText(text);
 
   switch (coachName) {
     case "Terry":
@@ -23,7 +30,7 @@ function formatCoachSpeech(text, coachName) {
 
 export async function speakResponse(text, coachName) {
   if (!coachName || !coachVoices[coachName]) {
-    console.warn("No valid coach name passed to speakResponse. Skipping TTS.");
+    console.warn("TTS: No valid voice available for coach:", coachName);
     return;
   }
 
@@ -31,11 +38,9 @@ export async function speakResponse(text, coachName) {
   const ssml = formatCoachSpeech(text, coachName);
 
   try {
-    const response = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=AIzaSyB2qxr51EP6_bmCVzD4nq2SATWUQefbMeM`, {
+    const response = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${process.env.REACT_APP_GOOGLE_TTS_KEY}`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         input: { ssml },
         voice: {
@@ -49,17 +54,14 @@ export async function speakResponse(text, coachName) {
     });
 
     const data = await response.json();
-    console.log("TTS API Response:", data);
 
     if (data && data.audioContent) {
       const audioUrl = "data:audio/mp3;base64," + data.audioContent;
-      const audio = new Audio(audioUrl);
-      audio.play();
+      new Audio(audioUrl).play();
     } else {
-      console.warn("No audio content returned from TTS.");
+      console.warn("TTS: No audio content returned from Google.");
     }
-
   } catch (err) {
-    console.error("Text-to-Speech error:", err);
+    console.error("Google TTS error:", err);
   }
-} 
+}
