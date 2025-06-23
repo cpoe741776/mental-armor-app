@@ -61,38 +61,63 @@ export const skills = [
  {
   id: 'flex',
   title: 'Flex Your Strengths',
-  domains: ['family', 'emotional'],
+  domains: ['family', 'emotional', 'social'],
   category: 'Values & Meaning',
-  brief: 'Identify and apply your character strengths in new contexts.',
+  brief: 'Shift your focus from what’s wrong to what’s strong by identifying and applying your strengths — and noticing them in others.',
   trainer: 'AJ',
   trainerImage: '/aj.jpg',
   videoUrl: 'https://videos.files.wordpress.com/HXvYn4pz/fys.mp4',
-  videoThumbnail: 'https://via.placeholder.com/800x450.png?text=Flex+Your+Strengths+Video',
-  goal: 'Identify and apply your strengths at work and home.',
-  when: 'When you want to leverage your unique talents.',
+  videoThumbnail: 'https://mymentalarmor.com/wp-content/uploads/2025/06/30CM_FLEX_FLOOR_CIRCLE_MTN.png',
+  goal: 'To identify and apply your character strengths at work and at home and to notice and appreciate strengths in yourself and others',
+  when: 'Use the skill on a regular basis in order to capitalize on your strengths more often as well as when you are facing a challenge.',
   benefits: [
-    'Increased confidence',
-    'Better performance',
-    'Enhanced well-being'
+    'Increased energy and performance',
+    'Greater confidence and happiness',
+    'Stronger relationships',
+    'Greater ability to live your values and achieve your goals',
+    'Reduced stress and increased sense of meaning and purpose',
+    'Improved engagement, satisfaction, and performance in work or school when strengths are applied — especially when leaders or educators focus on what’s strong rather than what’s wrong'
   ],
   definitions: [
-    { term: 'Signature Strengths', definition: 'Your most prominent personal traits.' },
-    { term: 'Application', definition: 'Using a strength in a new context for impact.' }
+    {
+      term: 'Signature Strengths',
+      definition: 'Your most prominent personal strengths.'
+    },
+    {
+      term: 'Character Strengths',
+      definition: 'The most natural and positive parts of your personality — not talents or skills, but the inner qualities that help you be your best self.'
+    },
+    {
+      term: 'Strength Spotting',
+      definition: 'The practice of observing and naming character strengths in yourself or others, often by recognizing patterns in behavior, language, or decision-making.'
+    },
+    {
+      term: 'VIA Classification',
+      definition: 'A scientific framework of 24 universal character strengths developed by researchers to help people identify, understand, and apply their best qualities.'
+    },
+    {
+      term: 'Strengths Regulation',
+      definition: 'The ability to intentionally use your strengths in the right way, at the right time, and in the right amount — avoiding overuse or underuse.'
+    },
+    {
+      term: 'Strengths Definitions',
+      definition: 'Official VIA strengths definitions were developed through research by Dr. Martin Seligman and Dr. Chris Peterson. These scientific definitions may differ from everyday interpretations, and help clarify how each strength contributes to well-being and resilience.'
+    }
   ],
-  definition:
-    'Signature strengths are your most prominent personal traits. Application means using a strength in a new context for greater impact.',
   examples: [
-    'If “Creativity” is a signature strength, brainstorm a new hobby that uses creative thinking.',
-    'Notice when a colleague demonstrates “Curiosity,” and ask them about their process.'
+    "AJ remembers working with a team leader who always brought energy and warmth to meetings. When AJ pointed out their strength of 'Zest,' it changed how that leader showed up — they began using it intentionally to uplift team morale and inspire others.",
+    "In grad school, AJ struggled with a tough class. Instead of shutting down, she leaned into her top strength — 'Curiosity' — and reframed the challenge as an opportunity to explore how people learn. It not only helped her pass, it reshaped her entire teaching style."
   ],
-  details: [
-    'Identify Strengths: List your top 3 signature strengths from the MFA.',
-    'Notice in Others: Reflect on strengths shown by those around you.',
-    'Apply in New Ways: Plan a novel activity using one strength.',
-    'Reflect on Impact: Journal about outcomes and feelings.'
+  how: [
+    'Understand Character Strengths: Learn what strengths are and how they differ from talents or skills.',
+    'Identify Your Signature Strengths: Take the VIA survey to discover your top character strengths.',
+    'Explore Strength Definitions: Review what each of your strengths means and how they appear in daily life.',
+    'Regulate Your Strengths: Practice using your strengths in the right way, at the right time, and in the right amount.',
+    'Spot Strengths in Others: Observe people around you and name the strengths they demonstrate.',
+    'Use Strengths in New Ways: Apply your signature strengths in creative or meaningful ways at home, at work, or at school.'
   ],
-  link: '/skills/flex',           // ✅ string, not array
-  recommendedBy: 'AJ'             // ✅ in the same object, not wrapped in []
+  link: '/skills/flex',
+  recommendedBy: 'AJ'
 },
 
   {
