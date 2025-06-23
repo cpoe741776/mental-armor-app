@@ -27,7 +27,12 @@ export async function speakResponse(text, coachName) {
   const plainText = cleanText(text);
   const cacheKey = `${voiceId}:${plainText}`;
 
+  console.log("Fetching voice for:", coachName);
+  console.log("Voice ID:", voiceId);
+  console.log("Cleaned text:", plainText);
+
   if (audioCache.has(cacheKey)) {
+    console.log("Using cached audio for:", cacheKey);
     const cachedUrl = audioCache.get(cacheKey);
     const audio = new Audio(cachedUrl);
     audio.play();
@@ -52,10 +57,18 @@ export async function speakResponse(text, coachName) {
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error("TTS fetch failed:", response.status, errorText);
       throw new Error("Failed to fetch audio from ElevenLabs: " + response.status);
     }
 
     const blob = await response.blob();
+    console.log("Blob type:", blob.type);
+
+    if (!blob.type.startsWith("audio")) {
+      throw new Error(`Unexpected blob type: ${blob.type}`);
+    }
+
     const audioUrl = URL.createObjectURL(blob);
     audioCache.set(cacheKey, audioUrl);
 
