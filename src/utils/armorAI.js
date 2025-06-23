@@ -43,7 +43,7 @@ export async function getAIResponse(messages, selectedCoach, customPrompt) {
 
   const crisisFlag = containsCrisisLanguage(messages);
   const dynamicPrompt = crisisFlag
-    ? basePrompt + "\n\nThe user may be in crisis. You must begin your response with the appropriate crisis line. You must still recommend one helpful Mental Armor skill and explain why. Respond with extra care."
+    ? basePrompt + '\n\nThe user may be in crisis. You must begin and end your response with the appropriate crisis line. Use this format:\n\n- For U.S.: <a href="tel:988" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;">988</a>\n- For UK: <a href="tel:111" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;">111</a> or <a href="tel:116123" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;">116 123</a>\n\nRespond with extra care.'
     : basePrompt;
 
   const systemMessage = {
