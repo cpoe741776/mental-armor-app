@@ -26,8 +26,7 @@ export async function getAIResponse(messages, selectedCoach, customPrompt) {
     - You MUST recommend one Mental Armor skill in every response. Do not skip this.
     - Use this exact phrasing: "The skill I recommend for this is [Skill Title], taught by [Trainer]."
     - Only choose from the official list of skills below. You must match the title exactly as listed.
-
-    Keep the conversation flowing. Offer only a few lines of text at a time.
+    - Keep the conversation flowing. Offer only a few lines of text at a time.
 
     Here are the skills you can use:
     ${skills.map(skill => `- **${skill.title}** (taught by ${skill.trainer}) <a href="/skill/${skill.id}" style="color: #3498db; font-weight: bold; font-style: italic; text-decoration: underline;">Try it</a>`).join('\n')}
