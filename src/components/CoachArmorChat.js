@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { skills } from '../skills';
 import { personalities } from '../utils/armorAI';
 import { getAIResponse } from '../utils/armorAI';
-import { speakResponse } from '../utils/elevenlabs_tts';
+import { speakResponse as speakWithFallback } from '../utils/tts-fallback';
 
 export default function CoachArmorChat({ selectedCoach }) {
   const [messages, setMessages] = useState([]);
@@ -44,11 +44,11 @@ export default function CoachArmorChat({ selectedCoach }) {
           : "That’s a great question! While I don’t have a skill that fits right now, I’m happy to chat about anything else!";
       }
 
-      setMessages([...newMessages, { role: 'assistant', content: coachMessage }]);
-
       if (voiceEnabled && selectedCoach?.name) {
-        await speakResponse(coachMessage, selectedCoach.name);
+        await speakWithFallback(coachMessage, selectedCoach.name);
       }
+
+      setMessages([...newMessages, { role: 'assistant', content: coachMessage }]);
 
     } catch (error) {
       console.error("AI or TTS Error:", error);
@@ -168,11 +168,12 @@ export default function CoachArmorChat({ selectedCoach }) {
                 setIsThinking(true);
                 try {
                   const aiReply = await getAIResponse(newMessages, selectedCoach, systemPrompt);
-                  setMessages([...newMessages, { role: 'assistant', content: aiReply }]);
 
-                  if (voiceEnabled) {
-                    await speakResponse(aiReply, selectedCoach?.name);
+                  if (voiceEnabled && selectedCoach?.name) {
+                    await speakWithFallback(aiReply, selectedCoach.name);
                   }
+
+                  setMessages([...newMessages, { role: 'assistant', content: aiReply }]);
                 } catch (err) {
                   setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
                 } finally {
