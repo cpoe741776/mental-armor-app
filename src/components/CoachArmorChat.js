@@ -1,29 +1,43 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { skills } from '../skills';
-import { personalities } from '../utils/armorAI';  // Ensure the correct import
+import { personalities } from '../utils/armorAI';
 import { getAIResponse } from '../utils/armorAI';
+import { getVoiceAudio } from '../utils/tts';
+
+async function speakResponse(responseText, selectedCoachName) {
+  const coachVoices = {
+    Rhonda: "en-US-Wavenet-C",
+    Jill: "en-US-Wavenet-F",
+    Scotty: "en-US-Wavenet-B",
+    Terry: "en-US-Wavenet-A",
+    AJ: "en-US-Wavenet-E",
+    Chris: "en-US-Wavenet-D"
+  };
+
+  const voice = coachVoices[selectedCoachName] || "en-US-Wavenet-D";
+  const audioUrl = await getVoiceAudio(responseText, voice);
+  const audio = new Audio(audioUrl);
+  audio.play();
+}
 
 export default function CoachArmorChat({ selectedCoach }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isThinking, setIsThinking] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const chatContainerRef = useRef(null);
 
-  const chatContainerRef = useRef(null); // Ref for the chat container
-
-  // Clear the chat when the coach changes
   useEffect(() => {
-    setMessages([]); // Clear the chat messages when selectedCoach changes
-    console.log("Selected coach changed:", selectedCoach);  // Debugging step
+    setMessages([]);
+    console.log("Selected coach changed:", selectedCoach);
   }, [selectedCoach]);
 
-  // Auto-scroll the chat to the bottom when new messages are added
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-  }, [messages]); // Scroll to the bottom every time messages change
+  }, [messages]);
 
-  // Prepare system prompt based on selectedCoach
   const systemPrompt = selectedCoach
     ? `You are ${selectedCoach.name}, a Mental Armor resilience coach. Your background is: ${selectedCoach.title}. Your style is: ${personalities[selectedCoach.name]}. Respond as this character while helping the user with their struggles.`
     : `You are a helpful Mental Armor resilience coach.`;
@@ -37,18 +51,25 @@ export default function CoachArmorChat({ selectedCoach }) {
     setIsThinking(true);
 
     try {
-      console.log("Calling AI with selectedCoach:", selectedCoach); // Debugging step
-      const aiReply = await getAIResponse(newMessages, selectedCoach);  // Passing selectedCoach to AI
-      
-      // If no matching skill is found, provide an upbeat fallback message
+      console.log("Calling AI with selectedCoach:", selectedCoach);
+      const aiReply = await getAIResponse(newMessages, selectedCoach);
+
+      let coachMessage;
+
       if (!aiReply || aiReply.trim() === '') {
-        const fallbackReply = selectedCoach?.name === 'Terry'
+        coachMessage = selectedCoach?.name === 'Terry'
           ? "Life in the Bronx? It's tough, but you've gotta find the humor in the hard times. Now, what else can I help with?"
           : "That’s a great question! While I don’t have a skill that fits right now, I’m happy to chat about anything else!";
-        setMessages([...newMessages, { role: 'assistant', content: fallbackReply }]);
       } else {
-        setMessages([...newMessages, { role: 'assistant', content: aiReply }]);
+        coachMessage = aiReply;
       }
+
+      setMessages([...newMessages, { role: 'assistant', content: coachMessage }]);
+
+      if (voiceEnabled) {
+        await speakResponse(coachMessage, selectedCoach?.name);
+      }
+
     } catch (error) {
       setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
     } finally {
@@ -62,7 +83,6 @@ export default function CoachArmorChat({ selectedCoach }) {
 
   return (
     <div style={{ maxWidth: 700, margin: 'auto', padding: 20 }}>
-      {/* Coach Image */}
       {selectedCoach && (
         <div className="flex items-center gap-4 mb-4">
           <img
@@ -77,18 +97,25 @@ export default function CoachArmorChat({ selectedCoach }) {
         </div>
       )}
 
-      {/* Chat Box with Outline */}
+      <div className="flex justify-between items-center px-4 py-2 border-b border-gray-200 bg-white">
+        <h2 className="text-lg font-bold text-gray-700">{selectedCoach?.name} is coaching</h2>
+        <div className="flex items-center space-x-2">
+          <span className="text-sm text-gray-600">Voice</span>
+          <button
+            onClick={() => setVoiceEnabled(!voiceEnabled)}
+            className={`px-3 py-1 text-sm rounded-full transition-all ${
+              voiceEnabled ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700'
+            }`}
+          >
+            {voiceEnabled ? 'On' : 'Off'}
+          </button>
+        </div>
+      </div>
+
       <div
-        ref={chatContainerRef}  // Attach ref for auto-scrolling
-        style={{
-          border: '1px solid #ccc', 
-          padding: 10, 
-          height: 400, 
-          overflowY: 'auto', 
-          borderRadius: 10, 
-          background: '#f9f9f9'
-        }}
-        className="border-2 border-gray-300"  // Tailwind class to outline the chat window
+        ref={chatContainerRef}
+        style={{ border: '1px solid #ccc', padding: 10, height: 400, overflowY: 'auto', borderRadius: 10, background: '#f9f9f9' }}
+        className="border-2 border-gray-300"
       >
         {messages.map((msg, i) => (
           <div key={i} style={{ margin: '10px 0', textAlign: msg.role === 'user' ? 'right' : 'left' }}>
@@ -103,12 +130,11 @@ export default function CoachArmorChat({ selectedCoach }) {
         {isThinking && (
           <div className="italic text-gray-500">
             {selectedCoach?.name || 'Coach'} is typing
-            <span className="animate-pulse">...</span> {/* Tailwind animation for typing dots */}
+            <span className="animate-pulse">...</span>
           </div>
         )}
       </div>
 
-      {/* Input Field with Outline */}
       <div className="flex items-center mt-4">
         <input
           id="coach-chat-input"
@@ -129,7 +155,6 @@ export default function CoachArmorChat({ selectedCoach }) {
         </button>
       </div>
 
-      {/* Clear Chat Button */}
       <div className="flex justify-end mt-2">
         <button
           onClick={() => setMessages([])}
@@ -139,9 +164,8 @@ export default function CoachArmorChat({ selectedCoach }) {
         </button>
       </div>
 
-      {/* Skills Panel */}
       <div style={{ marginTop: 20 }}>
-        <h3 className="text-lg font-semibold mb-2">🧠 Mental Armor Skills</h3>
+        <h3 className="text-lg font-semibold mb-2">\ud83e\udde0 Mental Armor Skills</h3>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
           {skills.map((skill, index) => (
             <button
@@ -162,8 +186,12 @@ export default function CoachArmorChat({ selectedCoach }) {
                 setInput('');
                 setIsThinking(true);
                 try {
-                  const aiReply = await getAIResponse(newMessages, selectedCoach, systemPrompt);  // Use systemPrompt here
+                  const aiReply = await getAIResponse(newMessages, selectedCoach, systemPrompt);
                   setMessages([...newMessages, { role: 'assistant', content: aiReply }]);
+
+                  if (voiceEnabled) {
+                    await speakResponse(aiReply, selectedCoach?.name);
+                  }
                 } catch (err) {
                   setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
                 } finally {
