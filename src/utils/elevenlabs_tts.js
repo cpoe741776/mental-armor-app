@@ -18,17 +18,14 @@ function cleanText(text) {
 const audioCache = new Map();
 
 export async function speakResponse(text, coachName) {
-  console.log("🔊 speakResponse called with:", { text, coachName });
-
-  const voice = coachVoices[coachName];
-
-  if (!coachName || !voice) {
-    console.warn("🚫 Invalid coach name passed to speakResponse:", coachName);
+  if (!coachName || !coachVoices[coachName]) {
+    console.warn("No valid coach name passed to speakResponse. Skipping TTS.", coachName);
     return;
   }
 
+  const voiceId = coachVoices[coachName];
   const plainText = cleanText(text);
-  const cacheKey = `${coachName}:${plainText}`;
+  const cacheKey = `${voiceId}:${plainText}`;
 
   if (audioCache.has(cacheKey)) {
     const cachedUrl = audioCache.get(cacheKey);
@@ -38,7 +35,7 @@ export async function speakResponse(text, coachName) {
   }
 
   try {
-    const response = await fetch("https://api.elevenlabs.io/v1/text-to-speech/" + voice, {
+    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

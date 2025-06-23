@@ -199,7 +199,7 @@ export default function CoachArmorChat({ selectedCoach }) {
                   setMessages([...newMessages, { role: 'assistant', content: aiReply }]);
 
                   if (voiceEnabled) {
-                    await speakResponse(aiReply, selectedCoach?.name);
+                    await speakResponse(newMessages, selectedCoach?.name);
                   }
                 } catch (err) {
                   setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
