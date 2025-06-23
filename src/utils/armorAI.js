@@ -32,8 +32,8 @@ export async function getAIResponse(messages, selectedCoach, customPrompt) {
     - Keep your response under 100 words.
 
     For each recommendation:
-    - If you identify anything that appears to demonstrate suicidal ideation from United States users, begin your response with this line: <strong>If you're in the U.S., please call or text <a href="tel:988" style="font-weight: bold; text-decoration: underline;">988</a> immediately.</strong>
-    - If the user appears to be in the United Kingdom, begin your response with this line: <strong>If you're in the UK, call <a href="tel:111" style="font-weight: bold; text-decoration: underline;">111</a> or contact Samaritans at <a href="tel:116123" style="font-weight: bold; text-decoration: underline;">116 123</a>.</strong>
+    - If you identify anything that appears to demonstrate suicidal ideation from United States users, begin your response with this line: If you're in the U.S., please call or text <a href="tel:988" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;">988</a> immediately.
+    - If the user appears to be in the United Kingdom, begin your response with this line: If you're in the UK, call <a href="tel:111" style="font-weight: bold; text-decoration: underline;">111</a> or contact Samaritans at <a href="tel:116123" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;">116 123</a>.
     - Recommend one Mental Armor Skill per response.
     - Briefly explain the skill or skills with a practical example,
     - Mention the trainer for the recommended skill and their personality,
