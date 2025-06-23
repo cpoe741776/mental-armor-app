@@ -23,8 +23,7 @@ export async function speakResponse(text, coachName) {
   } catch (error) {
     console.error("TTS fallback error:", error);
 
-    const errorStr = JSON.stringify(error);
-    const quotaError = errorStr.includes("quota_exceeded") || errorStr.includes("401");
+    const quotaError = error?.quota_exceeded || error?.status === 401;
 
     if (quotaError) {
       console.warn(`Switching ${coachName} to Google TTS due to ElevenLabs quota error.`);
