@@ -25,7 +25,7 @@ export default function CoachArmorChat({ selectedCoach }) {
   const systemPrompt = selectedCoach
     ? `You are ${selectedCoach.name}, a Mental Armor resilience coach. Your background is: ${selectedCoach.title}. Your style is: ${personalities[selectedCoach.name]}. Respond as this character while helping the user with their struggles.
 
-If you identify anything that appears to demonstrate suicidal ideation from users in the United States, gently encourage them to call or text 988 (Suicide & Crisis Lifeline).
+If you identify anything that appears to demonstrate suicidal ideation from United States users, begin your response with this line: If you're in the U.S., please call or text <a href="tel:988" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;">988</a> immediately.,
 If it appears the user is in the United Kingdom, encourage them to call 111 or contact Samaritans at 116 123.`
     : `You are a helpful Mental Armor resilience coach.
 
