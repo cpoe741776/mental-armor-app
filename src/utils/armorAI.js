@@ -9,6 +9,12 @@ export const personalities = {
   Chris: "You're a resilient soldier and reflective leader who believes deeply in legacy and growth through experience."
 };
 
+function containsCrisisLanguage(messages) {
+  const crisisKeywords = ["suicide", "kill myself", "end my life", "want to die", "hurt myself", "can’t go on", "overdose", "no reason to live"];
+  const combined = messages.map(m => m.content.toLowerCase()).join(" ");
+  return crisisKeywords.some(keyword => combined.includes(keyword));
+}
+
 export async function getAIResponse(messages, selectedCoach, customPrompt) {
   const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
 
@@ -32,9 +38,14 @@ export async function getAIResponse(messages, selectedCoach, customPrompt) {
     - Provide an internal link to the skill directly within the message using the format: <a href="/skill/${skills.id}" style="color: #003049;"></a>.
   `.trim();
 
+  const crisisFlag = containsCrisisLanguage(messages);
+  const dynamicPrompt = crisisFlag
+    ? basePrompt + "\n\nThe user may be in crisis. Respond with extra care and repeat crisis line options."
+    : basePrompt;
+
   const systemMessage = {
     role: "system",
-    content: customPrompt || basePrompt
+    content: customPrompt || dynamicPrompt
   };
 
   const payload = {
@@ -66,8 +77,8 @@ export async function getAIResponse(messages, selectedCoach, customPrompt) {
     const mentionedSkill = skills.find(skill => reply.includes(skill.title));
 
     if (!mentionedSkill) {
-      console.error("Error: No matching skill found in the response");
-      return reply; // Return the plain reply if no skill is matched
+      console.warn("⚠️ No matching skill found in the response");
+      return reply;
     }
 
     const skillLink = `/skill/${mentionedSkill.id}`;
