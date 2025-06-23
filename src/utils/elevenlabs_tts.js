@@ -1,11 +1,12 @@
 // src/utils/tts-elevenlabs.js
 
 const coachVoices = {
-  Rhonda: "Rachel",
-  Jill: "Clyde",
-  Scotty: "Domi",
-  Terry: "Antoni",
-  AJ: "Bella"
+  Rhonda: "ZT9u07TYPVl83ejeLakq",
+  Jill: "Clyde2qfp6zPuviqeCOZIE9RZ",
+  Scotty: "YXpFCvM1S3JbWEJhoskW",
+  Terry: "UgBBYS2sOqTuMpoF3BR0",
+  AJ: "CyHwTRKhXEYuSd7CbMwI",
+  Chris: "gUABw7pXQjhjt0kNFBTF"
 };
 
 function cleanText(text) {
