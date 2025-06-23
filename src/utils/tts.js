@@ -29,6 +29,8 @@ function formatCoachSpeech(text, coachName) {
 }
 
 export async function speakResponse(text, coachName) {
+  console.log("🔑 GOOGLE TTS KEY AT BUILD TIME:", process.env.REACT_APP_GOOGLE_TTS_KEY);
+
   if (!coachName || !coachVoices[coachName]) {
     console.warn("TTS: No valid voice available for coach:", coachName);
     return;
