@@ -24,6 +24,8 @@ export async function getAIResponse(messages, selectedCoach, customPrompt) {
     ${personalities[selectedCoach?.name] || ""}
     You teach *Mental Armor* skills to help users navigate emotional, social, family, and spiritual challenges.
     Always respond with at least one recommended skill, even in crisis or vague situations.
+    Clearly identify the skill title you are recommending and name its trainer.
+    Example format: "The skill I recommend for this is **Mindfulness**, taught by AJ."
     Keep the conversation flowing. Offer only a few lines of text at a time.
 
     Here are the skills you can use:
@@ -75,11 +77,11 @@ export async function getAIResponse(messages, selectedCoach, customPrompt) {
     const data = await res.json();
     let reply = data.choices[0].message.content.trim();
 
-    const mentionedSkill = skills.find(skill => reply.includes(skill.title));
+    const mentionedSkill = skills.find(skill => new RegExp(`\\*\\*${skill.title}\\*\\*`, "i").test(reply));
 
     if (!mentionedSkill) {
       console.warn("⚠️ No matching skill found in the response");
-      return reply;
+      return reply + "\n\nLet me recommend one of our Mental Armor skills that might help. Ask me anything else and I’ll guide you.";
     }
 
     const skillLink = `/skill/${mentionedSkill.id}`;
