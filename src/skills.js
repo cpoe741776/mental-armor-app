@@ -2,40 +2,60 @@
 
 export const skills = [
   {
-    id: 'science_of_resilience',
-    title: 'The Science of Resilience',
-    category: 'Foundation',
-    brief: 'Understand core resilience principles and mindset.',
-    trainer: 'Rhonda',
-    trainerImage: '/rhonda.jpg',
-    goal:
-      'Provide a psychological foundation of what resilience is and how individuals define it through personal characteristics.',
-    when:
-      'At the start of the program or when needing a refresher on resilience principles.',
-    benefits: [
-      'Shared language for resilience',
-      'Clarified resilience components',
-      'Growth mindset introduction'
-    ],
-    definitions: [
-      { term: 'Resilience', definition: 'Ability to withstand, recover, and grow in the face of stressors.' },
-      { term: 'Growth Mindset', definition: 'Belief that abilities can develop through effort and learning.' }
-    ],
-    // Single string for the “Definition” tab (combined or first definition)
-    definition:
-      'Resilience is the ability to withstand, recover, and grow in the face of stressors. A growth mindset is the belief that abilities can develop through effort and learning.',
-    examples: [
-      'After a setback at work, list two lessons learned instead of focusing on failure.',
-      'When faced with a challenging project, remind yourself you can improve through practice.'
-    ],
-    // Map each step’s description into “details” for SkillDetail
-    details: [
-      'Watch Introduction: View Dr. Cornum’s resilience story.',
-      'Define Resilience: Write your own definition based on the video.',
-      'Action Planning: Choose one resilience trait to strengthen.'
-    ],
-      link: '/skills/science_of_resilience', // ✅ string, not array
-      recommendedBy: 'Brigadier General Rhonda Cornum',             // ✅ in the same object, not wrapped in []
+  id: 'science_of_resilience',
+  title: 'Foundations of Resilience',
+  category: 'Foundation',
+  brief: 'Learn how resilience helps us withstand, recover, and grow — and why understanding its foundations is essential to mental strength and endurance.',
+  trainer: 'Rhonda',
+  trainerImage: '/rhonda.jpg',
+  goal: 'Learn how resilience helps us withstand, recover, and grow — and why understanding its foundations is essential to mental strength and endurance.',
+  when: 'When we need an understanding of scientific resilience principles; when we need to understand why practicing resilience is important in our daily lives; and when we need to know what mindset we should have when developing resilience in ourselves and others.',
+  benefits: [
+    'Clarifies what resilience is and how it shows up in everyday life',
+    'Builds a shared language and understanding around resilience concepts',
+    'Corrects common myths about resilient people',
+    'Explains the science of neuroplasticity and how resilience changes the brain',
+    'Introduces the power of growth mindset and how it drives long-term development',
+    'Builds awareness of how practicing resilience can improve performance and well-being'
+  ],
+  definitions: [
+    {
+      term: 'Resilience',
+      definition: 'The ability to withstand, recover, and grow in the face of stressors and adversity.'
+    },
+    {
+      term: 'Growth Mindset',
+      definition: 'The belief that intelligence, talent, and ability can be developed through effort, learning, and openness to feedback — a mindset that embraces challenges and sees them as opportunities for growth.'
+    },
+    {
+      term: 'Fixed Mindset',
+      definition: 'The belief that talents and abilities are static and unchangeable, often leading individuals to avoid challenges and dismiss feedback.'
+    },
+    {
+      term: 'Neuroplasticity',
+      definition: 'The brain’s ability to adapt and rewire itself through experience, learning, and intentional practice — making mental and emotional growth possible.'
+    },
+    {
+      term: 'Resilient Attributes',
+      definition: 'Personal qualities such as optimism, perseverance, adaptability, and confidence that contribute to a person’s ability to bounce back from challenges.'
+    }
+  ],
+  examples: [
+    "Abraham Lincoln experienced deep personal loss, business failures, and multiple election defeats. Despite depression and adversity, he remained committed to learning, leading, and persevering — modeling the core attributes of resilience.",
+    "Michael Jordan missed more than 9,000 shots, lost nearly 300 games, and failed 26 times in clutch moments. He says, 'That is why I succeed.' His mindset — seeing failure as part of growth — reflects powerful resilience and mental strength."
+  ],
+  how: [
+    'Watch Introduction: View Dr. Cornum’s personal story of resilience and recovery.',
+    'Understand Resilience: Learn how psychologists define resilience and the attributes that support it.',
+    'Observe in Action: Watch examples of real people using resilience and identify the attributes they demonstrate.',
+    'Personalize It: Choose 3–5 resilient attributes that describe you and reflect on a time you used them.',
+    'Debunk Myths: Explore and challenge common myths and assumptions about resilient people.',
+    'Learn the Science: Understand how practicing resilience affects the brain through neuroplasticity.',
+    'Adopt the Right Mindset: Learn the difference between fixed and growth mindset, and how mindset shapes resilience.'
+  ],
+  videoThumbnail: 'https://mymentalarmor.com/wp-content/uploads/2025/06/30CM_FOUND_FLOOR_CIRCLE_MED.png',
+  link: '/skills/science_of_resilience',
+  recommendedBy: 'Rhonda'
   },
 
  {
@@ -76,36 +96,40 @@ export const skills = [
 },
 
   {
-    id: 'spiritual_resilience',
-    title: 'Spiritual Resilience',
-    category: 'Values & Meaning',
-    domains: ['spiritual', 'family'] ,
-    brief: 'Use beliefs for hope and well-being.',
-    trainer: 'Chris',
-    trainerImage: '/chris.jpg',
-    goal: 'Identify beliefs that sustain purpose and hope.',
-    when: 'When seeking renewal.',
-    benefits: [
-      'Increased hope',
-      'Enhanced life satisfaction',
-      'Greater connection'
-    ],
-    definitions: [
-      { term: 'Spirituality', definition: 'Belief in something larger than oneself.' },
-      { term: 'Purpose', definition: 'Sense of meaning guiding actions.' }
-    ],
-    definition:
-      'Spirituality is belief in something larger than oneself. Purpose is the sense of meaning that guides actions.',
-    examples: [
-      'Write down three core beliefs that give your life meaning and read them each morning.',
-      'Attend a service or gathering that reinforces your spiritual values once this week.'
-    ],
-    details: [
-      'Reflect on Beliefs: Write down your core beliefs or principles.',
-      'Connect to Purpose: Describe how beliefs give life meaning.',
-      'Identify Practices: List activities that reinforce beliefs.',
-      'Plan Renewal: Schedule one spiritual practice this week.'
-    ],
+  id: 'spiritual_resilience',
+  title: 'Spiritual Resilience',
+  category: 'Values & Meaning',
+  domains: ['spiritual', 'family'],
+  brief: 'Draw strength from beliefs in something greater than yourself and your core values to build hope, optimism and face life’s challenges with resilience.',
+  trainer: 'Chris',
+  trainerImage: '/chris.jpg',
+  goal: 'To identify the beliefs, principles, and values that sustain our sense of well-being, purpose, and hope.',
+  when: 'On a regular basis and when a sense of understanding, renewal, or direction is needed.',
+  benefits: [
+    'Inspires optimism and belief in the possibility of growth',
+    'Enables acceptance and positive perseverance through adversity',
+    'Strengthens relationships and sense of connection to others',
+    'Supports a deeper sense of meaning, purpose, and transcendence'
+  ],
+  definitions: [
+    { term: 'Spirituality', definition: 'Connection to something larger than oneself that provides meaning, purpose, and guidance.' },
+    { term: 'Hope', definition: 'Belief that the future can be better than the present, and that we have the power to make it so.' },
+    { term: 'Acceptance', definition: 'The ability to acknowledge and face life’s challenges without resistance, while remaining open to growth and meaning.' },
+    { term: 'Transcendence', definition: 'Experiences or perspectives that go beyond the ordinary, offering a sense of connection to the sacred or the infinite.' },
+    { term: 'Spiritual Attributes', definition: 'Personal qualities (such as compassion, forgiveness, humility, and purpose) that reflect one’s connection to their values and beliefs.' },
+    { term: 'Spiritual Fitness', definition: 'The ability to maintain purpose, perspective, and connection during life’s challenges by aligning with one’s beliefs and values.' }
+  ],
+  examples: [
+    "During wartime, General Cornum observed the longest line she'd ever seen — not for food or gear, but to see the chaplain. It reminded her that spiritual beliefs aren't just comfort in crisis — they're foundations we need in place before we face adversity.",
+    "Buster Douglas famously drew on the memory of his mother’s belief in him when he knocked out Mike Tyson — not just to win a fight, but to stand up after being knocked down. That’s spiritual resilience: using belief to turn despair into strength."
+  ],
+  how: [
+    'Identify Spiritual Attributes & Beliefs: Choose the spiritual attributes and core beliefs that define your sense of meaning.',
+    'Reflect on Meaning: Consider which beliefs provide you with direction, purpose, and a sense of connection.',
+    'Strengthen Hope: Use your spiritual beliefs to reinforce optimism and perseverance during stressful times.',
+    'Make Meaning of Adversity: Accept difficulty or failure, then reflect on what it taught you to grow stronger from the experience.'
+  ],
+  videoThumbnail: 'https://mymentalarmor.com/wp-content/uploads/2025/06/30CM_SPIRT_FLOOR_CIRCLE_MED.png',
   link: '/skills/spiritual_resilience',
   recommendedBy: 'Chris'
 },
