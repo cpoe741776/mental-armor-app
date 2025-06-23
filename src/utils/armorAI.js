@@ -34,11 +34,11 @@ export async function getAIResponse(messages, selectedCoach, customPrompt) {
     For each recommendation:
     - If you identify anything that appears to demonstrate suicidal ideation from United States users, encourage them to dial 988
     - If you identify anything that appears to demonstrate suicidal ideation from the United Kingdom, encourage the user to dial 111
-    - Recommend one or two skills only in any response,
+    - Recommend one Mental Armor skill in every response
     - Briefly explain the skill or skills with a practical example,
     - Mention the trainer for the recommended skill and their personality,
     - If the recommendation is not too long, you can make a reference to our team as caring and good at training,
-    - Provide an internal link to the skill directly within the message using the format: <a href="/skill/${skills.id}" style="color: #003049;"></a>.
+    - Provide an internal link to the skill directly within the message using the format: <a href="/skill/${skills.id}" style="color: #003049;">Try it and see if it helps.</a>.
   `.trim();
 
   const crisisFlag = containsCrisisLanguage(messages);
