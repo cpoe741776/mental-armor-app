@@ -18,12 +18,15 @@ function cleanText(text) {
 const audioCache = new Map();
 
 export async function speakResponse(text, coachName) {
-  if (!coachName || !coachVoices[coachName]) {
-    console.warn("No valid coach name passed to speakResponse. Skipping TTS.");
+  console.log("🔊 speakResponse called with:", { text, coachName });
+
+  const voice = coachVoices[coachName];
+
+  if (!coachName || !voice) {
+    console.warn("🚫 Invalid coach name passed to speakResponse:", coachName);
     return;
   }
 
-  const voice = coachVoices[coachName];
   const plainText = cleanText(text);
   const cacheKey = `${coachName}:${plainText}`;
 
