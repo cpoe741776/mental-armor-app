@@ -2,23 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { skills } from '../skills';
 import { personalities } from '../utils/armorAI';
 import { getAIResponse } from '../utils/armorAI';
-import { getVoiceAudio } from '../utils/tts';
-
-async function speakResponse(responseText, selectedCoachName) {
-  const coachVoices = {
-    Rhonda: "en-US-Wavenet-C",
-    Jill: "en-US-Wavenet-F",
-    Scotty: "en-US-Wavenet-B",
-    Terry: "en-US-Wavenet-A",
-    AJ: "en-US-Wavenet-E",
-    Chris: "en-US-Wavenet-D"
-  };
-
-  const voice = coachVoices[selectedCoachName] || "en-US-Wavenet-D";
-  const audioUrl = await getVoiceAudio(responseText, voice);
-  const audio = new Audio(audioUrl);
-  audio.play();
-}
+import { speakResponse } from '../utils/tts';
 
 export default function CoachArmorChat({ selectedCoach }) {
   const [messages, setMessages] = useState([]);
