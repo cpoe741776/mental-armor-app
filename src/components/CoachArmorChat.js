@@ -49,6 +49,8 @@ export default function CoachArmorChat({ selectedCoach }) {
     if (voiceEnabled && selectedCoach?.name) {
       const voice = selectedCoach.name;
       const cleanedText = coachMessage.replace(/<[^>]*>?/gm, '').replace(/\*/g, '');
+      console.log("Voice ID:", voice);
+      console.log("Coach Name:", selectedCoach);
       const response = await fetch("https://api.elevenlabs.io/v1/text-to-speech/" + voice, {
         method: "POST",
         headers: {
