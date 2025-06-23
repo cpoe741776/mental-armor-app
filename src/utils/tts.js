@@ -1,11 +1,9 @@
 // src/utils/tts.js
 
 const coachVoices = {
-  Rhonda: "en-US-Wavenet-C",
-  Jill: "en-US-Wavenet-F",
-  Scotty: "en-US-Wavenet-B",
   Terry: "en-US-Wavenet-A",
-  AJ: "en-US-Wavenet-E"
+  AJ: "en-US-Wavenet-E",
+  Chris: "en-US-Wavenet-D"
 };
 
 function formatCoachSpeech(text, coachName) {
