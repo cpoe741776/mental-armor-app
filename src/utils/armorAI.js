@@ -1,4 +1,4 @@
-import { skills } from '../skills'; // Assuming skills.js is in the src folder
+import { skills } from '../skills';
 
 export const personalities = {
   Scotty: "You speak with humble warmth, a Southern kindness, and spiritual insight. You gently guide others using stories and heartfelt care.",
@@ -9,36 +9,37 @@ export const personalities = {
   Chris: "You're a resilient soldier and reflective leader who believes deeply in legacy and growth through experience."
 };
 
-async function getAIResponse(messages, selectedCoach) {
+export async function getAIResponse(messages, selectedCoach, customPrompt) {
   const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
 
- const systemPrompt = {
-  role: "system",
-  content: `
-    Commit your full personality to memory before speaking,
+  const basePrompt = `
+    Commit your full personality to memory before speaking.
     Speak in the tone of the assigned coach personality:
-    ${personalities[selectedCoach?.name] || ""}  // Use selectedCoach.name here
-    You teach *Mental Armor* skills to help users navigate emotional, social, family, and spiritual challenges, 
-    Keep the conversation flowing. Offer only a few lines of text at a time,
-    
+    ${personalities[selectedCoach?.name] || ""}
+    You teach *Mental Armor* skills to help users navigate emotional, social, family, and spiritual challenges.
+    Keep the conversation flowing. Offer only a few lines of text at a time.
+
     Here are the skills you can use:
     ${skills.map(skill => `- **${skill.title}** (taught by ${skill.trainer}) <a href="/skill/${skill.id}" style="color: #3498db; font-weight: bold; font-style: italic; text-decoration: underline;">Try it</a>`).join('\n')}
-    
+
     For each recommendation:
     - If you identify anything that appears to demonstrate suicidal ideation from United States users, encourage them to dial 988
     - If you identify anything that appears to demonstrate suicidal ideation from the United Kingdom, encourage the user to dial 111
     - Recommend one or two skills only in any response,
     - Briefly explain the skill or skills with a practical example,
     - Mention the trainer for the recommended skill and their personality,
-    - If the recommendation is not too long, you can make a reference to our team as caring and good at training
+    - If the recommendation is not too long, you can make a reference to our team as caring and good at training,
     - Provide an internal link to the skill directly within the message using the format: <a href="/skill/${skills.id}" style="color: #003049;"></a>.
-  `.trim(),
+  `.trim();
 
+  const systemMessage = {
+    role: "system",
+    content: customPrompt || basePrompt
   };
 
   const payload = {
     model: "gpt-4o",
-    messages: [systemPrompt, ...messages],
+    messages: [systemMessage, ...messages],
     temperature: 0.7,
     max_tokens: 600
   };
@@ -62,36 +63,29 @@ async function getAIResponse(messages, selectedCoach) {
     const data = await res.json();
     let reply = data.choices[0].message.content.trim();
 
-    // Find the skill mentioned in the response
     const mentionedSkill = skills.find(skill => reply.includes(skill.title));
 
-    // Ensure the skill was found
     if (!mentionedSkill) {
       console.error("Error: No matching skill found in the response");
-      return;
+      return reply; // Return the plain reply if no skill is matched
     }
 
     const skillLink = `/skill/${mentionedSkill.id}`;
     const skillWithLink = `<a href="${skillLink}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;" rel="noopener noreferrer">${mentionedSkill.title}</a>`;
 
-    // Ensure selectedCoach is defined and has a name property
     if (!selectedCoach || !selectedCoach.name) {
       console.error("Error: No selected coach found");
-      return;
+      return reply;
     }
 
-    // Check if the coach is recommending their own skill based on the "trainer" field
     const isCoachRecommendingOwnSkill = mentionedSkill.trainer.toLowerCase() === selectedCoach.name.toLowerCase();
 
-    // If the coach is recommending their own skill, make it sound more natural
     if (isCoachRecommendingOwnSkill) {
       reply = reply.replace(mentionedSkill.title, `${mentionedSkill.title} skill, which I teach.`);
     } else {
-      // Replace the skill name in the AI response with the clickable link
       reply = reply.replace(mentionedSkill.title, skillWithLink);
     }
 
-    // Optionally, you can append the skill brief summary to the response
     const skillSummary = `${mentionedSkill.brief} <a href="${skillLink}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;" rel="noopener noreferrer">Try it</a>`;
     reply += ` ${skillSummary}`;
 
@@ -101,5 +95,3 @@ async function getAIResponse(messages, selectedCoach) {
     return "Sorry, I ran into a problem trying to help you. Try again in a bit.";
   }
 }
-
-export { getAIResponse };
