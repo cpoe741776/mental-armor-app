@@ -15,6 +15,8 @@ function cleanText(text) {
     .replace(/\*/g, '');       // Remove asterisks
 }
 
+const audioCache = new Map();
+
 export async function speakResponse(text, coachName) {
   if (!coachName || !coachVoices[coachName]) {
     console.warn("No valid coach name passed to speakResponse. Skipping TTS.");
@@ -23,13 +25,21 @@ export async function speakResponse(text, coachName) {
 
   const voice = coachVoices[coachName];
   const plainText = cleanText(text);
+  const cacheKey = `${coachName}:${plainText}`;
+
+  if (audioCache.has(cacheKey)) {
+    const cachedUrl = audioCache.get(cacheKey);
+    const audio = new Audio(cachedUrl);
+    audio.play();
+    return;
+  }
 
   try {
     const response = await fetch("https://api.elevenlabs.io/v1/text-to-speech/" + voice, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "xi-api-key": "sk_5900056e9ae225f8c8dc0d6b6023d51cf6efd3bb8cb57aca"
+        "xi-api-key": process.env.REACT_APP_ELEVENLABS_TTS_KEY
       },
       body: JSON.stringify({
         text: plainText,
@@ -47,10 +57,12 @@ export async function speakResponse(text, coachName) {
 
     const blob = await response.blob();
     const audioUrl = URL.createObjectURL(blob);
+    audioCache.set(cacheKey, audioUrl);
+
     const audio = new Audio(audioUrl);
     audio.play();
 
   } catch (err) {
     console.error("ElevenLabs TTS error:", err);
   }
-} 
+}
