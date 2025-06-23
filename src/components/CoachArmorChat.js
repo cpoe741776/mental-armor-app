@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { skills } from '../skills';
 import { personalities } from '../utils/armorAI';
 import { getAIResponse } from '../utils/armorAI';
-import { speakResponse } from '../utils/elevenlabs_tts';
-
+import { speakResponse } from '../utils/tts-elevenlabs';
 
 export default function CoachArmorChat({ selectedCoach }) {
   const [messages, setMessages] = useState([]);
@@ -27,64 +26,37 @@ export default function CoachArmorChat({ selectedCoach }) {
     ? `You are ${selectedCoach.name}, a Mental Armor resilience coach. Your background is: ${selectedCoach.title}. Your style is: ${personalities[selectedCoach.name]}. Respond as this character while helping the user with their struggles.`
     : `You are a helpful Mental Armor resilience coach.`;
 
- const handleSend = async () => {
-  if (!input.trim()) return;
+  const handleSend = async () => {
+    if (!input.trim()) return;
 
-  const newMessages = [...messages, { role: 'user', content: input }];
-  setMessages(newMessages);
-  setInput('');
-  setIsThinking(true);
+    const newMessages = [...messages, { role: 'user', content: input }];
+    setMessages(newMessages);
+    setInput('');
+    setIsThinking(true);
 
-  try {
-    const aiReply = await getAIResponse(newMessages, selectedCoach);
+    try {
+      const aiReply = await getAIResponse(newMessages, selectedCoach);
 
-    let coachMessage = aiReply?.trim();
-    if (!coachMessage) {
-      coachMessage = selectedCoach?.name === 'Terry'
-        ? "Life in the Bronx? It's tough, but you've gotta find the humor in the hard times. Now, what else can I help with?"
-        : "That’s a great question! While I don’t have a skill that fits right now, I’m happy to chat about anything else!";
+      let coachMessage = aiReply?.trim();
+      if (!coachMessage) {
+        coachMessage = selectedCoach?.name === 'Terry'
+          ? "Life in the Bronx? It's tough, but you've gotta find the humor in the hard times. Now, what else can I help with?"
+          : "That’s a great question! While I don’t have a skill that fits right now, I’m happy to chat about anything else!";
+      }
+
+      setMessages([...newMessages, { role: 'assistant', content: coachMessage }]);
+
+      if (voiceEnabled && selectedCoach?.name) {
+        await speakResponse(coachMessage, selectedCoach.name);
+      }
+
+    } catch (error) {
+      console.error("AI or TTS Error:", error);
+      setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
+    } finally {
+      setIsThinking(false);
     }
-
-    let audio;
-    if (voiceEnabled && selectedCoach?.name) {
-      const voice = selectedCoach.name;
-      const cleanedText = coachMessage.replace(/<[^>]*>?/gm, '').replace(/\*/g, '');
-      console.log("Voice ID:", voice);
-      console.log("Coach Name:", selectedCoach);
-      const response = await fetch("https://api.elevenlabs.io/v1/text-to-speech/" + voice, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "xi-api-key": process.env.REACT_APP_ELEVENLABS_TTS_KEY
-        },
-        body: JSON.stringify({
-          text: cleanedText,
-          model_id: "eleven_monolingual_v1",
-          voice_settings: {
-            stability: 0.4,
-            similarity_boost: 0.75
-          }
-        })
-      });
-
-      const blob = await response.blob();
-      const audioUrl = URL.createObjectURL(blob);
-      audio = new Audio(audioUrl);
-    }
-
-    // 👇 Show message now
-    setMessages([...newMessages, { role: 'assistant', content: coachMessage }]);
-
-    // 🔊 Play voice after setting
-    if (audio) audio.play();
-
-  } catch (error) {
-    console.error("AI or TTS Error:", error);
-    setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
-  } finally {
-    setIsThinking(false);
-  }
-};
+  };
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') handleSend();
@@ -174,7 +146,7 @@ export default function CoachArmorChat({ selectedCoach }) {
       </div>
 
       <div style={{ marginTop: 20 }}>
-        <h3 className="text-lg font-semibold mb-2">\ud83e\udde0 Mental Armor Skills</h3>
+        <h3 className="text-lg font-semibold mb-2">🧠 Mental Armor Skills</h3>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
           {skills.map((skill, index) => (
             <button
@@ -199,7 +171,7 @@ export default function CoachArmorChat({ selectedCoach }) {
                   setMessages([...newMessages, { role: 'assistant', content: aiReply }]);
 
                   if (voiceEnabled) {
-                    await speakResponse(newMessages, selectedCoach?.name);
+                    await speakResponse(aiReply, selectedCoach?.name);
                   }
                 } catch (err) {
                   setMessages([...newMessages, { role: 'assistant', content: "Something went wrong." }]);
