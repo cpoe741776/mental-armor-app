@@ -15,10 +15,7 @@ export async function speakResponse(text, coachName) {
   }
 
   const voice = coachVoices[coachName];
-
-  console.log("TTS is being called...");
-  console.log("Voice:", voice);
-  console.log("Text:", text);
+  const plainText = text.replace(/<[^>]*>?/gm, ''); // Strip all HTML tags
 
   try {
     const response = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=AIzaSyB2qxr51EP6_bmCVzD4nq2SATWUQefbMeM`, {
@@ -27,7 +24,7 @@ export async function speakResponse(text, coachName) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        input: { text },
+        input: { text: plainText },
         voice: {
           languageCode: "en-US",
           name: voice
