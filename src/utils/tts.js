@@ -9,7 +9,9 @@ const coachVoices = {
 };
 
 function formatCoachSpeech(text, coachName) {
-  const clean = text.replace(/<[^>]*>?/gm, '');
+  const clean = text
+    .replace(/<[^>]*>?/gm, '')  // Strip HTML
+    .replace(/\*/g, '');       // Remove asterisks
 
   switch (coachName) {
     case "Rhonda":
@@ -68,4 +70,4 @@ export async function speakResponse(text, coachName) {
   } catch (err) {
     console.error("Text-to-Speech error:", err);
   }
-}
+} 
