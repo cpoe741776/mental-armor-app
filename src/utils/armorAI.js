@@ -77,10 +77,30 @@ export async function getAIResponse(messages, selectedCoach, customPrompt) {
 
     let mentionedSkill = skills.find(skill => new RegExp(`\\*\\*${skill.title}\\*\\*`, "i").test(reply));
 
-    if (!mentionedSkill) {
-      mentionedSkill = skills[Math.floor(Math.random() * skills.length)];
-      reply += `\n\nThe skill I recommend for this is **${mentionedSkill.title}**, taught by ${mentionedSkill.trainer}.`;
-    }
+    if (!crisisFlag) {
+  if (!mentionedSkill) {
+    mentionedSkill = skills[Math.floor(Math.random() * skills.length)];
+    reply += `\n\nThe skill I recommend for this is **${mentionedSkill.title}**, taught by ${mentionedSkill.trainer}.`;
+  }
+
+  if (reply.includes("Let me recommend one of our Mental Armor skills")) {
+    reply = reply.replace(/Let me recommend.*?\n?/gi, '');
+  }
+
+  const skillLink = `/skill/${mentionedSkill.id}`;
+  const skillWithLink = `<a href="${skillLink}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;" rel="noopener noreferrer">${mentionedSkill.title}</a>`;
+
+  const isCoachRecommendingOwnSkill = mentionedSkill.trainer.toLowerCase() === selectedCoach.name.toLowerCase();
+
+  if (isCoachRecommendingOwnSkill) {
+    reply = reply.replace(mentionedSkill.title, `${mentionedSkill.title} skill, which I teach.`);
+  } else {
+    reply = reply.replace(mentionedSkill.title, skillWithLink);
+  }
+
+  const skillSummary = `${mentionedSkill.brief} <a href="${skillLink}" style="color: #003049; font-weight: bold; font-style: italic; text-decoration: underline;" rel="noopener noreferrer">Try it</a>`;
+  reply += ` ${skillSummary}`;
+}
     if (reply.includes("Let me recommend one of our Mental Armor skills")) {
       reply = reply.replace(/Let me recommend.*?\n?/gi, '');
     }
