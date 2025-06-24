@@ -15,3 +15,9 @@ html, body {
   max-width: 100%;
   overflow-x: hidden;      /* prevents sideways scroll if *anything* leaks */
 }
+.bg-garden {
+  background-image: url('/images/grass-hills.jpg');
+  background-position: bottom;
+  background-repeat: repeat-x;
+  background-size: cover;
+}
