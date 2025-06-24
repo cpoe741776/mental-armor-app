@@ -67,13 +67,16 @@ Flower.propTypes = {
 export function Garden({ domainScores, suggestedSkills = [] }) {
   return (
   <section
-  className="p-4 rounded-2xl bg-garden min-h-[240px] h-full"
+  style={{
+    backgroundImage: "url('/images/grass-hills.jpg')",
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "bottom",
+  }}
+  className="p-4 rounded-2xl min-h-[240px] h-full"
   role="group"
   aria-label="Resilience & Well-being Garden"
 >
-  role="group"
-  aria-label="Resilience & Well-being Garden"
-
   <h3 className="text-xl font-semibold mb-4 text-center">Your Resilience and Wellbeing Garden</h3>
   <div className="grid grid-cols-2 gap-4 justify-items-center content-start">
     {DOMAIN_ORDER.map((domain) => {
