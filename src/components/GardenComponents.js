@@ -3,7 +3,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-
+import { skills } from "../skills"; // adjust the import path as needed
 
 const DOMAIN_ORDER = ["emotional", "social", "family", "spiritual"];
 
@@ -16,7 +16,7 @@ const toStatus = (score) => {
 const capLeft = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
 const mapStatusToEmoji = {
-  challenged: "🦀",
+  challenged: "🥀", // corrected to wilted rose
   needsImprovement: "🌱",
   thriving: "🌸",
 };
@@ -37,17 +37,21 @@ export function Flower({ status, label, size = 48, showLabel = true, skillsFor =
         </figcaption>
       )}
       <span style={{ fontSize: size }}>{mapStatusToEmoji[status]}</span>
-      {skillsFor.length > 0 && (
-        <ul className="mt-1 space-y-1 text-sm">
-          {skillsFor.map((skill) => (
-            <li key={skill.id}>
-              <span role="img" aria-label="Watering plant">🚿</span>{' '}
-              <Link to={`/skill/${skill.id}`} className="text-blue-600 hover:underline">
-                {skill.title}
-              </Link>
-            </li>
-          ))}
-        </ul>
+      {status !== "thriving" ? (
+        skillsFor.length > 0 && (
+          <ul className="mt-1 space-y-1 text-sm">
+            {skillsFor.map((skill) => (
+              <li key={skill.id}>
+                <span role="img" aria-label="Watering plant">🚿</span>{' '}
+                <Link to={`/skill/${skill.id}`} className="text-blue-600 hover:underline">
+                  {skill.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )
+      ) : (
+        <p className="text-xs text-green-700 font-semibold mt-1">Thriving</p>
       )}
     </figure>
   );
