@@ -5,18 +5,18 @@ const config = {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {
-      animation: {
-        gardenScroll: 'scrollBg 30s linear infinite',
-      },
-      keyframes: {
-        scrollBg: {
-          '0%': { backgroundPosition: '0% 100%' },
-          '100%': { backgroundPosition: '100% 100%' },
-        },
+  extend: {
+    animation: {
+      gardenScroll: 'scrollBg 30s linear infinite',
+    },
+    keyframes: {
+      scrollBg: {
+        '0%': { backgroundPositionX: '0%' },
+        '100%': { backgroundPositionX: '100%' },
       },
     },
   },
+},
   plugins: [require('@tailwindcss/typography')],
 };
 
