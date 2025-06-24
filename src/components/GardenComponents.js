@@ -43,9 +43,12 @@ export function Flower({ status, label, size = 48, showLabel = true, skillsFor =
             {skillsFor.map((skill) => (
               <li key={skill.id}>
                 <span role="img" aria-label="Watering plant">🚿</span>{" "}
-                <Link to={`/skill/${skill.id}`} className="text-green-400 font-bold hover:underline animate-pulse">
-                  {skill.title}
-                </Link>
+                <Link
+  to={`/skill/${skill.id}`}
+  className="text-amber-300 font-bold hover:underline animate-pulse drop-shadow-[0_0_4px_#facc15]"
+>
+  {skill.title}
+</Link>
               </li>
             ))}
           </ul>
