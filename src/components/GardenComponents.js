@@ -60,7 +60,7 @@ Flower.propTypes = {
 export function Garden({ domainScores }) {
   return (
     <section
-      className="grid grid-cols-2 gap-4 p-4 rounded-2xl bg-green-50"
+      className="grid grid-cols-2 gap-4 p-4 rounded-2xl bg-green-50 min-h-[240px] h-full justify-center items-center"
       role="group"
       aria-label="Resilience & Well-being Garden"
     >
