@@ -43,11 +43,11 @@ export default function SkillDetail() {
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Video Section */}
         {skill.videoUrl && !showVideo && skill.videoThumbnail && (
-          <div className="relative cursor-pointer" onClick={() => setShowVideo(true)}>
+          <div className="relative cursor-pointer aspect-video" onClick={() => setShowVideo(true)}>
             <img
               src={skill.videoThumbnail}
               alt="Video thumbnail"
-              className="w-full rounded-xl shadow-md"
+              className="w-full h-full object-cover rounded-xl shadow-md"
             />
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-white text-5xl bg-black bg-opacity-50 px-4 py-2 rounded-full">
@@ -58,13 +58,13 @@ export default function SkillDetail() {
         )}
 
         {showVideo && skill.videoUrl && (
-          <div>
+          <div className="aspect-video">
             <video
               src={skill.videoUrl}
               controls
               muted
               playsInline
-              className="w-full rounded-xl shadow"
+              className="w-full h-full rounded-xl shadow object-contain"
             />
             <button
               onClick={() => setShowVideo(false)}
@@ -76,7 +76,12 @@ export default function SkillDetail() {
         )}
 
         {/* Header Section */}
-        <div className="flex items-start gap-6 bg-gray-100 p-6 rounded-xl shadow">
+        <div className="flex flex-col sm:flex-row items-start gap-6 bg-gray-100 p-6 rounded-xl shadow relative">
+          {visited && (
+            <span className="absolute top-4 right-4 bg-green-100 text-green-800 text-xs font-medium px-3 py-1 rounded-full shadow">
+              ✓ Viewed
+            </span>
+          )}
           {skill.trainerImage && (
             <img
               src={skill.trainerImage}
@@ -85,14 +90,32 @@ export default function SkillDetail() {
             />
           )}
           <div>
-            <h1 className="text-3xl font-bold mb-1">{skill.title}</h1>
+            <h1 className="text-3xl font-bold mb-1 flex items-center">
+              {skill.title}
+              {visited && (
+                <span className="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  ✓ Viewed
+                </span>
+              )}
+            </h1>
             <p className="text-gray-700 italic mb-2">{skill.brief}</p>
             <div className="text-sm text-gray-600 space-y-1">
               <p><strong>Category:</strong> {skill.category}</p>
-              {skill.domains && (
-                <p><strong>Domains:</strong> {skill.domains.map(d => <span key={d} className="inline-block bg-blue-100 text-blue-800 text-xs font-medium mr-1 px-2 py-0.5 rounded-full">{d}</span>)}</p>
+              {skill.domains && skill.domains.length > 0 && (
+                <p className="flex flex-wrap gap-1">
+                  <strong>Domains:</strong>
+                  {skill.domains.map(d => (
+                    <span
+                      key={d}
+                      className="inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded-full"
+                    >
+                      {d}
+                    </span>
+                  ))}
+                </p>
               )}
               <p><strong>Trainer:</strong> {skill.trainer}</p>
+              <p><strong>Recommended by:</strong> {skill.recommendedBy}</p>
             </div>
           </div>
         </div>
@@ -115,13 +138,24 @@ export default function SkillDetail() {
           </div>
         </div>
 
+        {/* Reflection Prompt if Visited */}
+        {visited && (
+          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-xl shadow">
+            <h3 className="text-lg font-semibold text-yellow-800 mb-1">Reflection Prompt</h3>
+            <p className="text-yellow-700 text-sm">
+              How have you used this skill in real life? What changed because of it?
+              Consider writing it down or sharing with someone close to you.
+            </p>
+          </div>
+        )}
+
         {/* Tab Navigation */}
-        <div className="flex space-x-6 border-b border-gray-200 pb-2">
+        <div className="flex space-x-6 overflow-x-auto border-b border-gray-200 pb-2">
           {['definitions', 'examples'].map(key => (
             <button
               key={key}
               onClick={() => setTab(key)}
-              className={`pb-2 capitalize ${
+              className={`pb-2 capitalize whitespace-nowrap ${
                 tab === key
                   ? 'border-b-2 border-blue-600 font-semibold text-gray-900'
                   : 'text-gray-600 hover:text-gray-800'
@@ -170,16 +204,9 @@ export default function SkillDetail() {
         {skill.steps && skill.steps.length > 0 && (
           <div className="bg-green-50 p-6 rounded-xl shadow">
             <h2 className="text-xl font-semibold mb-2">Skill Steps</h2>
-            <ol className="list-decimal list-inside text-gray-700 space-y-1">
+            <ol className="list-decimal; list-inside text-gray-700 space-y-1">
               {skill.steps.map((step, idx) => <li key={idx}>{step}</li>)}
             </ol>
-          </div>
-        )}
-
-        {/* Visited Indicator */}
-        {visited && (
-          <div className="fixed top-16 right-4 bg-green-100 border border-green-400 text-green-800 px-4 py-2 rounded shadow-md">
-            You’ve viewed this skill.
           </div>
         )}
       </div>
