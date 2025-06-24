@@ -18,7 +18,7 @@ const capLeft = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 const mapStatusToEmoji = {
   challenged: "🥀", // restored wilted rose emoji
   needsImprovement: "🌱",
-  thriving: "🌸",
+  thriving: "🌹",
 };
 
 const labelMap = {
