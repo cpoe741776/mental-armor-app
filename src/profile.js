@@ -142,12 +142,25 @@ export default function Profile() {
           </div>
         ) : (
           <>
-            <div className="flex items-center space-x-3">
-              {avatar && (
-                <img src={AVATARS.find(a => a.id === avatar)?.src} alt="Your avatar" className="w-12 h-12 rounded-full" />
-              )}
-              <div><strong>Email:</strong> {user.email}</div>
-            </div>
+            <div className="flex flex-wrap items-center justify-between mb-6">
+  <div className="flex items-center space-x-3">
+    {avatar && (
+      <img src={AVATARS.find(a => a.id === avatar)?.src} alt="Your avatar" className="w-12 h-12 rounded-full" />
+    )}
+    <div><strong>Email:</strong> {user.email}</div>
+  </div>
+  <div className="flex items-center space-x-2">
+    {AVATARS.map(a => (
+      <img
+        key={a.id}
+        src={a.src}
+        alt={a.id}
+        className={`w-10 h-10 rounded-full cursor-pointer border-2 ${avatar === a.id ? 'border-blue-500' : 'border-transparent'}`}
+        onClick={() => updateAvatar(a.id)}
+      />
+    ))}
+  </div>
+</div>
             <div className="space-y-8">
               <div className="space-y-2">
                 <button onClick={handleResetPassword} className="w-full px-4 py-2 bg-yellow-400 rounded">
@@ -254,21 +267,6 @@ export default function Profile() {
                       </section>
                     </>
                   )}
-
-                  <section>
-                    <h2 className="text-xl font-semibold mb-2 text-center">Choose your Avatar</h2>
-                    <div className="grid grid-cols-2 gap-2 justify-items-center">
-                      {AVATARS.map(a => (
-                        <img
-                          key={a.id}
-                          src={a.src}
-                          alt={a.id}
-                          className={`w-16 h-16 rounded-full cursor-pointer border-2 ${avatar === a.id ? 'border-blue-500' : 'border-transparent'}`}
-                          onClick={() => updateAvatar(a.id)}
-                        />
-                      ))}
-                    </div>
-                  </section>
                 </div>
               </div>
             </div>
