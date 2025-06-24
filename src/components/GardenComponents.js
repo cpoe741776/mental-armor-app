@@ -4,7 +4,6 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 
-
 const DOMAIN_ORDER = ["emotional", "social", "family", "spiritual"];
 
 const toStatus = (score) => {
@@ -68,7 +67,7 @@ Flower.propTypes = {
 export function Garden({ domainScores, suggestedSkills = [] }) {
   return (
     <section
-      className="grid grid-cols-2 gap-4 p-4 rounded-2xl bg-green-50 min-h-[240px] h-full justify-center items-center"
+      className="grid grid-cols-2 gap-4 p-4 rounded-2xl bg-green-50 min-h-[240px] h-full justify-items-center content-start"
       role="group"
       aria-label="Resilience & Well-being Garden"
     >
