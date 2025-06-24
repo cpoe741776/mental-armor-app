@@ -3,7 +3,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import grassImage from "../assets/grass-hills.jpg"; // corrected import path
+import grassImage from "../assets/grass-hills.png"; // corrected import path
 
 const DOMAIN_ORDER = ["emotional", "social", "family", "spiritual"];
 
