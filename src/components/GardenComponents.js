@@ -3,6 +3,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
+import grassImage from './assets/images/grass-hills.jpg'; // adjust path if needed
+
 
 
 const DOMAIN_ORDER = ["emotional", "social", "family", "spiritual"];
@@ -70,11 +72,11 @@ export function Garden({ domainScores, suggestedSkills = [] }) {
     <section
       className="p-4 rounded-2xl min-h-[240px] h-full"
       style={{
-        backgroundImage: "url('.images/grass-hills.jpg')",
-        backgroundRepeat: "repeat-x",
-        backgroundPosition: "bottom",
-        backgroundSize: "cover"
-      }}
+  backgroundImage: `url(${grassImage})`,
+  backgroundRepeat: "repeat-x",
+  backgroundPosition: "bottom",
+  backgroundSize: "cover",
+}}
       role="group"
       aria-label="Resilience & Well-being Garden"
     >
