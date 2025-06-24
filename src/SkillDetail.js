@@ -93,7 +93,6 @@ export default function SkillDetail() {
                 <p><strong>Domains:</strong> {skill.domains.map(d => <span key={d} className="inline-block bg-blue-100 text-blue-800 text-xs font-medium mr-1 px-2 py-0.5 rounded-full">{d}</span>)}</p>
               )}
               <p><strong>Trainer:</strong> {skill.trainer}</p>
-              <p><strong>Recommended by:</strong> {skill.recommendedBy}</p>
             </div>
           </div>
         </div>
