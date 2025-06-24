@@ -42,10 +42,10 @@ export function Flower({ status, label, size = 48, showLabel = true, skillsFor =
           <ul className="mt-1 space-y-1 text-sm">
             {skillsFor.map((skill) => (
               <li key={skill.id}>
-                <span role="img" aria-label="Watering plant">🚿</span>{" "}
+                <span role="img" aria-label="Watering plant">🛿</span>{" "}
                 <Link
                   to={`/skill/${skill.id}`}
-                  className="text-amber-300 font-extrabold hover:underline"
+                  className="text-[#003049] font-extrabold hover:underline"
                 >
                   {skill.title}
                 </Link>
@@ -76,7 +76,7 @@ export function Garden({ domainScores, suggestedSkills = [] }) {
       aria-label="Resilience & Well-being Garden"
     >
       <div
-        className="absolute inset-0 opacity-75 z-0"
+        className="absolute inset-0 opacity-50 z-0"
         style={{
           backgroundImage: `url(${grassImage})`,
           backgroundRepeat: "repeat-x",
