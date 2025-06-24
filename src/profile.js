@@ -1,4 +1,5 @@
 // src/profile.js
+
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { skills } from './skills';
@@ -6,6 +7,7 @@ import MFADials from './components/MFADials';
 import { Garden } from './components/GardenComponents';
 import netlifyIdentity from 'netlify-identity-widget';
 import { auth } from './auth';
+import ProfileReflections from './components/ProfileReflections';
 
 const labelMap = {
   emotional: 'Emotional Fitness',
@@ -44,8 +46,6 @@ export default function Profile() {
   const [mfaScores, setMfaScores] = useState(null);
   const [topStrengths, setStrengths] = useState({ strength1: null, strength2: null });
   const [suggestedSkills, setSuggest] = useState([]);
-  const [reflections, setReflections] = useState({});
-  const [reflectionTimestamps, setTimestamps] = useState({});
   const [loading, setLoading] = useState(true);
 
   const loadMetadata = (u) => {
@@ -64,8 +64,6 @@ export default function Profile() {
     setStrengths(md.topStrengths ?? {});
     setSuggest(mapScoresToSkills(scores));
     setAvatar(md.avatar || localStorage.getItem('selectedAvatar') || '');
-    setReflections(md.reflections || {});
-    setTimestamps(md.reflectionTimestamps || {});
   };
 
   useEffect(() => {
@@ -88,8 +86,6 @@ export default function Profile() {
       setStrengths({ strength1: null, strength2: null });
       setSuggest([]);
       setAvatar('');
-      setReflections({});
-      setTimestamps({});
       localStorage.removeItem('selectedAvatar');
     };
 
@@ -193,23 +189,7 @@ export default function Profile() {
                     ) : <p className="text-gray-600">No skills viewed yet.</p>}
                   </section>
 
-                  <section>
-                    <h2 className="text-xl font-semibold mb-2">Reflections</h2>
-                    {Object.keys(reflections).length > 0 ? (
-                      <ul className="space-y-4 text-gray-700">
-                        {Object.entries(reflections).map(([id, text]) => {
-                          const skill = skills.find(s => s.id === id);
-                          return skill ? (
-                            <li key={id}>
-                              <p className="font-semibold">{skill.title}</p>
-                              <p className="text-sm italic text-gray-600 mb-1">{reflectionTimestamps[id] ? new Date(reflectionTimestamps[id]).toLocaleString() : ''}</p>
-                              <p className="text-sm">{text}</p>
-                            </li>
-                          ) : null;
-                        })}
-                      </ul>
-                    ) : <p className="text-gray-600">No reflections saved yet.</p>}
-                  </section>
+                  <ProfileReflections />
                 </div>
 
                 <div className="space-y-8">
