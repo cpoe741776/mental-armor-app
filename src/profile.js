@@ -173,6 +173,7 @@ export default function Profile() {
                   <MFADials scores={mfaScores} />
                 </div>
                 <div className="w-full md:w-1/2">
+                <h2 className="text-xl font-semibold mb-2 text-center">Your Resilience Garden</h2>
                   <Garden domainScores={mfaScores} />
                 </div>
               </div>
@@ -213,11 +214,6 @@ export default function Profile() {
                 <div className="md:col-span-2 space-y-8">
                   {mfaScores && (
                     <>
-                      <section>
-                        <h2 className="text-xl font-semibold mb-2 text-center">Your Resilience Garden</h2>
-                        <Garden domainScores={mfaScores} />
-                      </section>
-
                       <section>
                         <h2 className="text-xl font-semibold mb-2 text-center">Skills We Suggest</h2>
                         {Object.entries(mfaScores).map(([dim, score]) => {
