@@ -31,18 +31,25 @@ const mapStatusToEmoji = {
 // ---------------------------------------------------------------------
 // <Flower /> – single emoji flower
 // ---------------------------------------------------------------------
+const labelMap = {
+  emotional: 'EMOTIONAL',
+  social: 'SOCIAL/PROFESSIONAL',
+  family: 'FAMILY/PERSONAL',
+  spiritual: 'SPIRITUAL',
+};
+
 export function Flower({ status, label, size = 48, showLabel = true }) {
   return (
     <figure
       className="flex flex-col items-center gap-1"
       aria-label={`${label} flower – ${status}`}
     >
-      <span style={{ fontSize: size }}>{mapStatusToEmoji[status]}</span>
       {showLabel && (
-        <figcaption className="text-xs font-semibold text-gray-700">
-          {label}
+        <figcaption className="text-xs font-semibold text-gray-700 text-center">
+          {labelMap[label.toLowerCase()] || label}
         </figcaption>
       )}
+      <span style={{ fontSize: size }}>{mapStatusToEmoji[status]}</span>
     </figure>
   );
 }
