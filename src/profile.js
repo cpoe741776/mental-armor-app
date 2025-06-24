@@ -167,11 +167,16 @@ export default function Profile() {
                   Reset Password
                 </button>
               </div>
-              {mfaScores && (
-                <div className="flex justify-center mb-8">
+               {mfaScores && (
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 space-y-6 md:space-y-0 md:space-x-6">
+                <div className="w-full md:w-1/2 scale-90">
                   <MFADials scores={mfaScores} />
                 </div>
-              )}
+                <div className="w-full md:w-1/2">
+                  <Garden domainScores={mfaScores} />
+                </div>
+              </div>
+            )}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="space-y-8">
                   <section>
