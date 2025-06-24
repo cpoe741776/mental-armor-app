@@ -15,7 +15,7 @@ const toStatus = (score) => {
 const capLeft = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
 const mapStatusToEmoji = {
-  challenged: "🍀", // corrected to wilted rose
+  challenged: "🥀", // corrected to wilted rose
   needsImprovement: "🌱",
   thriving: "🌸",
 };
