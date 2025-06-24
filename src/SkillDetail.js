@@ -204,7 +204,7 @@ export default function SkillDetail() {
         {skill.steps && skill.steps.length > 0 && (
           <div className="bg-green-50 p-6 rounded-xl shadow">
             <h2 className="text-xl font-semibold mb-2">Skill Steps</h2>
-            <ol className="list-decimal; list-inside text-gray-700 space-y-1">
+            <ol className="list-decimal list-inside text-gray-700 space-y-1">
               {skill.steps.map((step, idx) => <li key={idx}>{step}</li>)}
             </ol>
           </div>
