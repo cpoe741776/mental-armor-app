@@ -78,7 +78,7 @@ export default function SkillDetail() {
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row items-start gap-6 bg-gray-100 p-6 rounded-xl shadow relative">
           {visited && (
-            <span className="absolute top-4 right-4 bg-green-100 text-green-800 text-xs font-medium px-3 py-1 rounded-full shadow">
+            <span className="absolute top-4 right-4 bg-green-100 text-green-800 text-xs font-medium px-3 py-1 rounded-full shadow animate-bounce">
               ✓ Viewed
             </span>
           )}
@@ -92,11 +92,7 @@ export default function SkillDetail() {
           <div>
             <h1 className="text-3xl font-bold mb-1 flex items-center">
               {skill.title}
-              {visited && (
-                <span className="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  ✓ Viewed
-                </span>
-              )}
+              
             </h1>
             <p className="text-gray-700 italic mb-2">{skill.brief}</p>
             <div className="text-sm text-gray-600 space-y-1">
