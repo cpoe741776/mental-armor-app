@@ -43,7 +43,7 @@ export function Flower({ status, label, size = 48, showLabel = true, skillsFor =
             {skillsFor.map((skill) => (
               <li key={skill.id}>
                 <span role="img" aria-label="Watering plant">🚿</span>{" "}
-               <Link
+                <Link
                   to={`/skill/${skill.id}`}
                   className="text-amber-300 font-extrabold hover:underline"
                 >
@@ -71,33 +71,38 @@ Flower.propTypes = {
 export function Garden({ domainScores, suggestedSkills = [] }) {
   return (
     <section
-      className="p-4 rounded-2xl min-h-[240px] h-full animate-gardenScroll"
-      style={{
-        backgroundImage: `url(${grassImage})`,
-        backgroundRepeat: "repeat-x",
-        backgroundPosition: "bottom",
-        backgroundSize: "cover"
-      }}
+      className="p-4 rounded-2xl min-h-[240px] h-full animate-gardenScroll relative overflow-hidden"
       role="group"
       aria-label="Resilience & Well-being Garden"
     >
-      <h3 className="text-xl font-semibold mb-4 text-center">Your Resilience and Wellbeing Garden</h3>
-      <div className="grid grid-cols-2 gap-4 justify-items-center content-start">
-        {DOMAIN_ORDER.map((domain) => {
-          const domainSkills = suggestedSkills.filter(skill =>
-            Array.isArray(skill.domains) && skill.domains.includes(domain)
-          );
-          return (
-            <Flower
-              key={domain}
-              status={toStatus(domainScores[domain] ?? 0)}
-              label={capLeft(domain)}
-              size={48}
-              showLabel={true}
-              skillsFor={domainSkills}
-            />
-          );
-        })}
+      <div
+        className="absolute inset-0 opacity-75 z-0"
+        style={{
+          backgroundImage: `url(${grassImage})`,
+          backgroundRepeat: "repeat-x",
+          backgroundPosition: "bottom",
+          backgroundSize: "cover",
+        }}
+      ></div>
+      <div className="relative z-10">
+        <h3 className="text-xl font-semibold mb-4 text-center">Your Resilience and Wellbeing Garden</h3>
+        <div className="grid grid-cols-2 gap-4 justify-items-center content-start">
+          {DOMAIN_ORDER.map((domain) => {
+            const domainSkills = suggestedSkills.filter(skill =>
+              Array.isArray(skill.domains) && skill.domains.includes(domain)
+            );
+            return (
+              <Flower
+                key={domain}
+                status={toStatus(domainScores[domain] ?? 0)}
+                label={capLeft(domain)}
+                size={48}
+                showLabel={true}
+                skillsFor={domainSkills}
+              />
+            );
+          })}
+        </div>
       </div>
     </section>
   );
