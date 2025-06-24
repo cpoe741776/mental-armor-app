@@ -192,16 +192,69 @@ export default function Profile() {
                   <ProfileReflections />
                 </div>
 
-                <div className="space-y-8">
+                <div className="md:col-span-2 space-y-8">
                   {mfaScores && (
-                    <section>
-                      <h2 className="text-xl font-semibold mb-2 text-center">Your Resilience Garden</h2>
-                      <Garden domainScores={mfaScores} />
-                    </section>
-                  )}
-                </div>
+                    <>
+                      <section>
+                        <h2 className="text-xl font-semibold mb-2 text-center">Your Resilience Garden</h2>
+                        <Garden domainScores={mfaScores} />
+                      </section>
 
-                <div>
+                      <section>
+                        <h2 className="text-xl font-semibold mb-2 text-center">Skills We Suggest</h2>
+                        {Object.entries(mfaScores).map(([dim, score]) => {
+                          const label = labelMap[dim];
+                          const bgMap = {
+                            emotional: 'bg-red-50',
+                            social: 'bg-blue-50',
+                            family: 'bg-yellow-50',
+                            spiritual: 'bg-purple-50',
+                          };
+                          const skillsFor = suggestedSkills.filter(skill =>
+                            Array.isArray(skill.domains) && skill.domains.includes(dim)
+                          );
+
+                          if (score >= 3.5) {
+                            return (
+                              <p key={dim} className="text-green-600 mb-6 text-center">
+                                Your {label} is Thriving! Well done!
+                              </p>
+                            );
+                          }
+
+                          return (
+                            <div key={dim} className={`mb-12 ${bgMap[dim]} rounded-xl p-4`}>
+                              <p className="font-semibold mb-3 text-lg text-center">
+                                To increase your {label}, we recommend:
+                              </p>
+                              {skillsFor.length > 0 ? (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                  {skillsFor.map(skill => (
+                                    <div key={skill.id} className="bg-white rounded-xl shadow p-4 flex flex-col">
+                                      <h3 className="text-lg font-medium mb-2">{skill.title}</h3>
+                                      <div className="flex items-center mb-3">
+                                        {skill.trainerImage && (
+                                          <img src={skill.trainerImage} alt={skill.trainer} className="w-8 h-8 rounded-full mr-2" />
+                                        )}
+                                        <p className="text-sm text-gray-500">Trainer: {skill.trainer}</p>
+                                      </div>
+                                      <p className="text-sm text-gray-700 mb-4">{skill.benefits[0]}</p>
+                                      <Link to={`/skill/${skill.id}`} className="mt-auto text-blue-600 hover:underline text-sm">
+                                        Learn more
+                                      </Link>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <p className="text-gray-600 text-center">No recommendations at this time.</p>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </section>
+                    </>
+                  )}
+
                   <section>
                     <h2 className="text-xl font-semibold mb-2 text-center">Choose your Avatar</h2>
                     <div className="grid grid-cols-2 gap-2 justify-items-center">
@@ -218,61 +271,6 @@ export default function Profile() {
                   </section>
                 </div>
               </div>
-
-              {mfaScores && (
-                <section className="mt-12">
-                  <h2 className="text-2xl font-semibold mb-4 text-center">Skills We Suggest</h2>
-                  {Object.entries(mfaScores).map(([dim, score]) => {
-                    const label = labelMap[dim];
-                    const bgMap = {
-                      emotional: 'bg-red-50',
-                      social: 'bg-blue-50',
-                      family: 'bg-yellow-50',
-                      spiritual: 'bg-purple-50',
-                    };
-                    const skillsFor = suggestedSkills.filter(skill =>
-                      Array.isArray(skill.domains) && skill.domains.includes(dim)
-                    );
-
-                    if (score >= 3.5) {
-                      return (
-                        <p key={dim} className="text-green-600 mb-6 text-center">
-                          Your {label} is Thriving! Well done!
-                        </p>
-                      );
-                    }
-
-                    return (
-                      <div key={dim} className={`mb-12 ${bgMap[dim]} rounded-xl p-4`}>
-                        <p className="font-semibold mb-3 text-lg text-center">
-                          To increase your {label}, we recommend:
-                        </p>
-                        {skillsFor.length > 0 ? (
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {skillsFor.map(skill => (
-                              <div key={skill.id} className="bg-white rounded-xl shadow p-4 flex flex-col">
-                                <h3 className="text-lg font-medium mb-2">{skill.title}</h3>
-                                <div className="flex items-center mb-3">
-                                  {skill.trainerImage && (
-                                    <img src={skill.trainerImage} alt={skill.trainer} className="w-8 h-8 rounded-full mr-2" />
-                                  )}
-                                  <p className="text-sm text-gray-500">Trainer: {skill.trainer}</p>
-                                </div>
-                                <p className="text-sm text-gray-700 mb-4">{skill.benefits[0]}</p>
-                                <Link to={`/skill/${skill.id}`} className="mt-auto text-blue-600 hover:underline text-sm">
-                                  Learn more
-                                </Link>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <p className="text-gray-600 text-center">No recommendations at this time.</p>
-                        )}
-                      </div>
-                    );
-                  })}
-                </section>
-              )}
             </div>
           </>
         )}
