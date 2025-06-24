@@ -2,10 +2,9 @@
 
 import React from "react";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 
-// ---------------------------------------------------------------------
-// INTERNAL HELPERS
-// ---------------------------------------------------------------------
+
 const DOMAIN_ORDER = ["emotional", "social", "family", "spiritual"];
 
 const toStatus = (score) => {
@@ -17,33 +16,39 @@ const toStatus = (score) => {
 const capLeft = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
 const mapStatusToEmoji = {
-  challenged: "🥀",       // wilted rose
-  needsImprovement: "🌱", // budding sprout
-  thriving: "🌸",         // blossom
+  challenged: "🦀",
+  needsImprovement: "🌱",
+  thriving: "🌸",
 };
 
 const labelMap = {
-  emotional: 'EMOTIONAL',
-  social: 'SOCIAL/PROFESSIONAL',
-  family: 'FAMILY/PERSONAL',
-  spiritual: 'SPIRITUAL',
+  emotional: "EMOTIONAL",
+  social: "SOCIAL/PROFESSIONAL",
+  family: "FAMILY/PERSONAL",
+  spiritual: "SPIRITUAL",
 };
 
-// ---------------------------------------------------------------------
-// <Flower /> – single emoji flower
-// ---------------------------------------------------------------------
-export function Flower({ status, label, size = 48, showLabel = true }) {
+export function Flower({ status, label, size = 48, showLabel = true, skillsFor = [] }) {
   return (
-    <figure
-      className="flex flex-col items-center gap-1"
-      aria-label={`${label} flower – ${status}`}
-    >
+    <figure className="flex flex-col items-center gap-2 text-center" aria-label={`${label} flower – ${status}`}>
       {showLabel && (
-        <figcaption className="text-xs font-semibold text-gray-700 text-center">
+        <figcaption className="text-xs font-semibold text-gray-700">
           {labelMap[label.toLowerCase()] || label}
         </figcaption>
       )}
       <span style={{ fontSize: size }}>{mapStatusToEmoji[status]}</span>
+      {skillsFor.length > 0 && (
+        <ul className="mt-1 space-y-1 text-sm">
+          {skillsFor.map((skill) => (
+            <li key={skill.id}>
+              <span role="img" aria-label="Watering plant">🚿</span>{' '}
+              <Link to={`/skill/${skill.id}`} className="text-blue-600 hover:underline">
+                {skill.title}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </figure>
   );
 }
@@ -53,32 +58,31 @@ Flower.propTypes = {
   label: PropTypes.string.isRequired,
   size: PropTypes.number,
   showLabel: PropTypes.bool,
+  skillsFor: PropTypes.array,
 };
 
-// ---------------------------------------------------------------------
-// <Garden /> – 2×2 grid with header
-// ---------------------------------------------------------------------
-export function Garden({ domainScores }) {
+export function Garden({ domainScores, suggestedSkills = [] }) {
   return (
     <section
-      className="bg-green-50 p-4 rounded-2xl min-h-[240px] h-full"
+      className="grid grid-cols-2 gap-4 p-4 rounded-2xl bg-green-50 min-h-[240px] h-full justify-center items-center"
       role="group"
       aria-label="Resilience & Well-being Garden"
     >
-      <h3 className="text-lg font-semibold mb-4 text-center text-green-900">
-        Your Resilience and Well‑being Garden
-      </h3>
-      <div className="grid grid-cols-2 gap-4 justify-center items-center">
-        {DOMAIN_ORDER.map((domain) => (
+      {DOMAIN_ORDER.map((domain) => {
+        const domainSkills = suggestedSkills.filter(skill =>
+          Array.isArray(skill.domains) && skill.domains.includes(domain)
+        );
+        return (
           <Flower
             key={domain}
             status={toStatus(domainScores[domain] ?? 0)}
             label={capLeft(domain)}
             size={48}
             showLabel={true}
+            skillsFor={domainSkills}
           />
-        ))}
-      </div>
+        );
+      })}
     </section>
   );
 }
@@ -90,11 +94,9 @@ Garden.propTypes = {
     family: PropTypes.number.isRequired,
     spiritual: PropTypes.number.isRequired,
   }).isRequired,
+  suggestedSkills: PropTypes.array,
 };
 
-// ---------------------------------------------------------------------
-// <GardenHeader /> – compact, label‑less row (ideal for nav/header)
-// ---------------------------------------------------------------------
 export function GardenHeader({ domainScores }) {
   return (
     <div

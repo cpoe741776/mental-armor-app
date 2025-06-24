@@ -173,7 +173,7 @@ export default function Profile() {
                   <MFADials scores={mfaScores} />
                 </div>
                 <div className="w-full md:w-1/2 bg-gray-50 rounded-xl p-4">
-                  <Garden domainScores={mfaScores} />
+                  <Garden domainScores={mfaScores} suggestedSkills={suggestedSkills} />
                 </div>
               </div>
             )}
