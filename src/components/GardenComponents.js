@@ -3,7 +3,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { skills } from "../skills"; // adjust the import path as needed
+
 
 const DOMAIN_ORDER = ["emotional", "social", "family", "spiritual"];
 
