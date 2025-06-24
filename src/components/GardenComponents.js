@@ -3,7 +3,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import grassImage from './assets/images/grass-hills.jpg'; // adjust path if needed
+import grassImage from './assets/grass-hills.jpg'; // adjust path if needed
 
 
 
