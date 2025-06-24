@@ -70,7 +70,7 @@ export function Garden({ domainScores, suggestedSkills = [] }) {
     <section
       className="p-4 rounded-2xl min-h-[240px] h-full"
       style={{
-        backgroundImage: "url('/images/animated-grass.gif')",
+        backgroundImage: "url('/images/grass-hills.jpg')",
         backgroundRepeat: "repeat-x",
         backgroundPosition: "bottom",
         backgroundSize: "cover"
