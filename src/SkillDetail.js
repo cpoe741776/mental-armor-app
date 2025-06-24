@@ -78,7 +78,8 @@ export default function SkillDetail() {
 
         {skill.videoUrl && !showVideo && skill.videoThumbnail && (
           <div className="relative cursor-pointer aspect-video" onClick={() => setShowVideo(true)}>
-            <img src={skill.videoThumbnail} alt="Video thumbnail" className="w-full h-full object-cover rounded-xl shadow-md" />
+            <img src={skill.videoThumbnail} alt="Video thumbnail" className="w-full max-h-72 object-cover rounded-xl shadow-md" />
+
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-white text-5xl bg-black bg-opacity-50 px-4 py-2 rounded-full">▶</div>
             </div>
@@ -87,7 +88,8 @@ export default function SkillDetail() {
 
         {showVideo && skill.videoUrl && (
           <div className="aspect-video">
-            <video src={skill.videoUrl} controls muted playsInline className="w-full h-full rounded-xl shadow object-contain" />
+            <video src={skill.videoUrl} controls muted playsInline className="w-full max-h-72 rounded-xl shadow object-contain" />
+
             <button onClick={() => setShowVideo(false)} className="mt-2 text-blue-600 hover:underline">Hide Video</button>
           </div>
         )}
