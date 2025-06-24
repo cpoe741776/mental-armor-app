@@ -43,7 +43,6 @@ export default function SkillDetail() {
 
   return (
     <div className="bg-white min-h-screen overflow-y-auto pb-24">
-
       <div className="container mx-auto px-4 py-8 space-y-8">
         {skill.videoUrl && (
           <div className="flex justify-center mb-8">
@@ -72,6 +71,12 @@ export default function SkillDetail() {
             <h1 className="text-3xl font-bold mb-2">{skill.title}</h1>
             <p className="text-gray-700 mb-1">
               <strong>Category:</strong> {skill.category}
+            </p>
+            <p className="text-gray-700 mb-1">
+              <strong>Goal:</strong> {skill.goal}
+            </p>
+            <p className="text-gray-700 mb-1">
+              <strong>Domain:</strong> {skill.domain}
             </p>
             <p className="text-gray-700 mb-1">{skill.brief}</p>
             <p className="text-gray-700">
@@ -168,14 +173,25 @@ export default function SkillDetail() {
             </div>
           )}
 
-          {Array.isArray(skill.details) && skill.details.length > 0 && (
+          {Array.isArray(skill.how) && skill.how.length > 0 && (
             <div className="bg-gray-50 p-6 rounded-lg shadow">
-              <h2 className="text-2xl font-semibold mb-2">How to Practice / Details</h2>
+              <h2 className="text-2xl font-semibold mb-2">How to Practice</h2>
               <ul className="list-disc list-inside text-gray-700 space-y-2">
-                {skill.details.map((step, idx) => (
-                  <li key={idx}>{step}</li>
+                {skill.how.map((item, idx) => (
+                  <li key={idx}>{item}</li>
                 ))}
               </ul>
+            </div>
+          )}
+
+          {Array.isArray(skill.steps) && skill.steps.length > 0 && (
+            <div className="bg-gray-50 p-6 rounded-lg shadow">
+              <h2 className="text-2xl font-semibold mb-2">Skill Steps</h2>
+              <ol className="list-decimal list-inside text-gray-700 space-y-2">
+                {skill.steps.map((step, idx) => (
+                  <li key={idx}>{step}</li>
+                ))}
+              </ol>
             </div>
           )}
         </div>
