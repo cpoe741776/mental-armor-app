@@ -168,12 +168,11 @@ export default function Profile() {
                 </button>
               </div>
                {mfaScores && (
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 space-y-6 md:space-y-0 md:space-x-6">
-                <div className="w-full md:w-1/2 scale-90">
+              <div className="flex flex-col md:flex-row justify-between items-stretch mb-8 space-y-6 md:space-y-0 md:space-x-6">
+                <div className="w-full md:w-1/2 bg-gray-50 rounded-xl p-4">
                   <MFADials scores={mfaScores} />
                 </div>
-                <div className="w-full md:w-1/2">
-                <h2 className="text-xl font-semibold mb-2 text-center">Your Resilience Garden</h2>
+                <div className="w-full md:w-1/2 bg-gray-50 rounded-xl p-4">
                   <Garden domainScores={mfaScores} />
                 </div>
               </div>
