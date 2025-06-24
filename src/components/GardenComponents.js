@@ -3,7 +3,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import grassImage from "../assets/grass-hills.png"; // corrected import path
+import grassImage from "../assets/grass-hills.jpg"; // corrected import path
 
 const DOMAIN_ORDER = ["emotional", "social", "family", "spiritual"];
 
@@ -16,7 +16,7 @@ const toStatus = (score) => {
 const capLeft = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
 const mapStatusToEmoji = {
-  challenged: "🥀", // corrected to wilted rose
+  challenged: "🥀", // restored wilted rose emoji
   needsImprovement: "🌱",
   thriving: "🌸",
 };
@@ -43,7 +43,7 @@ export function Flower({ status, label, size = 48, showLabel = true, skillsFor =
             {skillsFor.map((skill) => (
               <li key={skill.id}>
                 <span role="img" aria-label="Watering plant">🚿</span>{" "}
-                <Link to={`/skill/${skill.id}`} className="text-blue-600 hover:underline">
+                <Link to={`/skill/${skill.id}`} className="text-green-400 font-bold hover:underline animate-pulse">
                   {skill.title}
                 </Link>
               </li>
@@ -68,16 +68,16 @@ Flower.propTypes = {
 export function Garden({ domainScores, suggestedSkills = [] }) {
   return (
     <section
-  className="p-4 rounded-2xl min-h-[240px] h-full animate-gardenScroll"
-  style={{
-    backgroundImage: `url(${grassImage})`,
-    backgroundRepeat: "repeat-x",
-    backgroundPosition: "bottom",
-    backgroundSize: "cover"
-  }}
-  role="group"
-  aria-label="Resilience & Well-being Garden"
->
+      className="p-4 rounded-2xl min-h-[240px] h-full animate-gardenScroll"
+      style={{
+        backgroundImage: `url(${grassImage})`,
+        backgroundRepeat: "repeat-x",
+        backgroundPosition: "bottom",
+        backgroundSize: "cover"
+      }}
+      role="group"
+      aria-label="Resilience & Well-being Garden"
+    >
       <h3 className="text-xl font-semibold mb-4 text-center">Your Resilience and Wellbeing Garden</h3>
       <div className="grid grid-cols-2 gap-4 justify-items-center content-start">
         {DOMAIN_ORDER.map((domain) => {
