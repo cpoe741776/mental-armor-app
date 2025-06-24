@@ -15,7 +15,7 @@ const toStatus = (score) => {
 const capLeft = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
 const mapStatusToEmoji = {
-  challenged: "🥀", // corrected to wilted rose
+  challenged: "🍀", // corrected to wilted rose
   needsImprovement: "🌱",
   thriving: "🌸",
 };
@@ -67,25 +67,28 @@ Flower.propTypes = {
 export function Garden({ domainScores, suggestedSkills = [] }) {
   return (
     <section
-      className="grid grid-cols-2 gap-4 p-4 rounded-2xl bg-green-50 min-h-[240px] h-full justify-items-center content-start"
+      className="p-4 rounded-2xl bg-green-50 min-h-[240px] h-full"
       role="group"
       aria-label="Resilience & Well-being Garden"
     >
-      {DOMAIN_ORDER.map((domain) => {
-        const domainSkills = suggestedSkills.filter(skill =>
-          Array.isArray(skill.domains) && skill.domains.includes(domain)
-        );
-        return (
-          <Flower
-            key={domain}
-            status={toStatus(domainScores[domain] ?? 0)}
-            label={capLeft(domain)}
-            size={48}
-            showLabel={true}
-            skillsFor={domainSkills}
-          />
-        );
-      })}
+      <h3 className="text-xl font-semibold mb-4 text-center">Your Resilience and Wellbeing Garden</h3>
+      <div className="grid grid-cols-2 gap-4 justify-items-center content-start">
+        {DOMAIN_ORDER.map((domain) => {
+          const domainSkills = suggestedSkills.filter(skill =>
+            Array.isArray(skill.domains) && skill.domains.includes(domain)
+          );
+          return (
+            <Flower
+              key={domain}
+              status={toStatus(domainScores[domain] ?? 0)}
+              label={capLeft(domain)}
+              size={48}
+              showLabel={true}
+              skillsFor={domainSkills}
+            />
+          );
+        })}
+      </div>
     </section>
   );
 }
