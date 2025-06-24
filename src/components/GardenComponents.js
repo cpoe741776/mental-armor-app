@@ -66,30 +66,30 @@ Flower.propTypes = {
 
 export function Garden({ domainScores, suggestedSkills = [] }) {
   return (
-    <section
-      className="p-4 rounded-2xl bg-green-50 min-h-[240px] h-full"
-      role="group"
-      aria-label="Resilience & Well-being Garden"
-    >
-      <h3 className="text-xl font-semibold mb-4 text-center">Your Resilience and Wellbeing Garden</h3>
-      <div className="grid grid-cols-2 gap-4 justify-items-center content-start">
-        {DOMAIN_ORDER.map((domain) => {
-          const domainSkills = suggestedSkills.filter(skill =>
-            Array.isArray(skill.domains) && skill.domains.includes(domain)
-          );
-          return (
-            <Flower
-              key={domain}
-              status={toStatus(domainScores[domain] ?? 0)}
-              label={capLeft(domain)}
-              size={48}
-              showLabel={true}
-              skillsFor={domainSkills}
-            />
-          );
-        })}
-      </div>
-    </section>
+   <section
+  className="p-4 rounded-2xl bg-[url('/images/grass-hills.jpg')] bg-cover bg-center min-h-[240px] h-full animate-gardenScroll"
+  role="group"
+  aria-label="Resilience & Well-being Garden"
+>
+  <h3 className="text-xl font-semibold mb-4 text-center">Your Resilience and Wellbeing Garden</h3>
+  <div className="grid grid-cols-2 gap-4 justify-items-center content-start">
+    {DOMAIN_ORDER.map((domain) => {
+      const domainSkills = suggestedSkills.filter(skill =>
+        Array.isArray(skill.domains) && skill.domains.includes(domain)
+      );
+      return (
+        <Flower
+          key={domain}
+          status={toStatus(domainScores[domain] ?? 0)}
+          label={capLeft(domain)}
+          size={48}
+          showLabel={true}
+          skillsFor={domainSkills}
+        />
+      );
+    })}
+  </div>
+</section>
   );
 }
 
