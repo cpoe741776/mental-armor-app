@@ -1,10 +1,5 @@
 // GardenComponents.js – Resilience & Well‑being Garden (emoji fallback v4)
-// ---------------------------------------------------------------------
-// Lightweight version that swaps Lottie animations for simple emoji so
-// the component works even when JSON animation assets are missing.
-// (You can revert to the Lottie version later by restoring the imports
-// and mapStatusToAnim logic.)
-// ---------------------------------------------------------------------
+
 import React from "react";
 import PropTypes from "prop-types";
 
@@ -14,10 +9,9 @@ import PropTypes from "prop-types";
 const DOMAIN_ORDER = ["emotional", "social", "family", "spiritual"];
 
 const toStatus = (score) => {
- 
-  if (score >= 3.5) return "thriving";          
-  if (score >= 2.3) return "needsImprovement"; 
-  return "challenged";                        
+  if (score >= 3.5) return "thriving";
+  if (score >= 2.3) return "needsImprovement";
+  return "challenged";
 };
 
 const capLeft = (str) => str.charAt(0).toUpperCase() + str.slice(1);
@@ -28,9 +22,6 @@ const mapStatusToEmoji = {
   thriving: "🌸",         // blossom
 };
 
-// ---------------------------------------------------------------------
-// <Flower /> – single emoji flower
-// ---------------------------------------------------------------------
 const labelMap = {
   emotional: 'EMOTIONAL',
   social: 'SOCIAL/PROFESSIONAL',
@@ -38,6 +29,9 @@ const labelMap = {
   spiritual: 'SPIRITUAL',
 };
 
+// ---------------------------------------------------------------------
+// <Flower /> – single emoji flower
+// ---------------------------------------------------------------------
 export function Flower({ status, label, size = 48, showLabel = true }) {
   return (
     <figure
@@ -57,29 +51,34 @@ export function Flower({ status, label, size = 48, showLabel = true }) {
 Flower.propTypes = {
   status: PropTypes.oneOf(["challenged", "needsImprovement", "thriving"]).isRequired,
   label: PropTypes.string.isRequired,
-  size: PropTypes.number,  // pixel font size
+  size: PropTypes.number,
   showLabel: PropTypes.bool,
 };
 
 // ---------------------------------------------------------------------
-// <Garden /> – 2×2 grid for profile / main pages
+// <Garden /> – 2×2 grid with header
 // ---------------------------------------------------------------------
 export function Garden({ domainScores }) {
   return (
     <section
-      className="grid grid-cols-2 gap-4 p-4 rounded-2xl bg-green-50 min-h-[240px] h-full justify-center items-center"
+      className="bg-green-50 p-4 rounded-2xl min-h-[240px] h-full"
       role="group"
       aria-label="Resilience & Well-being Garden"
     >
-      {DOMAIN_ORDER.map((domain) => (
-        <Flower
-          key={domain}
-          status={toStatus(domainScores[domain] ?? 0)}
-          label={capLeft(domain)}
-          size={48}
-          showLabel={true}
-        />
-      ))}
+      <h3 className="text-lg font-semibold mb-4 text-center text-green-900">
+        Your Resilience and Well‑being Garden
+      </h3>
+      <div className="grid grid-cols-2 gap-4 justify-center items-center">
+        {DOMAIN_ORDER.map((domain) => (
+          <Flower
+            key={domain}
+            status={toStatus(domainScores[domain] ?? 0)}
+            label={capLeft(domain)}
+            size={48}
+            showLabel={true}
+          />
+        ))}
+      </div>
     </section>
   );
 }
@@ -108,7 +107,7 @@ export function GardenHeader({ domainScores }) {
           key={domain}
           status={toStatus(domainScores[domain] ?? 0)}
           label={capLeft(domain)}
-          size={28}        /* ~1.75rem */
+          size={28}
           showLabel={false}
         />
       ))}
@@ -117,10 +116,3 @@ export function GardenHeader({ domainScores }) {
 }
 
 GardenHeader.propTypes = Garden.propTypes;
-
-// ---------------------------------------------------------------------
-// NOTES
-// • This emoji fallback avoids missing‑asset issues in production.
-// • Later, you can revert to the Lottie version by restoring the imports
-//   and the original <Flower /> implementation.
-// ---------------------------------------------------------------------
