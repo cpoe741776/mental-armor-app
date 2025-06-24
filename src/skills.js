@@ -274,111 +274,265 @@ export const skills = [
 },
 
   {
-    id: 'reframe',
-    title: 'ReFrame',
-    category: 'Resilient Thinking',
-    domains: ['emotional'] ,
-    brief: 'Recognize and shift unhelpful thoughts.',
-    trainer: 'Chris',
-    trainerImage: '/chris.jpg',
-    goal: 'Learn to recognize and reframe unhelpful thoughts.',
-    when: 'When you notice stress or unhelpful reactions.',
-    benefits: [
-      'Emotional regulation',
-      'Positive outlook',
-      'Effective problem-solving'
-    ],
-    definitions: [
-      { term: 'Event', definition: 'An occurrence that triggers reactions.' },
-      { term: 'Reframe', definition: 'Shifting perspective to a balanced view.' }
-    ],
-    definition:
-      'An event is an occurrence that triggers reactions. To reframe means shifting perspective to a balanced, constructive viewpoint.',
-    examples: [
-      'If you think “I always fail,” reframe to “I have faced challenges before and learned from them.”',
-      'When a task seems impossible, reframe “I can’t do this” to “I can try by breaking it into smaller steps.”'
-    ],
-    details: [
-      'Describe the Event: State the situation objectively without judgment.',
-      'Identify Reactions: Note automatic thoughts, emotions, and behaviors.',
-      'Generate Reframe: Create a realistic, constructive alternate thought.',
-      'Practice & Reflect: Apply the reframe and observe outcomes.'
-    ],
+  id: 'reframe',
+  title: 'ReFrame',
+  category: 'Resilient Thinking',
+  domains: ['emotional'],
+  brief: 'ReFrame helps you slow down and shift your perspective. It’s about recognizing how your thoughts shape your emotions and actions — and choosing responses that serve you better.',
+  trainer: 'Chris',
+  trainerImage: '/chris.jpg',
+  goal: 'To be aware that our thoughts and beliefs drive our emotions and behaviors to an event and to learn to ReFrame our thoughts and beliefs in a way that helps us take more productive action.',
+  when: 'When you need to understand why you reacted a certain way; when your reaction wasn’t helpful; or when you want to slow down and respond more effectively in the moment.',
+  benefits: [
+    'Improved performance',
+    'Alignment with personal values',
+    'Stronger relationships',
+    'Greater ability to achieve goals'
+  ],
+  definitions: [
+    {
+      term: 'ReFrame',
+      definition: 'Shifting your perspective to a more balanced, constructive viewpoint — especially when your initial reaction is unhelpful.'
+    },
+    {
+      term: 'Event',
+      definition: 'An external situation or trigger that prompts a reaction — can be big or small.'
+    },
+    {
+      term: 'Thoughts',
+      definition: 'Our internal commentary or interpretation of an event — often automatic and sometimes distorted.'
+    },
+    {
+      term: 'Beliefs',
+      definition: 'Deeply held views or assumptions about ourselves, others, or the world that influence how we interpret events.'
+    },
+    {
+      term: 'Emotions',
+      definition: 'Feelings that arise in response to how we think about an event — such as anger, fear, sadness, or joy.'
+    },
+    {
+      term: 'Behavior',
+      definition: 'The actions we take in response to an event — including both physical responses (like walking away) and physiological ones (like heart rate or muscle tension).'
+    },
+    {
+      term: 'Cognitive Behavioral Understanding',
+      definition: 'A psychological framework that helps us understand how thoughts, beliefs, and interpretations influence emotions and behavior.'
+    }
+  ],
+  examples: [
+    "After a long flight and ready to de-plane, Chris was stuck in the back while people up front weren’t moving. His first thoughts spiraled from frustration to anger, even snapping out loud. But when he learned they were waiting on a disabled veteran, it hit him — a quick reframe could have changed everything: 'Maybe I just don’t know what’s going on yet.'",
+    "Someone cuts you off in traffic. The first thought is 'What a jerk!' — and your body tenses, your emotions spike, and maybe your behavior follows. But reframing that to 'I can’t control others, but I can stay safe' lowers the emotional heat, and suddenly you're in control of your next move."
+  ],
+  how: [
+    'Step 1 – Describe the Event: Be specific and objective. Focus on one event at a time and stick to the facts — avoid labeling or exaggerating.',
+    'Step 2 – Identify and distinguish between your heat-of-the-moment thoughts and beliefs, as well as your emotions and behaviors — including both your physical behaviours and your physiological behaviours.',
+    'Step 3 – Ask yourself if your reaction negatively affected your performance, values, goals, or relationships.',
+    'Step 4 – If so, ReFrame your thought or belief to get a more productive outcome.',
+    'Step 5 – Make a new plan if needed. Do you need to implement that plan now or in the future?'
+  ],
+  videoThumbnail: 'https://mymentalarmor.com/wp-content/uploads/2024/06/30CM_REFRAME_FLOOR_CIRCLE_COMP-copy.jpg',
   link: '/skills/reframe',
   recommendedBy: 'Chris'
 },
 
   {
-    id: 'balance_your_thinking',
-    title: 'Balance Your Thinking',
-    category: 'Resilient Thinking',
-    domains: ['emotional'] ,
-    brief: 'Evaluate thoughts against evidence to make balanced decisions.',
-    trainer: 'Terry',
-    trainerImage: '/terry.jpg',
-    videoUrl: 'https://videos.files.wordpress.com/R6fW11cK/bytintro.mp4',
-    videoThumbnail: 'https://via.placeholder.com/800x450.png?text=BYT+Video',
-    goal:
-      'Help you see situations accurately and take action based on evidence.',
-    when: 'When you recognize biased or rushed thinking.',
-    benefits: [
-      'Improved decisions',
-      'Reduced distortion',
-      'Aligned actions'
-    ],
-    definitions: [
-      { term: 'All-or-Nothing', definition: 'Seeing things in black-and-white terms.' },
-      { term: 'Confirmation Bias', definition: 'Focusing only on evidence that supports beliefs.' }
-    ],
-    definition:
-      'All-or-nothing thinking means seeing things in black-and-white terms. Confirmation bias is focusing only on evidence that supports your beliefs.',
-    examples: [
-      'If you assume “Everyone is against me,” gather facts by asking colleagues for feedback.',
-      'When you think “I can’t succeed,” write down evidence of past successes to counter that belief.'
-    ],
-    details: [
-      'Select an Event: Choose a recent situation with an unhelpful thought.',
-      'Identify Thought: Write down the specific unbalanced thought.',
-      'Examine Evidence: List facts for and against that thought.',
-      'Formulate Reframe: Create a balanced, evidence-based thought.'
-    ],
+  id: 'balance_your_thinking',
+  title: 'Balance Your Thinking',
+  category: 'Resilient Thinking',
+  domains: ['emotional'],
+  brief: 'Sometimes our brains fill in gaps with bad information. Balance Your Thinking helps you slow down, check the facts, and act based on what’s real — not what feels true in the moment.',
+  trainer: 'Terry',
+  trainerImage: '/terry.jpg',
+  videoUrl: 'https://videos.files.wordpress.com/R6fW11cK/bytintro.mp4',
+  videoThumbnail: 'https://mymentalarmor.com/wp-content/uploads/2024/06/30CM_BYT_FLOOR_CIRCLE_MED-copy.jpg',
+  goal: 'To help you see situations accurately and take action based on evidence.',
+  when: 'When you want to understand why you reacted in a certain way; when your reaction was not helpful; and the more we practice, we want to be able to use it in the moment to slow down.',
+  benefits: [
+    'Improved performance',
+    'Alignment with personal values',
+    'Stronger relationships',
+    'Greater ability to achieve goals'
+  ],
+  definitions: [
+    {
+      term: 'ReFrame',
+      definition: 'Shifting your perspective to a more balanced, constructive viewpoint — especially when your initial reaction is unhelpful.'
+    },
+    {
+      term: 'Event',
+      definition: 'An external situation or trigger that prompts a reaction — can be big or small.'
+    },
+    {
+      term: 'Thoughts',
+      definition: 'Our internal commentary or interpretation of an event — often automatic and sometimes distorted.'
+    },
+    {
+      term: 'Beliefs',
+      definition: 'Deeply held views or assumptions about ourselves, others, or the world that influence how we interpret events.'
+    },
+    {
+      term: 'Emotions',
+      definition: 'Feelings that arise in response to how we think about an event — such as anger, fear, sadness, or joy.'
+    },
+    {
+      term: 'Behavior',
+      definition: 'The actions we take in response to an event — including both physical responses (like walking away) and physiological ones (like heart rate or muscle tension).'
+    },
+    {
+      term: 'Cognitive Behavioral Understanding',
+      definition: 'A psychological framework that helps us understand how thoughts, beliefs, and interpretations influence emotions and behavior.'
+    },
+    {
+      term: 'Cognitive',
+      definition: 'Relating to mental processes like attention, thinking, judgment, and reasoning.'
+    },
+    {
+      term: 'Cognitive Traps',
+      definition: 'Common patterns of inaccurate thinking that lead to unhelpful emotional and behavioral reactions.'
+    },
+    {
+      term: 'Jumping to Conclusions',
+      definition: 'The mother of all cognitive traps — assuming you know what’s going on without real evidence.'
+    },
+    {
+      term: 'All-or-Nothing Thinking',
+      definition: 'A cognitive trap where things are seen in black-and-white terms — with no middle ground.'
+    },
+    {
+      term: 'Confirmation Bias',
+      definition: 'A cognitive trap where you focus only on evidence that supports your existing belief and ignore what doesn’t.'
+    },
+    {
+      term: 'Blaming Myself',
+      definition: 'A cognitive trap where you assume full responsibility for something that wasn’t entirely your fault.'
+    },
+    {
+      term: 'Blaming Others',
+      definition: 'A cognitive trap where you ignore your own role and place all the blame on someone else.'
+    },
+    {
+      term: 'Mindreading',
+      definition: 'A cognitive trap with two forms: assuming you know what someone else is thinking, or expecting them to know what you’re thinking.'
+    },
+    {
+      term: 'Examine the Evidence',
+      definition: 'Balance Your Thinking Strategy – Look at the thought or belief you’re having and ask: What evidence supports it? What evidence challenges it? Are you missing any information that could change your perspective? This strategy helps prevent All-or-Nothing Thinking and Confirmation Bias.'
+    },
+    {
+      term: 'Check for a Double Standard',
+      definition: 'Balance Your Thinking Strategy – Ask yourself: Would I judge someone else the same way I’m judging myself or others right now? This strategy helps reduce the traps of Blaming Myself and Blaming Others.'
+    },
+    {
+      term: 'Phone a Friend or Ask',
+      definition: 'Balance Your Thinking Strategy – Before reacting, get a second opinion from someone objective — someone who will tell you what you need to hear, not just what you want to hear. You can also ask the person involved directly to avoid mindreading.'
+    }
+  ],
+  examples: [
+    "Terry was convinced a teammate ignored his input on purpose. He started spiraling. But before reacting, he paused and asked, 'What’s the evidence?' Turns out, the guy hadn’t even seen the email — and the story in Terry’s head was just that: a story.",
+    "A young soldier said, 'I always screw up.' Terry pushed back: 'Always? Let’s list a few wins.' By the end, the kid had a full page of evidence that didn’t match the original thought — and a new outlook on what was actually true.",
+    'Cognitive Trap – All-or-Nothing: “I will NEVER win at this game!”',
+    'Cognitive Trap – Confirmation Bias: “I knew it — nobody here likes me. That one person didn’t say hello, just like I expected.”',
+    'Cognitive Trap – Blaming Myself: “The team lost because I missed the final free-throw.”',
+    'Cognitive Trap – Blaming Others: “The team lost because nobody else played as hard as I did.”',
+    'Cognitive Trap – Mindreading – *I Know*: “She didn’t respond to my message — she must be mad at me.”',
+    'Cognitive Trap – Mindreading – *They Should Know*: “I shouldn’t have to explain how I feel. He should just know.”'
+  ],
+  how: [
+    'Step 1 – Describe the Event: Be specific and objective. Focus on one event at a time and stick to the facts — avoid labeling or exaggerating.',
+    'Step 2 – Identify and distinguish between your heat-of-the-moment thoughts and beliefs, as well as your emotions and behaviors — including both your physical behaviours and your physiological behaviours.',
+    'Step 3 – Select a thought or belief that led to an unhelpful reaction. Apply the three Balance Your Thinking strategies — Examine the Evidence, Check for a Double Standard, and Phone a Friend or Ask the Person Involved.',
+    'Step 4 – Ask yourself if your reaction negatively affected your performance, values, goals, or relationships.',
+    'Step 5 – If so, ReFrame your unbalanced thought or belief to get a more productive outcome.',
+    'Step 6 – Make a new plan if needed. Do you need to implement that plan now or in the future?'
+  ],
   link: '/skills/balance_your_thinking',
   recommendedBy: 'Terry'
 },
 
   {
-    id: 'whats_most_important',
-    title: "What's Most Important",
-    category: 'Resilient Thinking',
-    domains: ['emotional'] ,
-    brief: 'Pause to assess thought patterns and choose value-aligned responses.',
-    trainer: 'Chris',
-    trainerImage: '/chris.jpg',
-    goal:
-      'Pause and evaluate recurring thought patterns, then make a new plan aligned with priorities.',
-    when:
-      'When reactions interfere with your values, goals, or relationships.',
-    benefits: [
-      'Deliberate decision-making',
-      'Reduced impulsivity',
-      'Greater alignment with priorities'
-    ],
-    definitions: [
-      { term: 'Pause & Observe', definition: 'Stopping to notice sensations and thoughts.' },
-      { term: 'New Plan', definition: 'A chosen action aligned with priorities.' }
-    ],
-    definition:
-      'Pause & Observe means stopping to notice sensations and thoughts. A New Plan is a chosen action aligned with your priorities.',
-    examples: [
-      'When feeling reactive, pause before responding and ask “What matters most right now?”',
-      'If you’re tempted to lash out in anger, pause and choose a response that aligns with your value of respect.'
-    ],
-    details: [
-      'Describe the Event: State the situation objectively.',
-      'Identify Influences: Spot “shoulds” or internal voices driving reactions.',
-      "Ask What’s Important: Use your top priority to reframe thoughts.",
-      'Implement & Reflect: Apply your new plan and note outcomes.'
-    ],
+  id: 'whats_most_important',
+  title: "What's Most Important",
+  category: 'Resilient Thinking',
+  domains: ['emotional'],
+  brief: "What's Most Important helps you recognize when your thoughts are being hijacked by old habits, expectations, or assumptions — and refocuses you on what really matters in the moment.",
+  trainer: 'Chris',
+  trainerImage: '/chris.jpg',
+  goal: 'To be aware of patterns of thinking that result in unproductive reactions and make a new plan if needed.',
+  when: 'Your reaction interfered with your performance, values, goals or relationships; you had an uncharacteristic reaction; you are dwelling on a problem; you are stuck in an unproductive pattern.',
+  benefits: [
+    'Improved performance',
+    'Alignment with personal values',
+    'Stronger relationships',
+    'Greater ability to achieve goals'
+  ],
+  definitions: [
+    {
+      term: 'ReFrame',
+      definition: 'Shifting your perspective to a more balanced, constructive viewpoint — especially when your initial reaction is unhelpful.'
+    },
+    {
+      term: 'Event',
+      definition: 'An external situation or trigger that prompts a reaction — can be big or small.'
+    },
+    {
+      term: 'Thoughts',
+      definition: 'Our internal commentary or interpretation of an event — often automatic and sometimes distorted.'
+    },
+    {
+      term: 'Beliefs',
+      definition: 'Deeply held views or assumptions about ourselves, others, or the world that influence how we interpret events.'
+    },
+    {
+      term: 'Emotions',
+      definition: 'Feelings that arise in response to how we think about an event — such as anger, fear, sadness, or joy.'
+    },
+    {
+      term: 'Behavior',
+      definition: 'The actions we take in response to an event — including both physical responses (like walking away) and physiological ones (like heart rate or muscle tension).'
+    },
+    {
+      term: 'Cognitive Behavioral Understanding',
+      definition: 'A psychological framework that helps us understand how thoughts, beliefs, and interpretations influence emotions and behavior.'
+    },
+    {
+      term: 'Values',
+      definition: 'Principles or standards that matter deeply to you and help guide your behavior and decisions.'
+    },
+    {
+      term: 'Shoulds',
+      definition: 'Internal rules or expectations — often shaped by past experiences or social norms — that can create pressure or conflict with your values.'
+    },
+    {
+      term: 'Internal Board of Directors',
+      definition: 'A mental representation of voices or influences from your past — such as parents, teachers, or role models — that continue to shape how you think and act.'
+    },
+    {
+      term: 'Uncharacteristic Reaction',
+      definition: 'A response that doesn’t match how you typically think, feel, or act — often a signal that something deeper is going on.'
+    },
+    {
+      term: 'Dwelling on a Problem',
+      definition: 'Replaying or obsessing over a situation without making progress toward resolution.'
+    },
+    {
+      term: 'Unproductive Pattern',
+      definition: 'A repeated way of thinking or reacting that leads to poor outcomes or keeps you stuck.'
+    }
+  ],
+  examples: [
+    "After getting unexpected criticism in a meeting, Chris felt his jaw clench and a sarcastic comment rise up. He nearly let it fly. But the reaction felt too sharp — not like him. He paused, asked what was driving it, and saw it was an old “I’ve got to prove myself” memory from the Army playing in his head. That helped him ReFrame it: “I can listen and still keep my self-respect.” He responded with a calm question instead.",
+    "Chris noticed he kept dwelling on a disagreement with his wife. Same thoughts, same irritation — no movement. He finally caught himself and used What’s Most Important. He realized this pattern wasn’t helping his values or his relationship. He reframed it: “I can’t change what was said, but I can show up better next time.” That freed him up to focus on what mattered: reconnecting with her."
+  ],
+  how: [
+    'Step 1 – Describe the Event: Be specific and objective. Focus on one event at a time and stick to the facts — avoid labeling or exaggerating.',
+    'Step 2 – Identify and distinguish between your heat-of-the-moment thoughts and beliefs, as well as your emotions and behaviors — including both your physical behaviours and your physiological behaviours.',
+    'Step 3 – Identify what influenced your thoughts or beliefs: your values or “shoulds,” past experiences, other factors, or your internal board of directors.',
+    'Step 4 – Determine if your reaction is helping or harming your performance, values, goals or relationships.',
+    'Step 5 – Ask yourself: What is most important right now? How can you ReFrame your thoughts about the event to get a more productive outcome?',
+    'Step 6 – Make a new plan if needed. Do you need to implement that plan now or in the future?'
+  ],
+  videoThumbnail: 'https://mymentalarmor.com/wp-content/uploads/2024/06/30CM_WMI_FLOOR_CIRCLE_CAR.png',
+  videoUrl: '',
   link: '/skills/whats_most_important',
   recommendedBy: 'Chris'
 },
