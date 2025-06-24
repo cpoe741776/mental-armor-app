@@ -3,9 +3,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import grassImage from './assets/grass-hills.jpg'; // adjust path if needed
-
-
+import grassImage from "../assets/grass-hills.jpg"; // corrected import path
 
 const DOMAIN_ORDER = ["emotional", "social", "family", "spiritual"];
 
@@ -44,7 +42,7 @@ export function Flower({ status, label, size = 48, showLabel = true, skillsFor =
           <ul className="mt-1 space-y-1 text-sm">
             {skillsFor.map((skill) => (
               <li key={skill.id}>
-                <span role="img" aria-label="Watering plant">🚿</span>{' '}
+                <span role="img" aria-label="Watering plant">🚿</span>{" "}
                 <Link to={`/skill/${skill.id}`} className="text-blue-600 hover:underline">
                   {skill.title}
                 </Link>
@@ -72,11 +70,11 @@ export function Garden({ domainScores, suggestedSkills = [] }) {
     <section
       className="p-4 rounded-2xl min-h-[240px] h-full"
       style={{
-  backgroundImage: `url(${grassImage})`,
-  backgroundRepeat: "repeat-x",
-  backgroundPosition: "bottom",
-  backgroundSize: "cover",
-}}
+        backgroundImage: `url(${grassImage})`,
+        backgroundRepeat: "repeat-x",
+        backgroundPosition: "bottom",
+        backgroundSize: "cover"
+      }}
       role="group"
       aria-label="Resilience & Well-being Garden"
     >
