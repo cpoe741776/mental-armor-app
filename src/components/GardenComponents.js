@@ -4,6 +4,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 
+
 const DOMAIN_ORDER = ["emotional", "social", "family", "spiritual"];
 
 const toStatus = (score) => {
@@ -66,36 +67,36 @@ Flower.propTypes = {
 
 export function Garden({ domainScores, suggestedSkills = [] }) {
   return (
-  <section
-  style={{
-    backgroundImage: "url('/images/grass-hills.jpg')",
-    backgroundSize: "cover",
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "bottom",
-  }}
-  className="p-4 rounded-2xl min-h-[240px] h-full"
-  role="group"
-  aria-label="Resilience & Well-being Garden"
->
-  <h3 className="text-xl font-semibold mb-4 text-center">Your Resilience and Wellbeing Garden</h3>
-  <div className="grid grid-cols-2 gap-4 justify-items-center content-start">
-    {DOMAIN_ORDER.map((domain) => {
-      const domainSkills = suggestedSkills.filter(skill =>
-        Array.isArray(skill.domains) && skill.domains.includes(domain)
-      );
-      return (
-        <Flower
-          key={domain}
-          status={toStatus(domainScores[domain] ?? 0)}
-          label={capLeft(domain)}
-          size={48}
-          showLabel={true}
-          skillsFor={domainSkills}
-        />
-      );
-    })}
-  </div>
-</section>
+    <section
+      className="p-4 rounded-2xl min-h-[240px] h-full"
+      style={{
+        backgroundImage: "url('/images/animated-grass.gif')",
+        backgroundRepeat: "repeat-x",
+        backgroundPosition: "bottom",
+        backgroundSize: "cover"
+      }}
+      role="group"
+      aria-label="Resilience & Well-being Garden"
+    >
+      <h3 className="text-xl font-semibold mb-4 text-center">Your Resilience and Wellbeing Garden</h3>
+      <div className="grid grid-cols-2 gap-4 justify-items-center content-start">
+        {DOMAIN_ORDER.map((domain) => {
+          const domainSkills = suggestedSkills.filter(skill =>
+            Array.isArray(skill.domains) && skill.domains.includes(domain)
+          );
+          return (
+            <Flower
+              key={domain}
+              status={toStatus(domainScores[domain] ?? 0)}
+              label={capLeft(domain)}
+              size={48}
+              showLabel={true}
+              skillsFor={domainSkills}
+            />
+          );
+        })}
+      </div>
+    </section>
   );
 }
 
