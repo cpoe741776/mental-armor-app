@@ -76,14 +76,14 @@ export function Garden({ domainScores, suggestedSkills = [] }) {
       aria-label="Resilience & Well-being Garden"
     >
       <div
-        className="absolute inset-0 opacity-50 z-0"
-        style={{
-          backgroundImage: `url(${grassImage})`,
-          backgroundRepeat: "repeat-x",
-          backgroundPosition: "bottom",
-          backgroundSize: "cover",
-        }}
-      ></div>
+  className="absolute inset-0 opacity-50 z-0 animate-gardenScroll"
+  style={{
+    backgroundImage: `url(${grassImage})`,
+    backgroundRepeat: "repeat-x",
+    backgroundPosition: "bottom",
+    backgroundSize: "cover",
+  }}
+></div>
       <div className="relative z-10">
         <h3 className="text-xl font-semibold mb-4 text-center">Your Resilience and Wellbeing Garden</h3>
         <div className="grid grid-cols-2 gap-4 justify-items-center content-start">
