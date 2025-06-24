@@ -141,7 +141,7 @@ export default function SkillDetail() {
         {/* Reflection Prompt if Visited */}
         {visited && (
           <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-xl shadow">
-            <h3 className="text-lg font-semibold text-yellow-800 mb-1">Reflection Prompt</h3>
+            <h3 className="text-lg font-semibold text-yellow-800 mb-1">Skill Reflection</h3>
             <p className="text-yellow-700 text-sm">
               How have you used this skill in real life? What changed because of it?
               Consider writing it down or sharing with someone close to you.
