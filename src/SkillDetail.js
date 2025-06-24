@@ -1,6 +1,6 @@
 // src/SkillDetail.js
 import React, { useEffect, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { skills } from './skills'
 import netlifyIdentity from 'netlify-identity-widget'
 
@@ -23,10 +23,7 @@ export default function SkillDetail() {
       const updatedList = [...visitedSkills, id]
       user
         .update({ data: { ...metadata, visitedSkills: updatedList } })
-        .then(updatedUser => {
-          console.log('✅ Visited skills updated:', updatedUser.user_metadata.visitedSkills)
-          setVisited(true)
-        })
+        .then(updatedUser => setVisited(true))
         .catch(err => console.error('❌ Error updating visitedSkills:', err))
     } else {
       setVisited(true)
@@ -42,173 +39,151 @@ export default function SkillDetail() {
   }
 
   return (
-    <div className="bg-white min-h-screen overflow-y-auto pb-24">
-      <div className="container mx-auto px-4 py-8 space-y-8">
-        {skill.videoUrl && (
-          <div className="flex justify-center mb-8">
+    <div className="bg-white min-h-screen px-4 py-8 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto space-y-8">
+        {/* Video Section */}
+        {skill.videoUrl && !showVideo && skill.videoThumbnail && (
+          <div className="relative cursor-pointer" onClick={() => setShowVideo(true)}>
+            <img
+              src={skill.videoThumbnail}
+              alt="Video thumbnail"
+              className="w-full rounded-xl shadow-md"
+            />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-white text-5xl bg-black bg-opacity-50 px-4 py-2 rounded-full">
+                ▶
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showVideo && skill.videoUrl && (
+          <div>
             <video
               src={skill.videoUrl}
               controls
               muted
-              autoPlay
-              loop={false}
               playsInline
-              className="w-full max-w-3xl rounded-lg shadow"
-              onError={() => console.warn(`Video failed to load: ${skill.videoUrl}`)}
+              className="w-full rounded-xl shadow"
             />
+            <button
+              onClick={() => setShowVideo(false)}
+              className="mt-2 text-blue-600 hover:underline"
+            >
+              Hide Video
+            </button>
           </div>
         )}
 
-        <div className="bg-gray-100 p-6 rounded-lg shadow flex items-center">
+        {/* Header Section */}
+        <div className="flex items-start gap-6 bg-gray-100 p-6 rounded-xl shadow">
           {skill.trainerImage && (
             <img
               src={skill.trainerImage}
               alt={skill.trainer}
-              className="w-16 h-16 rounded-full object-cover mr-6"
+              className="w-20 h-20 rounded-full object-cover border-2 border-white shadow"
             />
           )}
           <div>
-            <h1 className="text-3xl font-bold mb-2">{skill.title}</h1>
-            <p className="text-gray-700 mb-1">
-              <strong>Category:</strong> {skill.category}
-            </p>
-            <p className="text-gray-700 mb-1">
-              <strong>Goal:</strong> {skill.goal}
-            </p>
-            <p className="text-gray-700 mb-1">
-              <strong>Domain:</strong> {skill.domain}
-            </p>
-            <p className="text-gray-700 mb-1">{skill.brief}</p>
-            <p className="text-gray-700">
-              <strong>Trainer:</strong> {skill.trainer}
-            </p>
+            <h1 className="text-3xl font-bold mb-1">{skill.title}</h1>
+            <p className="text-gray-700 italic mb-2">{skill.brief}</p>
+            <div className="text-sm text-gray-600 space-y-1">
+              <p><strong>Category:</strong> {skill.category}</p>
+              {skill.domains && (
+                <p><strong>Domains:</strong> {skill.domains.map(d => <span key={d} className="inline-block bg-blue-100 text-blue-800 text-xs font-medium mr-1 px-2 py-0.5 rounded-full">{d}</span>)}</p>
+              )}
+              <p><strong>Trainer:</strong> {skill.trainer}</p>
+              <p><strong>Recommended by:</strong> {skill.recommendedBy}</p>
+            </div>
           </div>
         </div>
 
+        {/* Core Info */}
+        <div className="bg-white border border-gray-200 rounded-xl shadow p-6 space-y-4">
+          <div>
+            <h2 className="text-xl font-semibold mb-2">Goal</h2>
+            <p className="text-gray-700">{skill.goal}</p>
+          </div>
+          <div>
+            <h2 className="text-xl font-semibold mb-2">When to Use</h2>
+            <p className="text-gray-700">{skill.when}</p>
+          </div>
+          <div>
+            <h2 className="text-xl font-semibold mb-2">Benefits</h2>
+            <ul className="list-disc list-inside text-gray-700 space-y-1">
+              {skill.benefits.map((b, idx) => <li key={idx}>{b}</li>)}
+            </ul>
+          </div>
+        </div>
+
+        {/* Tab Navigation */}
         <div className="flex space-x-6 border-b border-gray-200 pb-2">
-          {['definitions', 'examples', 'video'].map(key => (
+          {['definitions', 'examples'].map(key => (
             <button
               key={key}
               onClick={() => setTab(key)}
-              className={`pb-2 ${
+              className={`pb-2 capitalize ${
                 tab === key
                   ? 'border-b-2 border-blue-600 font-semibold text-gray-900'
                   : 'text-gray-600 hover:text-gray-800'
               }`}
             >
-              {key === 'definitions' ? 'Definition' : key === 'examples' ? 'Examples' : 'Video'}
+              {key}
             </button>
           ))}
         </div>
 
-        <div className="space-y-6">
-          {tab === 'definitions' && (
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-2xl font-semibold mb-2">Definition</h2>
-              <p className="text-gray-700">{skill.definition}</p>
-            </div>
-          )}
+        {/* Tab Content */}
+        {tab === 'definitions' && skill.definitions && (
+          <div className="bg-white p-6 rounded-xl shadow">
+            <h2 className="text-xl font-semibold mb-4">Key Definitions</h2>
+            <dl className="divide-y divide-gray-200">
+              {skill.definitions.map((d, idx) => (
+                <div key={idx} className="py-2">
+                  <dt className="font-medium text-gray-800">{d.term}</dt>
+                  <dd className="text-gray-700 ml-4">{d.definition}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        )}
 
-          {tab === 'examples' && (
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-2xl font-semibold mb-2">Real-World Examples</h2>
-              {Array.isArray(skill.examples) && skill.examples.length > 0 ? (
-                <ul className="list-disc list-inside text-gray-700 space-y-2">
-                  {skill.examples.map((ex, idx) => (
-                    <li key={idx}>{ex}</li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-gray-600">No examples available for this skill.</p>
-              )}
-            </div>
-          )}
+        {tab === 'examples' && skill.examples && (
+          <div className="bg-white p-6 rounded-xl shadow space-y-3">
+            <h2 className="text-xl font-semibold mb-2">Examples</h2>
+            {skill.examples.map((e, idx) => (
+              <p key={idx} className="text-gray-700">{e}</p>
+            ))}
+          </div>
+        )}
 
-          {tab === 'video' && (
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-2xl font-semibold mb-2">Video</h2>
-              {skill.videoUrl ? (
-                !showVideo ? (
-                  <div className="relative">
-                    {skill.videoThumbnail ? (
-                      <img
-                        src={skill.videoThumbnail}
-                        alt={`${skill.title} thumbnail`}
-                        className="w-full h-auto rounded"
-                        onError={() => console.warn(`Thumbnail load failed`)}
-                      />
-                    ) : (
-                      <div className="w-full h-64 bg-gray-200 rounded flex items-center justify-center">
-                        <span className="text-gray-500">No thumbnail available</span>
-                      </div>
-                    )}
-                    <button
-                      onClick={() => setShowVideo(true)}
-                      className="absolute inset-0 flex items-center justify-center text-white text-4xl"
-                    >
-                      ▶
-                    </button>
-                  </div>
-                ) : (
-                  <div>
-                    <video
-                      src={skill.videoUrl}
-                      controls
-                      muted
-                      playsInline
-                      className="w-full h-auto rounded mb-2"
-                      onError={() => console.warn(`Video failed to load`)}
-                    />
-                    <button
-                      onClick={() => setShowVideo(false)}
-                      className="mt-2 text-blue-600 hover:underline"
-                    >
-                      Hide Video
-                    </button>
-                  </div>
-                )
-              ) : (
-                <p className="text-gray-600">No video available for this skill.</p>
-              )}
-            </div>
-          )}
+        {/* How to Practice */}
+        {skill.how && skill.how.length > 0 && (
+          <div className="bg-blue-50 p-6 rounded-xl shadow">
+            <h2 className="text-xl font-semibold mb-2">How to Practice</h2>
+            <ul className="list-disc list-inside text-gray-700 space-y-1">
+              {skill.how.map((item, idx) => <li key={idx}>{item}</li>)}
+            </ul>
+          </div>
+        )}
 
-          {Array.isArray(skill.how) && skill.how.length > 0 && (
-            <div className="bg-gray-50 p-6 rounded-lg shadow">
-              <h2 className="text-2xl font-semibold mb-2">How to Practice</h2>
-              <ul className="list-disc list-inside text-gray-700 space-y-2">
-                {skill.how.map((item, idx) => (
-                  <li key={idx}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+        {/* Steps */}
+        {skill.steps && skill.steps.length > 0 && (
+          <div className="bg-green-50 p-6 rounded-xl shadow">
+            <h2 className="text-xl font-semibold mb-2">Skill Steps</h2>
+            <ol className="list-decimal list-inside text-gray-700 space-y-1">
+              {skill.steps.map((step, idx) => <li key={idx}>{step}</li>)}
+            </ol>
+          </div>
+        )}
 
-          {Array.isArray(skill.steps) && skill.steps.length > 0 && (
-            <div className="bg-gray-50 p-6 rounded-lg shadow">
-              <h2 className="text-2xl font-semibold mb-2">Skill Steps</h2>
-              <ol className="list-decimal list-inside text-gray-700 space-y-2">
-                {skill.steps.map((step, idx) => (
-                  <li key={idx}>{step}</li>
-                ))}
-              </ol>
-            </div>
-          )}
-        </div>
+        {/* Visited Indicator */}
+        {visited && (
+          <div className="fixed top-16 right-4 bg-green-100 border border-green-400 text-green-800 px-4 py-2 rounded shadow-md">
+            You’ve viewed this skill.
+          </div>
+        )}
       </div>
-
-      {visited && (
-        <div className="fixed top-16 right-4 bg-green-100 border border-green-400 text-green-800 px-4 py-2 rounded">
-          You've viewed this skill.
-        </div>
-      )}
-
-      <Link
-        to="/repair-kit"
-        className="fixed bottom-4 left-4 right-4 p-3 bg-blue-700 text-white rounded-lg shadow-lg text-center hover:bg-blue-800"
-      >
-        Practice Now
-      </Link>
     </div>
   )
 }
