@@ -45,7 +45,7 @@ export function Flower({ status, label, size = 48, showLabel = true, skillsFor =
                 <span role="img" aria-label="Watering plant">🚿</span>{" "}
                 <Link
   to={`/skill/${skill.id}`}
-  className="text-amber-300 font-bold hover:underline animate-pulse drop-shadow-[0_0_4px_#facc15]"
+  className="text-cyan-300 font-bold hover:underline animate-pulse drop-shadow-[0_0_4px_#0ff]"
 >
   {skill.title}
 </Link>
