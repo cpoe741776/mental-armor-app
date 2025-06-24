@@ -538,80 +538,129 @@ export const skills = [
 },
 
   {
-    id: 'interpersonal_problem_solving',
-    title: 'Interpersonal Problem Solving',
-    category: 'Social Resilience' ,
-    domains: ['social' , 'family'] ,
-    brief: 'Resolve conflicts respectfully through collaborative solutions.',
-    trainer: 'Terry',
-    trainerImage: '/terry.jpg',
-    goal:
-      'Address interpersonal problems in a way that respects relationships and reduces tension.',
-    when:
-      'When facing disagreements that require mutual understanding and collaboration.',
-    benefits: [
-      'Stronger relationships',
-      'Effective conflict resolution',
-      'Mutual understanding'
-    ],
-    definitions: [
-      {
-        term: 'Constructive Conflict',
-        definition: 'Conflict that strengthens relationships through respectful dialogue.'
-      },
-      { term: 'Active Listening', definition: 'Fully concentrating and responding to the speaker.' }
-    ],
-    definition:
-      'Constructive Conflict is conflict that strengthens relationships through respectful dialogue. Active Listening is fully concentrating on and responding to the speaker.',
-    examples: [
-      'When tensions rise in a team meeting, use “I” statements and ask open-ended questions instead of assigning blame.',
-      'If a friend is upset, paraphrase their concerns before offering your perspective.'
-    ],
-    details: [
-      'Do Your Homework: Prepare by defining the problem and balancing thoughts.',
-      'Wind-Up: Open with a neutral statement using “I” language.',
-      'Ask for Perspective: Listen actively and paraphrase to confirm understanding.',
-      'Brainstorm Solutions: Generate options collaboratively.',
-      'Agree & Follow-Up: Choose a solution and set next steps.'
-    ],
-  link: '/skills/interpersonal_problem_solving',
-  recommendedBy: 'Terry'
+  "id": "interpersonal_problem_solving",
+  "title": "Interpersonal Problem Solving",
+  "category": "Social Resilience",
+  "domains": ["social", "family"],
+  "brief": "Relationships are critical to our resilience. Interpersonal Problem Solving helps you address problems in a way that preserves respect, reduces tension, and strengthens trust.",
+  "trainer": "Terry",
+  "trainerImage": "/terry.jpg",
+  "goal": "To address problems in a manner that shows respect for the relationship and to lower the intensity to find a resolution that both parties can live with.",
+  "when": "You need to find a resolution to an interpersonal problem.",
+  "benefits": [
+    "Building and strengthening relationships",
+    "Builds optimism",
+    "Achieving our goals",
+    "Acting based on our values",
+    "Enables proactive problem solving"
+  ],
+  "definitions": [
+    {
+      "term": "Constructive Conflict",
+      "definition": "Conflict that strengthens relationships through respectful dialogue, open communication, and collaborative solutions."
+    },
+    {
+      "term": "Destructive Conflict",
+      "definition": "Conflict that reduces the ability to resolve the situation and damages the relationship — often draining energy from the real issue."
+    },
+    {
+      "term": "Destructive Strategy – Avoidance",
+      "definition": "Ignoring the problem and hoping it will go away. Avoidance leads to deteriorating communication and unresolved tension."
+    },
+    {
+      "term": "Destructive Strategy – Competing or Forcing",
+      "definition": "Trying to “win” the argument by being right, blaming others, or overpowering them — often through yelling or dismissing their views."
+    },
+    {
+      "term": "Destructive Strategy – Trivialization",
+      "definition": "Minimizing the issue by laughing it off or acting like it doesn’t matter — which invalidates the other person’s experience and erodes trust."
+    },
+    {
+      "term": "Active Listening",
+      "definition": "Fully concentrating on what someone is saying, responding thoughtfully, and withholding judgment."
+    },
+    {
+      "term": "I Statements",
+      "definition": "Expressing your thoughts, feelings, and needs using statements that begin with “I” — to reduce blame and promote ownership."
+    },
+    {
+      "term": "Paraphrasing",
+      "definition": "Restating what someone said in your own words to confirm you understood their perspective accurately."
+    },
+    {
+      "term": "Brainstorming",
+      "definition": "The process of generating multiple possible solutions to a problem without evaluating them right away."
+    },
+    {
+      "term": "Homework",
+      "definition": "Preparing before the conversation by clearly defining the problem, adopting a growth mindset, balancing your thinking, and being ready to listen actively and openly."
+    },
+    {
+      "term": "Wind-Up Approach",
+      "definition": "A strategy to lower tension and open a difficult conversation. It starts with a positive statement and expresses the issue clearly using “I” language — short, specific, and growth-minded."
+    }
+  ],
+  "examples": [
+    "Terry was frustrated after a colleague didn’t follow through on a task. He caught himself thinking, “You always drop the ball,” and recognized it as an All or Nothing cognitive trap from Balance Your Thinking. He paused and used the Wind-Up Approach: 'I know we both want this project to go well. I’m feeling stuck because I wasn’t sure where things left off. Can we talk it through?'",
+    "After missing a deadline, Terry shrugged and said, “Not my job, not my prob,” but Scotty didn’t laugh. Instead, he calmly said, 'That actually put a lot on me, brother. Can we figure out a better way to handle it next time?' Terry realized his response had trivialized the issue and appreciated Scotty's respectful, growth-minded approach to solving the problem."
+  ],
+  "how": [
+    "Do Your Homework Before the Conversation",
+    "State the Problem Using the Wind-Up Approach",
+    "Ask for the Other Person’s Perspective",
+    "Work Together to Generate Solutions",
+    "Evaluate the Solutions",
+    "Choose a Solution and Seal the Agreement"
+  ],
+  "videoThumbnail": "https://mymentalarmor.com/wp-content/uploads/2024/06/30CM_IPPS_FLOOR_CIRCLE_SHAKE-copy.jpg",
+  "videoUrl": "",
+  "link": "/skills/interpersonal_problem_solving",
+  "recommendedBy": "Terry"
 },
 
   {
-    id: 'good_listening_celebrate_news',
-    title: 'Good Listening & Celebrate Good News',
-    category: 'Social Resilience',
-    domains: ['social' , 'family'] ,
-    brief: 'Deepen connections by active listening and sharing positive events.',
-    trainer: 'Scotty',
-    trainerImage: '/scotty.jpg',
-    goal:
-      'Build, strengthen, and maintain relationships through active listening and celebrating successes.',
-    when: 'When engaging in conversations or celebrating good news.',
-    benefits: [
-      'Enhanced empathy',
-      'Stronger support networks',
-      'Amplified positivity'
-    ],
-    definitions: [
-      { term: 'Attend with Genuine Interest', definition: 'Focus fully on the speaker without distraction.' },
-      { term: 'Savoring', definition: 'Prompt vivid recall to deepen positive emotions.' }
-    ],
-    definition:
-      'Attend with Genuine Interest means focusing fully on the speaker without distraction. Savoring is prompting vivid recall to deepen positive emotions.',
-    examples: [
-      'When a friend shares good news, ask them open-ended questions to encourage savoring.',
-      'During a conversation, focus entirely on the speaker—put away your phone and maintain eye contact.'
-    ],
-    details: [
-      'Apply ABCDE’s: Attend, Be responsive, Care, Don’t interrupt, Encourage.',
-      'Celebrate Good News: Express enthusiasm and ask open-ended questions.',
-      'Help Savor: Invite details to extend the positive emotion.',
-      'Use Conversations A & B: Celebrate first, then follow up if concerns arise.',
-      'Reflect on Patterns: Review how often you celebrate and adjust as needed.'
-    ],
-  link: '/skills/good_listening_celebrate_news',
-  recommendedBy: 'Scotty'
-}
-];
+  "id": "good_listening_celebrate_news",
+  "title": "Good Listening & Celebrate Good News",
+  "category": "Social Resilience",
+  "domains": ["social", "family"],
+  "brief": "Build and strengthen important relationships by listening actively and celebrating others’ good news.",
+  "trainer": "Scotty",
+  "trainerImage": "/scotty.jpg",
+  "goal": "To build, strengthen and maintain important relationships.",
+  "when": "Use good listening always. When someone shares good news.",
+  "benefits": [
+    "Building and strengthening relationships",
+    "Builds positive emotions",
+    "Builds a foundation for times when somebody needs support"
+  ],
+  "definitions": [
+    { "term": "Attend with Genuine Interest", "definition": "Focus fully on the speaker without distraction." },
+    { "term": "Be Responsive", "definition": "Show that you're listening with affirmations and gestures." },
+    { "term": "Care about the Other Person", "definition": "Show sincere interest in the person’s emotions and experience." },
+    { "term": "Don’t Interrupt", "definition": "Allow the other person to fully express themselves before responding." },
+    { "term": "Encourage", "definition": "Prompt the other person to continue by asking thoughtful or open-ended questions." },
+    { "term": "Celebrate", "definition": "Respond with high energy, ask questions, and help the person re-live the joy." },
+    { "term": "Deflate (Shut Down)", "definition": "Respond with low energy or distraction, showing disinterest." },
+    { "term": "Steal", "definition": "Shift focus to yourself instead of the person sharing the news." },
+    { "term": "Squash", "definition": "Point out problems or offer negative feedback instead of celebrating." },
+    { "term": "Conversation A", "definition": "Celebrate the good news and support the moment fully." },
+    { "term": "Conversation B", "definition": "Address concerns or difficult topics later — at an appropriate time." }
+  ],
+  "examples": [
+    "When AJ told the team she was going on vacation, she got four different responses.\n❌ Terry squashed the excitement: 'You think you’ll actually get time off? Vacations cost a fortune.'\n❌ Jill shut down: 'That’s cool,' and went back to typing.\n❌ Rhonda stole the spotlight: 'Let me tell you about *my* last trip—Hawaii was amazing.'\n✅ Scotty celebrated her joy: 'That’s awesome! Where to? You’ve earned this—you’ve been grinding hard lately.'"
+  ],
+  "how": [
+    "Apply the ABCDE’s: Attend with Genuine Interest, Be Responsive, Care, Don’t Interrupt, and Encourage the person to say more.",
+    "Celebrate because you care about the person, not just the news.",
+    "Celebrating good news doesn’t need to take much time — a few thoughtful questions can go a long way.",
+    "Help the other person savor the moment and re-live their positive emotions.",
+    "Use Conversation A to celebrate the good news first, then Conversation B (at an appropriate time) to express concerns if needed.",
+    "If the news is dangerous or harmful, do NOT celebrate — offer support instead.",
+    "Being present for good news can strengthen the relationship and open the door for future deeper conversations.",
+    "Trust built in positive moments may help the person turn to you during challenges."
+  ],
+  "link": "/skills/good_listening_celebrate_news",
+  "recommendedBy": "Scotty",
+  "videoURL": "",
+  "thumbnail": "https://mymentalarmor.com/wp-content/uploads/2024/06/30CM_GL_CGN_FLOOR_CIRCLE_CP-copy.jpg"
+}]
