@@ -74,28 +74,28 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
       <figcaption className="text-xs font-bold text-gray-800 text-center">
         {label}
       </figcaption>
-      <img
-        src={imgSrc}
-        alt={`${label} armor – ${status}`}
-        className="w-24 h-auto"
-      />
-
-      {/* Status Description */}
-      <p
-        className={`text-xs font-semibold mt-1 ${
-          status === "thriving"
-            ? "text-green-700"
-            : status === "needsImprovement"
-            ? "text-yellow-600"
-            : "text-red-600"
-        }`}
-      >
-        {status === "thriving"
-          ? "Battle-Ready"
-          : status === "needsImprovement"
-          ? "Armor shows wear—recommended reinforcement"
-          : "Vulnerable—repairs urgently needed"}
-      </p>
+      <div className="flex flex-col justify-end items-center h-32">
+  <img
+    src={imgSrc}
+    alt={`${label} armor – ${status}`}
+    className="w-24 h-auto mb-1"
+  />
+  <p
+    className={`text-xs font-semibold ${
+      status === "thriving"
+        ? "text-green-700"
+        : status === "needsImprovement"
+        ? "text-yellow-600"
+        : "text-red-600"
+    }`}
+  >
+    {status === "thriving"
+      ? "Battle-Ready"
+      : status === "needsImprovement"
+      ? "Armor shows wear—recommended reinforcement"
+      : "Vulnerable—repairs urgently needed"}
+  </p>
+</div>
 
       {/* Divider + Suggested Repairs if NOT thriving */}
       {status !== "thriving" && skillsFor.length > 0 && (
