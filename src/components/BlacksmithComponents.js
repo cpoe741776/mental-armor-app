@@ -71,7 +71,7 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
     <figure className="flex flex-col items-center gap-2 text-center" aria-label={`${label} armor – ${status}`}>
       <figcaption className="text-xs font-bold text-gray-800 text-center">
   {label}
-  {label !== "SOCIAL / PROFESSIONAL" && <br />}
+  {label !== "EMOTIONAL" && <br />}
 </figcaption>
       <img src={imgSrc} alt={`${label} armor – ${status}`} className="w-24 h-auto" />
       {status !== "thriving" ? (
