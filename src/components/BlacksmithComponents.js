@@ -67,43 +67,41 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
   const imgSrc = imageMap[domain][status];
 
   return (
-    <figure
-      className="flex flex-col items-center gap-2 text-center"
-      aria-label={`${label} armor – ${status}`}
-    >
-      <figcaption className="text-xs font-bold text-gray-800 text-center">
-        {label}
-      </figcaption>
-      <div className="flex flex-col items-center h-32 justify-start">
-  <img
-  src={imgSrc}
-  alt={`${label} armor – ${status}`}
-  className="w-auto max-h-20 mb-1"
-/>
-  <p
-    className={`text-xs font-semibold ${
-      status === "thriving"
-        ? "text-green-700"
-        : status === "needsImprovement"
-        ? "text-yellow-600"
-        : "text-red-600"
-    }`}
-  >
-    {status === "thriving"
-      ? "Battle-Ready"
-      : status === "needsImprovement"
-      ? "Armor shows wear—recommended reinforcement"
-      : "Vulnerable—repairs urgently needed"}
-  </p>
-</div>
+    <figure className="flex flex-col items-center text-center" aria-label={`${label} armor – ${status}`}>
+      {/* Fixed height container for title + image */}
+      <div className="flex flex-col items-center" style={{ minHeight: '140px' }}>
+        <figcaption className="text-xs font-bold text-gray-800 leading-tight mb-1">
+          {label}
+        </figcaption>
+        <img
+          src={imgSrc}
+          alt={`${label} armor – ${status}`}
+          className="w-auto max-h-20"
+        />
+      </div>
 
-      {/* Divider + Suggested Repairs if NOT thriving */}
+      {/* Fixed height container for readiness label */}
+      <div className="min-h-[2.5rem] flex items-start mt-1">
+        {status === "thriving" && (
+          <p className="text-xs text-green-700 font-semibold">Battle-Ready</p>
+        )}
+        {status === "needsImprovement" && (
+          <p className="text-xs text-yellow-700 font-semibold text-center">
+            Armor shows wear—<br className="hidden md:block" />recommended reinforcement
+          </p>
+        )}
+        {status === "challenged" && (
+          <p className="text-xs text-red-700 font-semibold text-center">
+            Vulnerable—<br className="hidden md:block" />repairs urgently needed
+          </p>
+        )}
+      </div>
+
+      {/* Divider and suggested skills (if needed) */}
       {status !== "thriving" && skillsFor.length > 0 && (
         <>
-          <hr className="my-2 w-3/4 border-gray-300" />
-          <h4 className="text-xs font-bold uppercase text-gray-600 mb-1">
-            Suggested Repairs
-          </h4>
+          <hr className="my-2 w-10 border-t border-gray-300" />
+          <p className="text-xs font-bold text-gray-500 mb-1">SUGGESTED REPAIRS</p>
           <ul className="space-y-1 text-sm">
             {skillsFor.map((skill) => (
               <li key={skill.id}>
