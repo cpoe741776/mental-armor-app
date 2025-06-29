@@ -37,7 +37,7 @@ const ArmorModal = ({ domain, label, status, imgSrc, skillsFor, onClose }) => {
         ) : skillsFor.length > 0 ? (
           <>
             <hr className="my-2 w-10 border-t border-gray-300 mx-auto" />
-            <p className="text-xs font-bold text-gray-500 tracking-wide text-center">SUGGESTED REPAIRS</p>
+            <p className="text-xs font-bold text-gray-500 tracking-wide text-center">UPGRADE SKILLS</p>
             <ul className="space-y-1 text-sm mt-2">
               {skillsFor.map((skill) => (
                 <li key={skill.id} className="text-center">
