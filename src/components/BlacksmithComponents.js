@@ -3,6 +3,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
+import Blacksmith from './Blacksmith';
 
 // Image imports from armor_images folder inside assets
 import HIGH_HELMET from "../assets/armor_images/HIGH_HELMET.png";
@@ -81,21 +82,37 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
       </div>
 
       {/* Fixed height container for readiness label */}
-      <div className="min-h-[2.5rem] flex items-start mt-1">
-        {status === "thriving" && (
-          <p className="text-xs text-green-700 font-semibold">Battle-Ready</p>
-        )}
-        {status === "needsImprovement" && (
-          <p className="text-xs text-yellow-700 font-semibold text-center">
-            Armor shows wear—<br className="hidden md:block" />recommended reinforcement
-          </p>
-        )}
-        {status === "challenged" && (
-          <p className="text-xs text-red-700 font-semibold text-center">
-            Vulnerable—<br className="hidden md:block" />repairs urgently needed
-          </p>
-        )}
-      </div>
+<div className="min-h-[2.5rem] flex items-start mt-1">
+  {status === "thriving" && (
+    <p className="text-xs text-green-700 font-semibold">Battle-Ready</p>
+  )}
+  {status === "needsImprovement" && (
+    <p className="text-xs text-yellow-700 font-semibold text-center">
+      Armor shows wear—<br className="hidden md:block" />recommended reinforcement
+    </p>
+  )}
+  {status === "challenged" && (
+    <p className="text-xs text-red-700 font-semibold text-center">
+      Vulnerable—<br className="hidden md:block" />repairs urgently needed
+    </p>
+  )}
+</div>
+
+{/* 🧱 Blacksmith for this domain */}
+<div
+  className="w-full flex justify-center items-center mt-2 mb-2"
+  style={{ height: '180px' }} // or adjust height to fit your design
+>
+  <Blacksmith
+    status={
+      status === "thriving"
+        ? "high"
+        : status === "needsImprovement"
+        ? "mod"
+        : "low"
+    }
+  />
+</div>
 
       {/* Divider and suggested skills (if needed) */}
       {status !== "thriving" && skillsFor.length > 0 && (
