@@ -72,61 +72,72 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
   className="flex flex-col justify-start items-center text-center bg-white rounded-xl p-2 shadow-sm h-full"
   aria-label={`${label} armor – ${status}`}
 >
-      {/* Fixed height container for title + image */}
-      <div className="flex flex-col justify-start items-center h-[140px]">
-        <figcaption className="text-xs font-bold text-gray-800 leading-tight mb-1">
-          {label}
-        </figcaption>
-        <img
-          src={imgSrc}
-          alt={`${label} armor – ${status}`}
-          className="w-auto max-h-20"
-        />
-      </div>
+  {/* Title + Armor */}
+  <div className="flex flex-col justify-start items-center h-[140px]">
+    <figcaption className="text-xs font-bold text-gray-800 leading-tight mb-1">
+      {label}
+    </figcaption>
+    <img
+      src={imgSrc}
+      alt={`${label} armor – ${status}`}
+      className="w-auto max-h-20"
+    />
+  </div>
 
-      {/* Fixed height container for readiness label */}
-<div className="min-h-[2.5rem] flex items-start mt-1">
-  <div className="w-full mt-2 flex flex-col justify-start items-start">
-  <hr className="mb-2 w-10 border-t border-gray-300" />
-  <p className="text-xs font-bold text-gray-500 mb-1">SUGGESTED REPAIRS</p>
-  <ul className="space-y-1 text-sm">...</ul>
-</div>
-</div>
+  {/* Status Description */}
+  <div className="min-h-[2.5rem] flex items-start mt-1">
+    {status === "thriving" && (
+      <p className="text-xs text-green-700 font-semibold">Battle-Ready</p>
+    )}
+    {status === "needsImprovement" && (
+      <p className="text-xs text-yellow-700 font-semibold text-center">
+        Armor shows wear—<br className="hidden md:block" />recommended reinforcement
+      </p>
+    )}
+    {status === "challenged" && (
+      <p className="text-xs text-red-700 font-semibold text-center">
+        Vulnerable—<br className="hidden md:block" />repairs urgently needed
+      </p>
+    )}
+  </div>
 
-{/* 🧱 Blacksmith for this domain */}
-<div className="w-full flex justify-center mt-2 mb-2" style={{ height: '120px', overflow: 'hidden' }}>
-  <Blacksmith
-    status={
-      status === "thriving"
-        ? "high"
-        : status === "needsImprovement"
-        ? "mod"
-        : "low"
-    }
-  />
-</div>
+  {/* Blacksmith */}
+  <div
+    className="w-full flex justify-center mt-2 mb-2"
+    style={{ height: '120px', overflow: 'hidden' }}
+  >
+    <Blacksmith
+      status={
+        status === "thriving"
+          ? "high"
+          : status === "needsImprovement"
+          ? "mod"
+          : "low"
+      }
+    />
+  </div>
 
-      {/* Divider and suggested skills (if needed) */}
-      {status !== "thriving" && skillsFor.length > 0 && (
-        <>
-          <hr className="my-2 w-10 border-t border-gray-300" />
-          <p className="text-xs font-bold text-gray-500 mb-1">SUGGESTED REPAIRS</p>
-          <ul className="space-y-1 text-sm">
-            {skillsFor.map((skill) => (
-              <li key={skill.id}>
-                <span role="img" aria-label="Forge tool">⚒️</span>{" "}
-                <Link
-                  to={`/skill/${skill.id}`}
-                  className="text-[#003049] font-extrabold hover:underline"
-                >
-                  {skill.title}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-    </figure>
+  {/* Suggested Repairs */}
+  {status !== "thriving" && skillsFor.length > 0 && (
+    <div className="w-full mt-2 flex flex-col justify-start items-start">
+      <hr className="mb-2 w-10 border-t border-gray-300" />
+      <p className="text-xs font-bold text-gray-500 mb-1">SUGGESTED REPAIRS</p>
+      <ul className="space-y-1 text-sm">
+        {skillsFor.map((skill) => (
+          <li key={skill.id}>
+            <span role="img" aria-label="Forge tool">⚒️</span>{" "}
+            <Link
+              to={`/skill/${skill.id}`}
+              className="text-[#003049] font-extrabold hover:underline"
+            >
+              {skill.title}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+</figure>
   );
 }
 
