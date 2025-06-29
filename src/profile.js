@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { skills } from './skills';
 import MFADials from './components/MFADials';
-import { Garden } from './components/GardenComponents';
+import { BlacksmithShop } from './components/BlacksmithComponents';
 import netlifyIdentity from 'netlify-identity-widget';
 import { auth } from './auth';
 import ProfileReflections from './components/ProfileReflections';
@@ -143,40 +143,46 @@ export default function Profile() {
         ) : (
           <>
             <div className="flex flex-wrap items-center justify-between mb-6">
-  <div className="flex items-center space-x-3">
-    {avatar && (
-      <img src={AVATARS.find(a => a.id === avatar)?.src} alt="Your avatar" className="w-12 h-12 rounded-full" />
-    )}
-    <div><strong>Email:</strong> {user.email}</div>
-  </div>
-  <div className="flex items-center space-x-2">
-    {AVATARS.map(a => (
-      <img
-        key={a.id}
-        src={a.src}
-        alt={a.id}
-        className={`w-10 h-10 rounded-full cursor-pointer border-2 ${avatar === a.id ? 'border-blue-500' : 'border-transparent'}`}
-        onClick={() => updateAvatar(a.id)}
-      />
-    ))}
-  </div>
-</div>
+              <div className="flex items-center space-x-3">
+                {avatar && (
+                  <img src={AVATARS.find(a => a.id === avatar)?.src} alt="Your avatar" className="w-12 h-12 rounded-full" />
+                )}
+                <div><strong>Email:</strong> {user.email}</div>
+              </div>
+              <div className="flex items-center space-x-2">
+                {AVATARS.map(a => (
+                  <img
+                    key={a.id}
+                    src={a.src}
+                    alt={a.id}
+                    className={`w-10 h-10 rounded-full cursor-pointer border-2 ${avatar === a.id ? 'border-blue-500' : 'border-transparent'}`}
+                    onClick={() => updateAvatar(a.id)}
+                  />
+                ))}
+              </div>
+            </div>
+
             <div className="space-y-8">
               <div className="space-y-2">
                 <button onClick={handleResetPassword} className="w-full px-4 py-2 bg-yellow-400 rounded">
                   Reset Password
                 </button>
               </div>
-               {mfaScores && (
-              <div className="flex flex-col md:flex-row justify-between items-stretch mb-8 space-y-6 md:space-y-0 md:space-x-6">
-                <div className="w-full md:w-1/2 bg-gray-50 rounded-xl p-4">
-                  <MFADials scores={mfaScores} />
-                </div>
-                <div className="w-full md:w-1/2 bg-gray-50 rounded-xl p-4">
-                  <Garden domainScores={mfaScores} suggestedSkills={suggestedSkills} />
-                </div>
-              </div>
-            )}
+             <section className="mb-8">
+  <h2 className="text-xl font-semibold mb-1 text-center">Your Mental Armor Blacksmith</h2>
+  <p className="text-center text-sm text-gray-600 mb-4">
+    Assess your gear. Strengthen your readiness. Reforge what’s vulnerable.
+  </p>
+  <div className="flex flex-col md:flex-row justify-between items-stretch space-y-6 md:space-y-0 md:space-x-6">
+    <div className="w-full md:w-1/2 bg-gray-50 rounded-xl p-4">
+      <MFADials scores={mfaScores} />
+    </div>
+    <div className="w-full md:w-1/2 bg-gray-50 rounded-xl p-4">
+      <BlacksmithShop domainScores={mfaScores} suggestedSkills={suggestedSkills} />
+    </div>
+  </div>
+</section>
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="space-y-8">
                   <section>
@@ -212,60 +218,58 @@ export default function Profile() {
 
                 <div className="md:col-span-2 space-y-8">
                   {mfaScores && (
-                    <>
-                      <section>
-                        <h2 className="text-xl font-semibold mb-2 text-center">Skills We Suggest</h2>
-                        {Object.entries(mfaScores).map(([dim, score]) => {
-                          const label = labelMap[dim];
-                          const bgMap = {
-                            emotional: 'bg-red-50',
-                            social: 'bg-blue-50',
-                            family: 'bg-yellow-50',
-                            spiritual: 'bg-purple-50',
-                          };
-                          const skillsFor = suggestedSkills.filter(skill =>
-                            Array.isArray(skill.domains) && skill.domains.includes(dim)
-                          );
+                    <section>
+                      <h2 className="text-xl font-semibold mb-2 text-center">Skills We Suggest</h2>
+                      {Object.entries(mfaScores).map(([dim, score]) => {
+                        const label = labelMap[dim];
+                        const bgMap = {
+                          emotional: 'bg-red-50',
+                          social: 'bg-blue-50',
+                          family: 'bg-yellow-50',
+                          spiritual: 'bg-purple-50',
+                        };
+                        const skillsFor = suggestedSkills.filter(skill =>
+                          Array.isArray(skill.domains) && skill.domains.includes(dim)
+                        );
 
-                          if (score >= 3.5) {
-                            return (
-                              <p key={dim} className="text-green-600 mb-6 text-center">
-                                Your {label} is Thriving! Well done!
-                              </p>
-                            );
-                          }
-
+                        if (score >= 3.5) {
                           return (
-                            <div key={dim} className={`mb-12 ${bgMap[dim]} rounded-xl p-4`}>
-                              <p className="font-semibold mb-3 text-lg text-center">
-                                To increase your {label}, we recommend:
-                              </p>
-                              {skillsFor.length > 0 ? (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                  {skillsFor.map(skill => (
-                                    <div key={skill.id} className="bg-white rounded-xl shadow p-4 flex flex-col">
-                                      <h3 className="text-lg font-medium mb-2">{skill.title}</h3>
-                                      <div className="flex items-center mb-3">
-                                        {skill.trainerImage && (
-                                          <img src={skill.trainerImage} alt={skill.trainer} className="w-8 h-8 rounded-full mr-2" />
-                                        )}
-                                        <p className="text-sm text-gray-500">Trainer: {skill.trainer}</p>
-                                      </div>
-                                      <p className="text-sm text-gray-700 mb-4">{skill.benefits[0]}</p>
-                                      <Link to={`/skill/${skill.id}`} className="mt-auto text-blue-600 hover:underline text-sm">
-                                        Learn more
-                                      </Link>
-                                    </div>
-                                  ))}
-                                </div>
-                              ) : (
-                                <p className="text-gray-600 text-center">No recommendations at this time.</p>
-                              )}
-                            </div>
+                            <p key={dim} className="text-green-600 mb-6 text-center">
+                              Your {label} is Thriving! Well done!
+                            </p>
                           );
-                        })}
-                      </section>
-                    </>
+                        }
+
+                        return (
+                          <div key={dim} className={`mb-12 ${bgMap[dim]} rounded-xl p-4`}>
+                            <p className="font-semibold mb-3 text-lg text-center">
+                              To increase your {label}, we recommend:
+                            </p>
+                            {skillsFor.length > 0 ? (
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {skillsFor.map(skill => (
+                                  <div key={skill.id} className="bg-white rounded-xl shadow p-4 flex flex-col">
+                                    <h3 className="text-lg font-medium mb-2">{skill.title}</h3>
+                                    <div className="flex items-center mb-3">
+                                      {skill.trainerImage && (
+                                        <img src={skill.trainerImage} alt={skill.trainer} className="w-8 h-8 rounded-full mr-2" />
+                                      )}
+                                      <p className="text-sm text-gray-500">Trainer: {skill.trainer}</p>
+                                    </div>
+                                    <p className="text-sm text-gray-700 mb-4">{skill.benefits[0]}</p>
+                                    <Link to={`/skill/${skill.id}`} className="mt-auto text-blue-600 hover:underline text-sm">
+                                      Learn more
+                                    </Link>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-gray-600 text-center">No recommendations at this time.</p>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </section>
                   )}
                 </div>
               </div>

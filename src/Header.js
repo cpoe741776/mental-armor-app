@@ -3,13 +3,13 @@ import React, { useEffect, useState } from 'react';
 import { Link, NavLink }              from 'react-router-dom';
 import netlifyIdentity                from 'netlify-identity-widget';
 import Logo                           from './Logo';
-import { GardenHeader }               from './components/GardenComponents';
+import { BlacksmithHeader }          from './components/BlacksmithComponents';  // ✅ Updated import
 import useMfaScores                   from './hooks/useMfaScores';
 
 export default function Header() {
   const [user, setUser] = useState(null);
-  const scores          = useMfaScores();          // mini garden
-  /* ---------- identity listeners ---------- */
+  const scores          = useMfaScores();
+
   useEffect(() => {
     const updateUser = () => setUser(netlifyIdentity.currentUser());
     netlifyIdentity.on('init',   updateUser);
@@ -23,9 +23,8 @@ export default function Header() {
     };
   }, []);
 
-  /* ---------- render ---------- */
   return (
-    <header className="bg-gray-800 text-white py-8">  {/* doubled height */}
+    <header className="bg-gray-800 text-white py-8">
       <nav
         className="
           container mx-auto
@@ -44,10 +43,10 @@ export default function Header() {
             </span>
           </Link>
 
-          {/* mini-garden (only on ≥md to avoid crowding small screens) */}
+          {/* mini-blacksmith status (only on ≥md to avoid crowding small screens) */}
           {scores && (
             <span className="hidden md:inline-block ml-4">
-              <GardenHeader domainScores={scores} />
+              <BlacksmithHeader domainScores={scores} />
             </span>
           )}
 

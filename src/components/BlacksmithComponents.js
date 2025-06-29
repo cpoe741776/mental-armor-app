@@ -1,48 +1,82 @@
-// GardenComponents.js – Resilience & Well‑being Garden (emoji fallback v4)
+// BlacksmithComponents.js – Mental Armor Blacksmith (v1)
 
 import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import grassImage from "../assets/grass-hills.png"; // corrected import path
+
+// Image imports from assets
+import HIGH_HELMET from "../assets/HIGH_HELMET.png";
+import MOD_HELMET from "../assets/MOD_HELMET.png";
+import LOW_HELMET from "../assets/LOW_HELMET.png";
+
+import HIGH_CHESTPLATE from "../assets/HIGH_CHESTPLATE.png";
+import MOD_CHESTPLATE from "../assets/MOD_CHESTPLATE.png";
+import LOW_CHESTPLATE from "../assets/LOW_CHESTPLATE.png";
+
+import HIGH_LEGS from "../assets/HIGH_LEGS.png";
+import MOD_LEGS from "../assets/MOD_LEGS.png";
+import LOW_LEGS from "../assets/LOW_LEGS.png";
+
+import HIGH_SHIELD from "../assets/HIGH_SHIELD.png";
+import MOD_SHIELD from "../assets/MOD_SHIELD.png";
+import LOW_SHIELD from "../assets/LOW_SHIELD.png";
+
+// Determine image to show per domain and score level
+const imageMap = {
+  emotional: {
+    challenged: LOW_HELMET,
+    needsImprovement: MOD_HELMET,
+    thriving: HIGH_HELMET,
+  },
+  family: {
+    challenged: LOW_CHESTPLATE,
+    needsImprovement: MOD_CHESTPLATE,
+    thriving: HIGH_CHESTPLATE,
+  },
+  social: {
+    challenged: LOW_LEGS,
+    needsImprovement: MOD_LEGS,
+    thriving: HIGH_LEGS,
+  },
+  spiritual: {
+    challenged: LOW_SHIELD,
+    needsImprovement: MOD_SHIELD,
+    thriving: HIGH_SHIELD,
+  },
+};
+
+const labelMap = {
+  emotional: "EMOTIONAL",
+  social: "SOCIAL / PROFESSIONAL",
+  family: "FAMILY / PERSONAL",
+  spiritual: "SPIRITUAL",
+};
 
 const DOMAIN_ORDER = ["emotional", "social", "family", "spiritual"];
 
+// Translate score to status
 const toStatus = (score) => {
   if (score >= 3.5) return "thriving";
   if (score >= 2.3) return "needsImprovement";
   return "challenged";
 };
 
-const capLeft = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+// 🛡️ ARMOR PIECE COMPONENT
+export function ArmorPiece({ domain, score, skillsFor = [] }) {
+  const status = toStatus(score);
+  const label = labelMap[domain] || domain.toUpperCase();
+  const imgSrc = imageMap[domain][status];
 
-const mapStatusToEmoji = {
-  challenged: "🥀", // restored wilted rose emoji
-  needsImprovement: "🌱",
-  thriving: "🌹",
-};
-
-const labelMap = {
-  emotional: "EMOTIONAL",
-  social: "SOCIAL/PROFESSIONAL",
-  family: "FAMILY/PERSONAL",
-  spiritual: "SPIRITUAL",
-};
-
-export function Flower({ status, label, size = 48, showLabel = true, skillsFor = [] }) {
   return (
-    <figure className="flex flex-col items-center gap-2 text-center" aria-label={`${label} flower – ${status}`}>
-      {showLabel && (
-        <figcaption className="text-xs font-semibold text-gray-700">
-          {labelMap[label.toLowerCase()] || label}
-        </figcaption>
-      )}
-      <span style={{ fontSize: size }}>{mapStatusToEmoji[status]}</span>
+    <figure className="flex flex-col items-center gap-2 text-center" aria-label={`${label} armor – ${status}`}>
+      <figcaption className="text-xs font-bold text-gray-800">{label}</figcaption>
+      <img src={imgSrc} alt={`${label} armor – ${status}`} className="w-24 h-auto" />
       {status !== "thriving" ? (
         skillsFor.length > 0 && (
           <ul className="mt-1 space-y-1 text-sm">
             {skillsFor.map((skill) => (
               <li key={skill.id}>
-                <span role="img" aria-label="Watering plant">🚿</span>{" "}
+                <span role="img" aria-label="Forge tool">⚒️</span>{" "}
                 <Link
                   to={`/skill/${skill.id}`}
                   className="text-[#003049] font-extrabold hover:underline"
@@ -54,88 +88,45 @@ export function Flower({ status, label, size = 48, showLabel = true, skillsFor =
           </ul>
         )
       ) : (
-        <p className="text-xs text-green-700 font-semibold mt-1">Thriving</p>
+        <p className="text-xs text-green-700 font-semibold mt-1">Battle-Ready</p>
       )}
     </figure>
   );
 }
 
-Flower.propTypes = {
-  status: PropTypes.oneOf(["challenged", "needsImprovement", "thriving"]).isRequired,
-  label: PropTypes.string.isRequired,
-  size: PropTypes.number,
-  showLabel: PropTypes.bool,
+ArmorPiece.propTypes = {
+  domain: PropTypes.string.isRequired,
+  score: PropTypes.number.isRequired,
   skillsFor: PropTypes.array,
 };
 
-export function Garden({ domainScores, suggestedSkills = [] }) {
+export function BlacksmithHeader({ domainScores }) {
   return (
-    <section
-      className="p-4 rounded-2xl min-h-[240px] h-full animate-gardenScroll relative overflow-hidden"
-      role="group"
-      aria-label="Resilience & Well-being Garden"
-    >
-      <div
-  className="absolute inset-0 opacity-50 z-0 animate-gardenScroll"
-  style={{
-    backgroundImage: `url(${grassImage})`,
-    backgroundRepeat: "repeat-x",
-    backgroundPosition: "bottom",
-    backgroundSize: "cover",
-  }}
-></div>
-      <div className="relative z-10">
-        <h3 className="text-xl font-semibold mb-4 text-center">Your Resilience and Wellbeing Garden</h3>
-        <div className="grid grid-cols-2 gap-4 justify-items-center content-start">
-          {DOMAIN_ORDER.map((domain) => {
-            const domainSkills = suggestedSkills.filter(skill =>
-              Array.isArray(skill.domains) && skill.domains.includes(domain)
-            );
-            return (
-              <Flower
-                key={domain}
-                status={toStatus(domainScores[domain] ?? 0)}
-                label={capLeft(domain)}
-                size={48}
-                showLabel={true}
-                skillsFor={domainSkills}
-              />
-            );
-          })}
-        </div>
-      </div>
-    </section>
+    <div className="flex items-center gap-3" role="group" aria-label="Mini Armor Status">
+      {DOMAIN_ORDER.map((domain) => {
+        const status = toStatus(domainScores[domain] ?? 0);
+        const imgSrc = imageMap[domain][status];
+        const label = labelMap[domain];
+
+        return (
+          <img
+            key={domain}
+            src={imgSrc}
+            alt={`${label} armor – ${status}`}
+            className="w-8 h-auto"
+            title={`${label}: ${status}`}
+          />
+        );
+      })}
+    </div>
   );
 }
 
-Garden.propTypes = {
+BlacksmithHeader.propTypes = {
   domainScores: PropTypes.shape({
     emotional: PropTypes.number.isRequired,
     social: PropTypes.number.isRequired,
     family: PropTypes.number.isRequired,
     spiritual: PropTypes.number.isRequired,
   }).isRequired,
-  suggestedSkills: PropTypes.array,
 };
-
-export function GardenHeader({ domainScores }) {
-  return (
-    <div
-      className="flex items-center gap-2"
-      role="group"
-      aria-label="Mini Resilience Garden"
-    >
-      {DOMAIN_ORDER.map((domain) => (
-        <Flower
-          key={domain}
-          status={toStatus(domainScores[domain] ?? 0)}
-          label={capLeft(domain)}
-          size={28}
-          showLabel={false}
-        />
-      ))}
-    </div>
-  );
-}
-
-GardenHeader.propTypes = Garden.propTypes;
