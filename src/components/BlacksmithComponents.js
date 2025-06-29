@@ -1,4 +1,4 @@
-// BlacksmithComponents.js – Mental Armor Blacksmith (v1)
+// BlacksmithComponents.js – Mental Armor Blacksmith (v2)
 
 import React from "react";
 import PropTypes from "prop-types";
@@ -52,9 +52,8 @@ const labelMap = {
   spiritual: "SPIRITUAL",
 };
 
-const DOMAIN_ORDER = ["emotional", "social", "family", "spiritual"];
+const DOMAIN_ORDER = ["emotional", "family", "social", "spiritual"];
 
-// Translate score to status
 const toStatus = (score) => {
   if (score >= 3.5) return "thriving";
   if (score >= 2.3) return "needsImprovement";
@@ -68,15 +67,44 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
   const imgSrc = imageMap[domain][status];
 
   return (
-    <figure className="flex flex-col items-center gap-2 text-center" aria-label={`${label} armor – ${status}`}>
+    <figure
+      className="flex flex-col items-center gap-2 text-center"
+      aria-label={`${label} armor – ${status}`}
+    >
       <figcaption className="text-xs font-bold text-gray-800 text-center">
-  {label}
-  {label !== "EMOTIONAL" && <br />}
-</figcaption>
-      <img src={imgSrc} alt={`${label} armor – ${status}`} className="w-24 h-auto" />
-      {status !== "thriving" ? (
-        skillsFor.length > 0 && (
-          <ul className="mt-1 space-y-1 text-sm">
+        {label}
+      </figcaption>
+      <img
+        src={imgSrc}
+        alt={`${label} armor – ${status}`}
+        className="w-24 h-auto"
+      />
+
+      {/* Status Description */}
+      <p
+        className={`text-xs font-semibold mt-1 ${
+          status === "thriving"
+            ? "text-green-700"
+            : status === "needsImprovement"
+            ? "text-yellow-600"
+            : "text-red-600"
+        }`}
+      >
+        {status === "thriving"
+          ? "Battle-Ready"
+          : status === "needsImprovement"
+          ? "Armor shows wear—recommended reinforcement"
+          : "Vulnerable—repairs urgently needed"}
+      </p>
+
+      {/* Divider + Suggested Repairs if NOT thriving */}
+      {status !== "thriving" && skillsFor.length > 0 && (
+        <>
+          <hr className="my-2 w-3/4 border-gray-300" />
+          <h4 className="text-xs font-bold uppercase text-gray-600 mb-1">
+            Suggested Repairs
+          </h4>
+          <ul className="space-y-1 text-sm">
             {skillsFor.map((skill) => (
               <li key={skill.id}>
                 <span role="img" aria-label="Forge tool">⚒️</span>{" "}
@@ -89,9 +117,7 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
               </li>
             ))}
           </ul>
-        )
-      ) : (
-        <p className="text-xs text-green-700 font-semibold mt-1">Battle-Ready</p>
+        </>
       )}
     </figure>
   );
@@ -103,14 +129,18 @@ ArmorPiece.propTypes = {
   skillsFor: PropTypes.array,
 };
 
+// 🔧 Mini Blacksmith Header (Armor Strip for Header Bar)
 export function BlacksmithHeader({ domainScores }) {
   return (
-    <div className="flex items-center gap-3" role="group" aria-label="Mini Armor Status">
+    <div
+      className="flex items-center gap-3"
+      role="group"
+      aria-label="Mini Armor Status"
+    >
       {DOMAIN_ORDER.map((domain) => {
         const status = toStatus(domainScores[domain] ?? 0);
         const imgSrc = imageMap[domain][status];
         const label = labelMap[domain];
-
         return (
           <img
             key={domain}
@@ -133,16 +163,18 @@ BlacksmithHeader.propTypes = {
     spiritual: PropTypes.number.isRequired,
   }).isRequired,
 };
+
+// 🔨 BlacksmithShop Full Component
 export function BlacksmithShop({ domainScores, suggestedSkills }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-100 rounded-xl">
-      {Object.entries(domainScores).map(([domain, score]) => (
+      {DOMAIN_ORDER.map((domain) => (
         <ArmorPiece
           key={domain}
           domain={domain}
-          score={score}
+          score={domainScores[domain] ?? 0}
           skillsFor={
-            suggestedSkills?.filter(skill =>
+            suggestedSkills?.filter((skill) =>
               Array.isArray(skill.domains)
                 ? skill.domains.includes(domain)
                 : skill.domains === domain
