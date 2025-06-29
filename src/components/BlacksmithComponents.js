@@ -121,7 +121,7 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
             <>
               <hr className="w-10 border-t border-gray-300 mb-1" />
               <p className="text-xs font-bold text-gray-500 tracking-wide mb-1">
-                SUGGESTED REPAIRS
+                REPAIR SKILLS
               </p>
               <ul className="space-y-1 text-sm text-center">
                 {skillsFor.map((skill) => (
