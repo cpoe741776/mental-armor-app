@@ -37,6 +37,9 @@ const Blacksmith = ({ status }) => {
     width: '100%',
     maxWidth: '300px',
     borderRadius: '8px',
+    margin: 0,            // ← no rogue margin
+    padding: 0,           // ← clean fit
+    position: 'relative', // ← never absolute
   }}
   title={blacksmith.alt}
 />
