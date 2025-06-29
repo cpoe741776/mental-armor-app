@@ -22,7 +22,6 @@ import HIGH_SHIELD from "../assets/armor_images/HIGH_SHIELD.png";
 import MOD_SHIELD from "../assets/armor_images/MOD_SHIELD.png";
 import LOW_SHIELD from "../assets/armor_images/LOW_SHIELD.png";
 
-// Determine image to show per domain and score level
 const imageMap = {
   emotional: {
     challenged: LOW_HELMET,
@@ -61,95 +60,93 @@ const toStatus = (score) => {
   return "challenged";
 };
 
-// 🛡️ ARMOR PIECE COMPONENT
 export function ArmorPiece({ domain, score, skillsFor = [] }) {
   const status = toStatus(score);
   const label = labelMap[domain] || domain.toUpperCase();
   const imgSrc = imageMap[domain][status];
 
   return (
-    <figure
-  className="flex flex-col justify-start items-center text-center bg-white rounded-xl p-2 shadow-sm h-full"
-  aria-label={`${label} armor – ${status}`}
->
-  {/* Title + Armor */}
-  <div className="flex flex-col justify-start items-center h-[140px]">
-    <figcaption className="text-xs font-bold text-gray-800 leading-tight mb-1">
-      {label}
-    </figcaption>
-    <img
-      src={imgSrc}
-      alt={`${label} armor – ${status}`}
-      className="w-auto max-h-20"
-    />
-  </div>
+    <figure className="flex flex-col justify-start items-center text-center bg-white rounded-xl p-2 shadow-sm h-full">
+      {/* Title + Armor */}
+      <div className="flex flex-col justify-start items-center h-[140px]">
+        <figcaption className="text-xs font-bold text-gray-800 leading-tight mb-1">
+          {label}
+        </figcaption>
+        <img
+          src={imgSrc}
+          alt={`${label} armor – ${status}`}
+          className="w-auto max-h-20"
+        />
+      </div>
 
-  <div className="flex flex-col justify-start items-center min-h-[260px]">
-  {/* Status Description */}
-  <div className="min-h-[2.5rem] flex items-start">
-    {status === "thriving" && (
-      <p className="text-xs text-green-700 font-semibold">Battle-Ready!!!</p>
-    )}
-    {status === "needsImprovement" && (
-      <p className="text-xs text-yellow-700 font-semibold text-center">
-        Armor shows wear and tear...
-      </p>
-    )}
-    {status === "challenged" && (
-      <p className="text-xs text-red-700 font-semibold text-center">
-        Repairs urgently needed!
-      </p>
-    )}
-  </div>
+      {/* Status Description + Blacksmith + Repair Guidance */}
+      <div className="flex flex-col justify-start items-center min-h-[260px] w-full">
+        {/* Status Description */}
+        <div className="min-h-[2.5rem] flex items-start">
+          {status === "thriving" && (
+            <p className="text-xs text-green-700 font-semibold">Battle-Ready!!!</p>
+          )}
+          {status === "needsImprovement" && (
+            <p className="text-xs text-yellow-700 font-semibold text-center">
+              Armor shows wear and tear...
+            </p>
+          )}
+          {status === "challenged" && (
+            <p className="text-xs text-red-700 font-semibold text-center">
+              Repairs urgently needed!
+            </p>
+          )}
+        </div>
 
-  {/* Blacksmith */}
-  <div className="w-full flex justify-center mt-2 h-[100px]">
-    <div className="h-full flex items-start">
-      <Blacksmith
-        status={
-          status === "thriving"
-            ? "high"
-            : status === "needsImprovement"
-            ? "mod"
-            : "low"
-        }
-      />
-    </div>
-  </div>
+        {/* Blacksmith */}
+        <div className="w-full flex justify-center mt-2 h-[100px]">
+          <div className="h-full flex items-start">
+            <Blacksmith
+              status={
+                status === "thriving"
+                  ? "high"
+                  : status === "needsImprovement"
+                  ? "mod"
+                  : "low"
+              }
+            />
+          </div>
+        </div>
 
-  {/* Shimmer line if thriving */}
-  {status === "thriving" && (
-    <p className="text-xs font-medium italic mt-2 bg-gradient-to-r from-gray-600 via-gray-300 to-gray-600 bg-[length:200%_100%] bg-clip-text text-transparent animate-shimmer">
-  Blacksmith says: Your {label} Mental Armor is holding strong—keep it up!
-</p>
-  )}
-</div>
-
-  {/* Suggested Repairs */}
-<div className="w-full flex flex-col justify-start items-center min-h-[100px]">
-  {status !== "thriving" && skillsFor.length > 0 && (
-    <>
-      <hr className="w-10 border-t border-gray-300 mb-1" />
-      <p className="text-xs font-bold text-gray-500 tracking-wide mb-1">
-        SUGGESTED REPAIRS
-      </p>
-      <ul className="space-y-1 text-sm text-center">
-        {skillsFor.map((skill) => (
-          <li key={skill.id}>
-            <span role="img" aria-label="Forge tool">⚒️</span>{" "}
-            <Link
-              to={`/skill/${skill.id}`}
-              className="text-[#003049] font-extrabold hover:underline"
-            >
-              {skill.title}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </>
-  )}
-</div>
-</figure>
+        {/* Suggested Repairs or Shimmer Line */}
+        <div className="w-full flex flex-col justify-start items-center min-h-[100px] mt-2">
+          {status === "thriving" ? (
+            <p className="text-xs font-medium italic text-center bg-gradient-to-r from-gray-600 via-gray-300 to-gray-600 bg-[length:200%_100%] bg-clip-text text-transparent animate-shimmer">
+              Blacksmith says: Your {label} Mental Armor is holding strong—keep it up!
+            </p>
+          ) : skillsFor.length > 0 ? (
+            <>
+              <hr className="w-10 border-t border-gray-300 mb-1" />
+              <p className="text-xs font-bold text-gray-500 tracking-wide mb-1">
+                SUGGESTED REPAIRS
+              </p>
+              <ul className="space-y-1 text-sm text-center">
+                {skillsFor.map((skill) => (
+                  <li key={skill.id}>
+                    <span role="img" aria-label="Forge tool">⚒️</span>{" "}
+                    <Link
+                      to={`/skill/${skill.id}`}
+                      className="text-[#003049] font-extrabold hover:underline"
+                    >
+                      {skill.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            <p className="text-xs italic text-gray-400 text-center">
+              No suggestions available
+            </p>
+          )}
+        </div>
+      </div>
+    </figure>
   );
 }
 
@@ -159,7 +156,6 @@ ArmorPiece.propTypes = {
   skillsFor: PropTypes.array,
 };
 
-// 🔧 Mini Blacksmith Header (Armor Strip for Header Bar)
 export function BlacksmithHeader({ domainScores }) {
   return (
     <div
@@ -194,11 +190,9 @@ BlacksmithHeader.propTypes = {
   }).isRequired,
 };
 
-// 🔨 BlacksmithShop Full Component
 export function BlacksmithShop({ domainScores, suggestedSkills }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-100 rounded-xl items-start">
-
       {DOMAIN_ORDER.map((domain) => (
         <ArmorPiece
           key={domain}
