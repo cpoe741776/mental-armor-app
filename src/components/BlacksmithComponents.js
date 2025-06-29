@@ -4,22 +4,22 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 
-// Image imports from assets
-import HIGH_HELMET from "../assets/HIGH_HELMET.png";
-import MOD_HELMET from "../assets/MOD_HELMET.png";
-import LOW_HELMET from "../assets/LOW_HELMET.png";
+// Image imports from armor_images folder inside assets
+import HIGH_HELMET from "../assets/armor_images/HIGH_HELMET.png";
+import MOD_HELMET from "../assets/armor_images/MOD_HELMET.png";
+import LOW_HELMET from "../assets/armor_images/LOW_HELMET.png";
 
-import HIGH_CHESTPLATE from "../assets/HIGH_CHESTPLATE.png";
-import MOD_CHESTPLATE from "../assets/MOD_CHESTPLATE.png";
-import LOW_CHESTPLATE from "../assets/LOW_CHESTPLATE.png";
+import HIGH_CHESTPLATE from "../assets/armor_images/HIGH_CHESTPLATE.png";
+import MOD_CHESTPLATE from "../assets/armor_images/MOD_CHESTPLATE.png";
+import LOW_CHESTPLATE from "../assets/armor_images/LOW_CHESTPLATE.png";
 
-import HIGH_LEGS from "../assets/HIGH_LEGS.png";
-import MOD_LEGS from "../assets/MOD_LEGS.png";
-import LOW_LEGS from "../assets/LOW_LEGS.png";
+import HIGH_LEGS from "../assets/armor_images/HIGH_LEGS.png";
+import MOD_LEGS from "../assets/armor_images/MOD_LEGS.png";
+import LOW_LEGS from "../assets/armor_images/LOW_LEGS.png";
 
-import HIGH_SHIELD from "../assets/HIGH_SHIELD.png";
-import MOD_SHIELD from "../assets/MOD_SHIELD.png";
-import LOW_SHIELD from "../assets/LOW_SHIELD.png";
+import HIGH_SHIELD from "../assets/armor_images/HIGH_SHIELD.png";
+import MOD_SHIELD from "../assets/armor_images/MOD_SHIELD.png";
+import LOW_SHIELD from "../assets/armor_images/LOW_SHIELD.png";
 
 // Determine image to show per domain and score level
 const imageMap = {
