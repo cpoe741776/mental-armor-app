@@ -32,10 +32,11 @@ const Blacksmith = ({ status }) => {
   muted
   playsInline
   preload="auto"
-  poster="/blacksmith.png"
+  poster="/fallbacks/blacksmith.png"
 >
   <source src={video.webm} type="video/webm" />
   <source src={video.mp4} type="video/mp4" />
+  <img src="/fallbacks/blacksmith.png" alt="Mental Armor Blacksmith" />
   Your browser does not support the video tag.
 </video>
   );
