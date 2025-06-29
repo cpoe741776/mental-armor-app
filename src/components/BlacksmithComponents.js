@@ -69,11 +69,11 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
 
   return (
     <figure
-  className="flex flex-col items-center text-center bg-white rounded-xl p-2 shadow-sm"
+  className="flex flex-col justify-start items-center text-center bg-white rounded-xl p-2 shadow-sm h-full"
   aria-label={`${label} armor – ${status}`}
 >
       {/* Fixed height container for title + image */}
-      <div className="flex flex-col items-center" style={{ minHeight: '140px' }}>
+      <div className="flex flex-col justify-start items-center h-[140px]">
         <figcaption className="text-xs font-bold text-gray-800 leading-tight mb-1">
           {label}
         </figcaption>
@@ -86,26 +86,15 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
 
       {/* Fixed height container for readiness label */}
 <div className="min-h-[2.5rem] flex items-start mt-1">
-  {status === "thriving" && (
-    <p className="text-xs text-green-700 font-semibold">Battle-Ready</p>
-  )}
-  {status === "needsImprovement" && (
-    <p className="text-xs text-yellow-700 font-semibold text-center">
-      Armor shows wear—<br className="hidden md:block" />recommended reinforcement
-    </p>
-  )}
-  {status === "challenged" && (
-    <p className="text-xs text-red-700 font-semibold text-center">
-      Vulnerable—<br className="hidden md:block" />repairs urgently needed
-    </p>
-  )}
+  <div className="w-full mt-2 flex flex-col justify-start items-start">
+  <hr className="mb-2 w-10 border-t border-gray-300" />
+  <p className="text-xs font-bold text-gray-500 mb-1">SUGGESTED REPAIRS</p>
+  <ul className="space-y-1 text-sm">...</ul>
+</div>
 </div>
 
 {/* 🧱 Blacksmith for this domain */}
-<div
-  className="w-full flex justify-center items-center mt-2 mb-2"
-  style={{ height: '120px', maxHeight: '25%' }}
->
+<div className="w-full flex justify-center mt-2 mb-2" style={{ height: '120px', overflow: 'hidden' }}>
   <Blacksmith
     status={
       status === "thriving"
@@ -185,7 +174,8 @@ BlacksmithHeader.propTypes = {
 // 🔨 BlacksmithShop Full Component
 export function BlacksmithShop({ domainScores, suggestedSkills }) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-100 rounded-xl">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-100 rounded-xl items-start">
+
       {DOMAIN_ORDER.map((domain) => (
         <ArmorPiece
           key={domain}
