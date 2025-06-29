@@ -99,19 +99,19 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
         </div>
 
         {/* Blacksmith */}
-        <div className="w-full flex justify-center mt-2 h-[100px]">
-          <div className="h-full flex items-start">
-            <Blacksmith
-              status={
-                status === "thriving"
-                  ? "high"
-                  : status === "needsImprovement"
-                  ? "mod"
-                  : "low"
-              }
-            />
-          </div>
-        </div>
+<div className="w-full flex justify-center items-start mt-2 min-h-[80px]">
+  <div className="w-full max-w-[80px] h-auto flex items-start">
+    <Blacksmith
+      status={
+        status === "thriving"
+          ? "high"
+          : status === "needsImprovement"
+          ? "mod"
+          : "low"
+      }
+    />
+  </div>
+</div>
 
         {/* Suggested Repairs or Shimmer Line */}
         <div className="w-full flex flex-col justify-start items-center min-h-[100px] mt-2">
