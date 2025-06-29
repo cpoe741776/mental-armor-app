@@ -68,7 +68,10 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
   const imgSrc = imageMap[domain][status];
 
   return (
-    <figure className="flex flex-col items-center text-center" aria-label={`${label} armor – ${status}`}>
+    <figure
+  className="flex flex-col items-center text-center bg-white rounded-xl p-2 shadow-sm"
+  aria-label={`${label} armor – ${status}`}
+>
       {/* Fixed height container for title + image */}
       <div className="flex flex-col items-center" style={{ minHeight: '140px' }}>
         <figcaption className="text-xs font-bold text-gray-800 leading-tight mb-1">
@@ -101,7 +104,7 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
 {/* 🧱 Blacksmith for this domain */}
 <div
   className="w-full flex justify-center items-center mt-2 mb-2"
-  style={{ height: '180px', overflow: 'hidden' }}
+  style={{ height: '90px', maxHeight: '25%' }}
 >
   <Blacksmith
     status={

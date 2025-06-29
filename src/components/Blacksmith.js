@@ -32,14 +32,12 @@ const Blacksmith = ({ status }) => {
   loop
   muted
   playsInline
-  className="max-h-full object-contain"
+  className="object-contain"
   style={{
+    maxHeight: '80px',
     width: '100%',
-    maxWidth: '300px',
+    maxWidth: '160px',
     borderRadius: '8px',
-    margin: 0,            // ← no rogue margin
-    padding: 0,           // ← clean fit
-    position: 'relative', // ← never absolute
   }}
   title={blacksmith.alt}
 />
