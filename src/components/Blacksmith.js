@@ -1,48 +1,44 @@
-import React from 'react';
+import React from "react";
+import PropTypes from "prop-types";
 
-import blacksmithHigh from '../assets/blacksmiths/blacksmith_high.webm';
-import blacksmithMod from '../assets/blacksmiths/blacksmith_mod.webm';
-import blacksmithLow from '../assets/blacksmiths/blacksmith_low.webm';
+// Import videos (update paths if needed)
+import highWebm from "../assets/blacksmiths/blacksmith_high.webm";
+import highMp4 from "../assets/blacksmiths/blacksmith_high.mp4";
+import modWebm from "../assets/blacksmiths/blacksmith_mod.webm";
+import modMp4 from "../assets/blacksmiths/blacksmith_mod.mp4";
+import lowWebm from "../assets/blacksmiths/blacksmith_low.webm";
+import lowMp4 from "../assets/blacksmiths/blacksmith_low.mp4";
 
-const blacksmithMap = {
-  high: {
-    src: blacksmithHigh,
-    alt: 'Confident blacksmith standing proudly – battle ready',
-  },
-  mod: {
-    src: blacksmithMod,
-    alt: 'Blacksmith inspecting armor – focused on repairs',
-  },
-  low: {
-    src: blacksmithLow,
-    alt: 'Blacksmith sleeves rolled up – ready to dig into heavy repairs',
-  },
+// Status map to corresponding video sources
+const blacksmithVideos = {
+  high: { webm: highWebm, mp4: highMp4 },
+  mod: { webm: modWebm, mp4: modMp4 },
+  low: { webm: lowWebm, mp4: lowMp4 },
 };
 
 const Blacksmith = ({ status }) => {
-  const blacksmith = blacksmithMap[status];
+  const video = blacksmithVideos[status];
 
-  if (!blacksmith) return null;
+  if (!video) return null;
 
   return (
-    <div className="flex justify-center mb-4">
-      <video
-  src={blacksmith.src}
-  autoPlay
-  loop
-  muted
-  playsInline
-  className="object-contain"
-  style={{
-    maxHeight: '100px',
-    width: '100%',
-    maxWidth: '200px',
-    borderRadius: '8px',
-  }}
-  title={blacksmith.alt}
-/>
-    </div>
+    <video
+      className="w-auto h-[100px] object-contain"
+      autoPlay
+      loop
+      muted
+      playsInline
+      preload="auto"
+    >
+      <source src={video.webm} type="video/webm" />
+      <source src={video.mp4} type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
   );
+};
+
+Blacksmith.propTypes = {
+  status: PropTypes.oneOf(["high", "mod", "low"]).isRequired,
 };
 
 export default Blacksmith;
