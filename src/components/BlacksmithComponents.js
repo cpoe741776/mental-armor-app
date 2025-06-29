@@ -126,7 +126,7 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
 </div>
 
   {/* Suggested Repairs */}
-<div className="w-full flex flex-col justify-start items-center mt-4 min-h-[140px]">
+<div className="w-full flex flex-col justify-start items-center mt-2 min-h-[140px]">
   {status !== "thriving" && skillsFor.length > 0 && (
     <>
       <hr className="mb-2 w-10 border-t border-gray-300" />
