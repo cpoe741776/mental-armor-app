@@ -84,64 +84,72 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
     />
   </div>
 
+  <div className="flex flex-col justify-start items-center min-h-[260px]">
   {/* Status Description */}
-  <div className="min-h-[2.5rem] flex items-start mt-1">
+  <div className="min-h-[2.5rem] flex items-start">
     {status === "thriving" && (
       <p className="text-xs text-green-700 font-semibold">Battle-Ready!!!</p>
     )}
     {status === "needsImprovement" && (
       <p className="text-xs text-yellow-700 font-semibold text-center">
-  Armor shows wear and tear...
-</p>
+        Armor shows wear and tear...
+      </p>
     )}
     {status === "challenged" && (
       <p className="text-xs text-red-700 font-semibold text-center">
-        Vulnerable—<br className="hidden md:block" />Repairs urgently needed!      </p>
+        Repairs urgently needed!
+      </p>
     )}
   </div>
 
   {/* Blacksmith */}
   <div className="w-full flex justify-center mt-2 h-[100px]">
-  <div className="h-full flex items-start">
-    <Blacksmith
-      status={
-        status === "thriving"
-          ? "high"
-          : status === "needsImprovement"
-          ? "mod"
-          : "low"
-      }
-    />
+    <div className="h-full flex items-start">
+      <Blacksmith
+        status={
+          status === "thriving"
+            ? "high"
+            : status === "needsImprovement"
+            ? "mod"
+            : "low"
+        }
+      />
+    </div>
   </div>
+
+  {/* Shimmer line if thriving */}
+  {status === "thriving" && (
+    <p className="text-xs font-medium italic mt-2 bg-gradient-to-r from-gray-400 via-white to-gray-400 bg-[length:200%_100%] bg-clip-text text-transparent animate-shimmer">
+      Blacksmith says: Your {label} Mental Armor is holding strong—keep it up!
+    </p>
+  )}
 </div>
 
   {/* Suggested Repairs */}
-  <div className="w-full flex flex-col justify-start items-start mt-2 min-h-[100px]">
+<div className="w-full flex flex-col justify-start items-center mt-4 min-h-[140px]">
   {status !== "thriving" && skillsFor.length > 0 ? (
-  <>
-    <hr className="mb-2 w-10 border-t border-gray-300" />
-    <p className="text-xs font-bold text-gray-500 mb-1">SUGGESTED REPAIRS</p>
-    <ul className="space-y-1 text-sm">
-      {skillsFor.map((skill) => (
-        <li key={skill.id}>
-          <span role="img" aria-label="Forge tool">⚒️</span>{" "}
-          <Link
-            to={`/skill/${skill.id}`}
-            className="text-[#003049] font-extrabold hover:underline"
-          >
-            {skill.title}
-          </Link>
-        </li>
-      ))}
-    </ul>
-  </>
-) : (
-  <p
-  className="text-xs font-medium italic mt-2 bg-gradient-to-r from-gray-400 via-white to-gray-400 bg-[length:200%_100%] bg-clip-text text-transparent animate-shimmer"
->
-  Blacksmith says: Your {label} Mental Armor is holding strong—keep it up!
-</p>
-)}
+    <>
+      <hr className="mb-2 w-10 border-t border-gray-300" />
+      <p className="text-xs font-bold text-gray-500 mb-1 tracking-wide">SUGGESTED REPAIRS</p>
+      <ul className="space-y-1 text-sm text-center">
+        {skillsFor.map((skill) => (
+          <li key={skill.id}>
+            <span role="img" aria-label="Forge tool">⚒️</span>{" "}
+            <Link
+              to={`/skill/${skill.id}`}
+              className="text-[#003049] font-extrabold hover:underline"
+            >
+              {skill.title}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </>
+  ) : (
+    <p className="text-xs font-medium italic text-center mt-6 bg-gradient-to-r from-gray-400 via-white to-gray-400 bg-[length:200%_100%] bg-clip-text text-transparent animate-shimmer">
+      Blacksmith says: Your {label} Mental Armor is holding strong—keep it up!
+    </p>
+  )}
 </div>
 </figure>
   );
