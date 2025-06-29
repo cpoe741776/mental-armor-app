@@ -127,7 +127,7 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
 
   {/* Suggested Repairs */}
 <div className="w-full flex flex-col justify-start items-center mt-4 min-h-[140px]">
-  {status !== "thriving" && skillsFor.length > 0 ? (
+  {status !== "thriving" && skillsFor.length > 0 && (
     <>
       <hr className="mb-2 w-10 border-t border-gray-300" />
       <p className="text-xs font-bold text-gray-500 mb-1 tracking-wide">SUGGESTED REPAIRS</p>
@@ -145,10 +145,6 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
         ))}
       </ul>
     </>
-  ) : (
-    <p className="text-xs font-medium italic text-center mt-6 bg-gradient-to-r from-gray-400 via-white to-gray-400 bg-[length:200%_100%] bg-clip-text text-transparent animate-shimmer">
-      Blacksmith says: Your {label} Mental Armor is holding strong—keep it up!
-    </p>
   )}
 </div>
 </figure>
