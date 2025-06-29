@@ -22,18 +22,20 @@ const Blacksmith = ({ status }) => {
   if (!video) return null;
 
   return (
-    <video
-      className="w-auto h-[100px] object-contain"
-      autoPlay
-      loop
-      muted
-      playsInline
-      preload="auto"
-    >
-      <source src={video.webm} type="video/webm" />
-      <source src={video.mp4} type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
+   <video
+  className="w-auto h-[100px] object-contain"
+  width="100"
+  height="100"
+  autoPlay
+  loop
+  muted
+  playsInline
+  preload="auto"
+>
+  <source src={video.webm} type="video/webm" />
+  <source src={video.mp4} type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
   );
 };
 
