@@ -1,9 +1,10 @@
 // BlacksmithComponents.js – Mental Armor Blacksmith (v2)
 
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import Blacksmith from './Blacksmith';
+import ArmorModal from './components/ArmorModal';
 
 // Image imports from armor_images folder inside assets
 import HIGH_HELMET from "../assets/armor_images/HIGH_HELMET.png";
@@ -67,7 +68,6 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
 
   return (
     <figure className="flex flex-col justify-start items-center text-center bg-white rounded-xl p-2 shadow-sm h-full">
-      {/* Title + Armor */}
       <div className="flex flex-col justify-start items-center h-[140px]">
         <figcaption className="text-xs font-bold text-gray-800 leading-tight mb-1">
           {label}
@@ -79,9 +79,7 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
         />
       </div>
 
-      {/* Status Description + Blacksmith + Repair Guidance */}
       <div className="flex flex-col justify-start items-center min-h-[260px] w-full">
-        {/* Status Description */}
         <div className="min-h-[2.5rem] flex items-start">
           {status === "thriving" && (
             <p className="text-xs text-green-700 font-semibold">Battle-Ready!!!</p>
@@ -98,22 +96,20 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
           )}
         </div>
 
-        {/* Blacksmith */}
-<div className="w-full flex justify-center items-start mt-2 min-h-[80px]">
-  <div className="w-full max-w-[80px] h-auto flex items-start">
-    <Blacksmith
-      status={
-        status === "thriving"
-          ? "high"
-          : status === "needsImprovement"
-          ? "mod"
-          : "low"
-      }
-    />
-  </div>
-</div>
+        <div className="w-full flex justify-center items-start mt-2 min-h-[80px]">
+          <div className="w-full max-w-[80px] h-auto flex items-start">
+            <Blacksmith
+              status={
+                status === "thriving"
+                  ? "high"
+                  : status === "needsImprovement"
+                  ? "mod"
+                  : "low"
+              }
+            />
+          </div>
+        </div>
 
-        {/* Suggested Repairs or Shimmer Line */}
         <div className="w-full flex flex-col justify-start items-center min-h-[100px] mt-2">
           {status === "thriving" ? (
             <p className="text-xs font-medium italic text-center bg-gradient-to-r from-gray-600 via-gray-300 to-gray-600 bg-[length:200%_100%] bg-clip-text text-transparent animate-shimmer">
@@ -191,22 +187,52 @@ BlacksmithHeader.propTypes = {
 };
 
 export function BlacksmithShop({ domainScores, suggestedSkills }) {
+  const [activeArmor, setActiveArmor] = useState(null);
+
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-100 rounded-xl items-start">
-      {DOMAIN_ORDER.map((domain) => (
-        <ArmorPiece
-          key={domain}
-          domain={domain}
-          score={domainScores[domain] ?? 0}
-          skillsFor={
+    <div className="relative">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-100 rounded-xl items-start">
+        {DOMAIN_ORDER.map((domain) => {
+          const status = toStatus(domainScores[domain] ?? 0);
+          const label = labelMap[domain];
+          const imgSrc = imageMap[domain][status];
+          const skillsFor =
             suggestedSkills?.filter((skill) =>
               Array.isArray(skill.domains)
                 ? skill.domains.includes(domain)
                 : skill.domains === domain
-            ) || []
-          }
+            ) || [];
+
+          return (
+            <div
+              key={domain}
+              onClick={() =>
+                setActiveArmor({
+                  domain,
+                  label,
+                  status,
+                  imgSrc,
+                  skillsFor,
+                })
+              }
+              className="cursor-pointer"
+            >
+              <ArmorPiece
+                domain={domain}
+                score={domainScores[domain]}
+                skillsFor={skillsFor}
+              />
+            </div>
+          );
+        })}
+      </div>
+
+      {activeArmor && (
+        <ArmorModal
+          {...activeArmor}
+          onClose={() => setActiveArmor(null)}
         />
-      ))}
+      )}
     </div>
   );
 }
