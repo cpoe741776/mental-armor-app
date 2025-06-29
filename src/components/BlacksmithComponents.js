@@ -104,7 +104,7 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
 {/* 🧱 Blacksmith for this domain */}
 <div
   className="w-full flex justify-center items-center mt-2 mb-2"
-  style={{ height: '90px', maxHeight: '25%' }}
+  style={{ height: '120px', maxHeight: '25%' }}
 >
   <Blacksmith
     status={

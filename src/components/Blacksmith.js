@@ -34,9 +34,9 @@ const Blacksmith = ({ status }) => {
   playsInline
   className="object-contain"
   style={{
-    maxHeight: '80px',
+    maxHeight: '100px',
     width: '100%',
-    maxWidth: '160px',
+    maxWidth: '200px',
     borderRadius: '8px',
   }}
   title={blacksmith.alt}
