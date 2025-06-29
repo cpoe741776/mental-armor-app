@@ -28,16 +28,16 @@ const Blacksmith = ({ status }) => {
 
   return (
     <video
-      className="w-auto h-[100px] object-contain"
-      width="100"
-      height="100"
-      autoPlay
-      loop
-      muted
-      playsInline
-      preload="auto"
-      poster="/fallbacks/blacksmith.png"
-    >
+  className="w-[90px] h-[120px] object-contain mx-auto"
+  width="90"
+  height="120"
+  autoPlay
+  loop
+  muted
+  playsInline
+  preload="auto"
+  poster="/fallbacks/blacksmith.png"
+>
       {/* MP4 comes first for iOS compatibility */}
       <source src={video.mp4} type="video/mp4" />
       {/* WebM fallback for modern desktop browsers */}
