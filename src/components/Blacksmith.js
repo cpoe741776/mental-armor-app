@@ -23,7 +23,8 @@ const Blacksmith = ({ status }) => {
 
   return (
    <video
-  className="w-auto h-[100px] object-contain"
+  style={{ backgroundColor: "#ccc" }}
+  className="w-[100px] h-[100px] object-contain border border-red-500"
   width="100"
   height="100"
   autoPlay
@@ -31,6 +32,7 @@ const Blacksmith = ({ status }) => {
   muted
   playsInline
   preload="auto"
+  poster="/blacksmith.png"
 >
   <source src={video.webm} type="video/webm" />
   <source src={video.mp4} type="video/mp4" />
