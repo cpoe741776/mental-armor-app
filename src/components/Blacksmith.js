@@ -9,16 +9,16 @@ import lowWebm from "../assets/blacksmiths/blacksmith_low.webm";
 // Map all source options
 const blacksmithVideos = {
   high: {
-    mp4: "https://mymentalarmor.com/wp-content/uploads/2025/06/blacksmith_high.mp4",
     webm: highWebm,
+    mp4: "https://videos.files.wordpress.com/d8pr2Q0o/outputios.mp4", // working
   },
   mod: {
-    mp4: "https://mymentalarmor.com/wp-content/uploads/2025/06/blacksmith_mod.mp4",
     webm: modWebm,
+    mp4: "https://videos.files.wordpress.com/g0eh9gOS/blacksmith_mod.mp4", // update
   },
   low: {
-    mp4: "https://mymentalarmor.com/wp-content/uploads/2025/06/blacksmith_low.mp4",
     webm: lowWebm,
+    mp4: "https://videos.files.wordpress.com/QsvP7Do2/blacksmith_low.mp4", // update
   },
 };
 
