@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import Blacksmith from './Blacksmith';
-import ArmorModal from './components/ArmorModal';
+import ArmorModal from './ArmorModal';
 
 // Image imports from armor_images folder inside assets
 import HIGH_HELMET from "../assets/armor_images/HIGH_HELMET.png";
