@@ -1,28 +1,29 @@
 import React from "react";
 import PropTypes from "prop-types";
 
+// Local webm for modern browsers
 import highWebm from "../assets/blacksmiths/blacksmith_high.webm";
 import modWebm from "../assets/blacksmiths/blacksmith_mod.webm";
 import lowWebm from "../assets/blacksmiths/blacksmith_low.webm";
 
+// Map all source options
 const blacksmithVideos = {
   high: {
-    webm: highWebm,
     mp4: "https://mymentalarmor.com/wp-content/uploads/2025/06/blacksmith_high.mp4",
+    webm: highWebm,
   },
   mod: {
-    webm: modWebm,
     mp4: "https://mymentalarmor.com/wp-content/uploads/2025/06/blacksmith_mod.mp4",
+    webm: modWebm,
   },
   low: {
-    webm: lowWebm,
     mp4: "https://mymentalarmor.com/wp-content/uploads/2025/06/blacksmith_low.mp4",
+    webm: lowWebm,
   },
 };
 
 const Blacksmith = ({ status }) => {
   const video = blacksmithVideos[status];
-
   if (!video) return null;
 
   return (
@@ -37,9 +38,11 @@ const Blacksmith = ({ status }) => {
       preload="auto"
       poster="/fallbacks/blacksmith.png"
     >
-      <source src={video.webm} type="video/webm" />
+      {/* MP4 comes first for iOS compatibility */}
       <source src={video.mp4} type="video/mp4" />
-      Your browser does not support the video tag.
+      {/* WebM fallback for modern desktop browsers */}
+      <source src={video.webm} type="video/webm" />
+      <img src="/fallbacks/blacksmith.png" alt="Blacksmith fallback" />
     </video>
   );
 };
