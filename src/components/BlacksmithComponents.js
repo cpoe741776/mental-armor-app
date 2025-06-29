@@ -74,12 +74,12 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
       <figcaption className="text-xs font-bold text-gray-800 text-center">
         {label}
       </figcaption>
-      <div className="flex flex-col justify-end items-center h-32">
+      <div className="flex flex-col items-center h-32 justify-start">
   <img
-    src={imgSrc}
-    alt={`${label} armor – ${status}`}
-    className="w-24 h-auto mb-1"
-  />
+  src={imgSrc}
+  alt={`${label} armor – ${status}`}
+  className="w-auto max-h-20 mb-1"
+/>
   <p
     className={`text-xs font-semibold ${
       status === "thriving"
