@@ -165,19 +165,19 @@ export default function Profile() {
             <div className="space-y-8">
               <div className="space-y-2">
                 <button onClick={handleResetPassword} className="w-full px-4 py-2 bg-yellow-400 rounded">
-                  Reset Password
+                  Click to reset password if needed
                 </button>
               </div>
              <section className="mb-8">
-  <h2 className="text-xl font-semibold mb-1 text-center">Your Mental Armor Blacksmith</h2>
-  <p className="text-center text-sm text-gray-600 mb-4">
-    Assess your gear. Strengthen your readiness. Reforge what’s vulnerable.
-  </p>
   <div className="flex flex-col md:flex-row justify-between items-stretch space-y-6 md:space-y-0 md:space-x-6">
     <div className="w-full md:w-1/2 bg-gray-50 rounded-xl p-4">
       <MFADials scores={mfaScores} />
     </div>
     <div className="w-full md:w-1/2 bg-gray-50 rounded-xl p-4">
+      <h2 className="text-xl font-semibold mb-2 text-center">Your Mental Armor Blacksmith</h2>
+      <p className="text-center text-sm text-gray-600 mb-4">
+        Assess your gear. Strengthen your readiness. Reforge what’s vulnerable.
+      </p>
       <BlacksmithShop domainScores={mfaScores} suggestedSkills={suggestedSkills} />
     </div>
   </div>
