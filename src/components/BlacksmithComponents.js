@@ -130,3 +130,23 @@ BlacksmithHeader.propTypes = {
     spiritual: PropTypes.number.isRequired,
   }).isRequired,
 };
+export function BlacksmithShop({ domainScores, suggestedSkills }) {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-100 rounded-xl">
+      {Object.entries(domainScores).map(([domain, score]) => (
+        <ArmorPiece
+          key={domain}
+          domain={domain}
+          score={score}
+          skillsFor={
+            suggestedSkills?.filter(skill =>
+              Array.isArray(skill.domains)
+                ? skill.domains.includes(domain)
+                : skill.domains === domain
+            ) || []
+          }
+        />
+      ))}
+    </div>
+  );
+}
