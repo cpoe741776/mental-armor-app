@@ -126,11 +126,14 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
 </div>
 
   {/* Suggested Repairs */}
-<div className="w-full flex flex-col justify-start items-center mt-2 min-h-[140px]">
+{/* Suggested Repairs */}
+<div className="w-full flex flex-col justify-start items-center mt-2 min-h-[100px]">
   {status !== "thriving" && skillsFor.length > 0 && (
     <>
-      <hr className="mb-2 w-10 border-t border-gray-300" />
-      <p className="text-xs font-bold text-gray-500 mb-1 tracking-wide">SUGGESTED REPAIRS</p>
+      <hr className="mb-1 w-10 border-t border-gray-300" />
+      <p className="text-xs font-bold text-gray-500 mb-1 tracking-wide">
+        SUGGESTED REPAIRS
+      </p>
       <ul className="space-y-1 text-sm text-center">
         {skillsFor.map((skill) => (
           <li key={skill.id}>
