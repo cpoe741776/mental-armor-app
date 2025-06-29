@@ -8,7 +8,7 @@ const config = {
     extend: {
       animation: {
         gardenScroll: 'scrollBg 30s linear infinite',
-        shimmer: 'shimmer 4s ease-in-out infinite', // ⬅️ Slower shimmer
+        shimmer: 'shimmer 6s ease-in-out infinite', // ⬅️ Slower shimmer
   },
   keyframes: {
     shimmer: {

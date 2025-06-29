@@ -119,19 +119,18 @@ export function ArmorPiece({ domain, score, skillsFor = [] }) {
 
   {/* Shimmer line if thriving */}
   {status === "thriving" && (
-    <p className="text-xs font-medium italic mt-2 bg-gradient-to-r from-gray-400 via-white to-gray-400 bg-[length:200%_100%] bg-clip-text text-transparent animate-shimmer">
-      Blacksmith says: Your {label} Mental Armor is holding strong—keep it up!
-    </p>
+    <p className="text-xs font-medium italic mt-2 bg-gradient-to-r from-gray-600 via-gray-300 to-gray-600 bg-[length:200%_100%] bg-clip-text text-transparent animate-shimmer">
+  Blacksmith says: Your {label} Mental Armor is holding strong—keep it up!
+</p>
   )}
 </div>
 
   {/* Suggested Repairs */}
-{/* Suggested Repairs */}
-<div className="w-full flex flex-col justify-start items-center mt-2 min-h-[100px]">
+<div className="w-full flex flex-col justify-start items-center min-h-[100px]">
   {status !== "thriving" && skillsFor.length > 0 && (
     <>
-      <hr className="mb-1 w-10 border-t border-gray-300" />
-      <p className="text-xs font-bold text-gray-500 mb-1 tracking-wide">
+      <hr className="w-10 border-t border-gray-300 mb-1" />
+      <p className="text-xs font-bold text-gray-500 tracking-wide mb-1">
         SUGGESTED REPAIRS
       </p>
       <ul className="space-y-1 text-sm text-center">
