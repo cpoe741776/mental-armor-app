@@ -20,10 +20,10 @@ export default function BlacksmithModal({ isOpen, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 px-2 sm:px-4">
-      <div className="relative bg-white rounded-xl p-4 shadow-lg w-full max-w-[90vw] sm:max-w-3xl max-h-[90vh] overflow-hidden flex flex-col items-center justify-center">
+      <div className="relative bg-white rounded-xl p-4 shadow-lg w-full max-w-[90vw] sm:max-w-3xl flex flex-col items-center justify-center overflow-hidden">
 
-        {/* VIDEO + SPARKS */}
-        <div className="relative w-full max-h-[70vh] flex items-center justify-center">
+        {/* VIDEO CONTAINER */}
+        <div className="relative w-full aspect-video max-w-full overflow-hidden rounded">
           <video
             ref={videoRef}
             src="https://videos.files.wordpress.com/hSoV5UvM/blacksmith_mod-2.mp4"
@@ -55,7 +55,7 @@ export default function BlacksmithModal({ isOpen, onClose }) {
         </div>
 
         {/* RETURN TO BATTLE BUTTON */}
-        <div className="mt-6">
+        <div className="mt-6 mb-2">
           <button
             onClick={onClose}
             className="px-6 py-3 bg-gradient-to-r from-red-700 to-red-900 text-white text-base font-semibold rounded-full shadow-lg hover:from-red-600 hover:to-red-800 transition-all"
