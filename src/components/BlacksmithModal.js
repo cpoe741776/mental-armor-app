@@ -23,7 +23,7 @@ export default function BlacksmithModal({ isOpen, onClose }) {
       <div className="relative bg-black rounded-xl p-4 shadow-lg max-w-3xl w-full">
         <video
           ref={videoRef}
-          src="/assets/blacksmith_mod.mp4" // ⛏️ OR your full WP URL
+          src="https://mymentalarmor.com/wp-content/uploads/2025/06/blacksmith_mod.mp4"
           autoPlay
           loop
           muted={false}
