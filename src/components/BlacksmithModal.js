@@ -39,19 +39,19 @@ export default function BlacksmithModal({ isOpen, onClose }) {
           </video>
 
           {/* GOLD SPARKS */}
-          <div className="pointer-events-none absolute inset-0 overflow-hidden z-10">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <div
-                key={i}
-                className="absolute w-1.5 h-1.5 bg-yellow-400 rounded-full opacity-40 animate-spark"
-                style={{
-                  top: `${Math.random() * 100}%`,
-                  left: `${Math.random() * 100}%`,
-                  animationDelay: `${Math.random() * 2}s`,
-                }}
-              />
-            ))}
-          </div>
+          <div className="pointer-events-none absolute inset-0 overflow-hidden z-20">
+  {Array.from({ length: 12 }).map((_, i) => (
+    <div
+      key={i}
+      className="absolute w-2.5 h-2.5 bg-yellow-300 rounded-full opacity-70 animate-spark"
+      style={{
+        top: `${Math.random() * 100}%`,
+        left: `${Math.random() * 100}%`,
+        animationDelay: `${Math.random() * 2}s`,
+      }}
+    />
+  ))}
+</div>
         </div>
 
         {/* RETURN TO BATTLE BUTTON */}

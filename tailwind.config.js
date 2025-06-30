@@ -9,7 +9,7 @@ const config = {
       animation: {
         gardenScroll: 'scrollBg 30s linear infinite',
         shimmer: 'shimmer 6s ease-in-out infinite',
-        spark: 'spark 1.5s ease-in-out infinite', // ✅ New spark animation
+        spark: 'spark 2s ease-in-out infinite', // Extended duration for subtle flicker
       },
       keyframes: {
         shimmer: {
@@ -18,12 +18,12 @@ const config = {
         },
         spark: {
           '0%, 100%': {
-            opacity: '0.2',
-            transform: 'translateY(0)',
+            opacity: '0.1',
+            transform: 'translateY(0) scale(0.8)',
           },
           '50%': {
-            opacity: '0.7',
-            transform: 'translateY(-5px)',
+            opacity: '0.9',
+            transform: 'translateY(-10px) scale(1.1)',
           },
         },
       },
