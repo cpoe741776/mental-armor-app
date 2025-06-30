@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import Blacksmith from './Blacksmith';
 import ArmorModal from './ArmorModal1';
+import BlacksmithModal from './BlacksmithModal';
 
 
 
@@ -190,6 +191,7 @@ BlacksmithHeader.propTypes = {
 
 export function BlacksmithShop({ domainScores, suggestedSkills }) {
   const [activeArmor, setActiveArmor] = useState(null);
+  const [showBlacksmith, setShowBlacksmith] = useState(false);
 
   return (
     <div className="relative">
@@ -228,13 +230,23 @@ export function BlacksmithShop({ domainScores, suggestedSkills }) {
           );
         })}
       </div>
-
+<div className="flex justify-center mt-6">
+  <button
+    onClick={() => setShowBlacksmith(true)}
+    className="bg-[#003049] text-white font-semibold px-6 py-2 rounded-lg shadow hover:bg-[#002033] transition-all"
+  >
+    Enter the Forge
+  </button>
+</div>
       {activeArmor && (
         <ArmorModal
           {...activeArmor}
           onClose={() => setActiveArmor(null)}
         />
       )}
+      {showBlacksmith && (
+  <BlacksmithModal isOpen={showBlacksmith} onClose={() => setShowBlacksmith(false)} />
+)}
     </div>
   );
 }
