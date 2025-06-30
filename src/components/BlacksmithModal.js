@@ -20,10 +20,10 @@ export default function BlacksmithModal({ isOpen, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 px-2 sm:px-4">
-      <div className="relative bg-white rounded-xl p-4 shadow-lg w-full max-w-[90vw] sm:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col items-center justify-center">
+      <div className="relative bg-white rounded-xl p-4 shadow-lg w-full max-w-[90vw] sm:max-w-3xl max-h-[90vh] overflow-hidden flex flex-col items-center justify-center">
 
         {/* VIDEO + SPARKS */}
-        <div className="relative w-full max-h-[70vh]">
+        <div className="relative w-full max-h-[70vh] flex items-center justify-center">
           <video
             ref={videoRef}
             src="https://videos.files.wordpress.com/hSoV5UvM/blacksmith_mod-2.mp4"
@@ -38,12 +38,12 @@ export default function BlacksmithModal({ isOpen, onClose }) {
             Sorry, your browser doesn’t support embedded video.
           </video>
 
-          {/* WHITE SPARKS */}
+          {/* GOLD SPARKS */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden z-10">
-            {Array.from({ length: 8 }).map((_, i) => (
+            {Array.from({ length: 10 }).map((_, i) => (
               <div
                 key={i}
-                className="absolute w-1 h-1 bg-white rounded-full opacity-30 animate-spark"
+                className="absolute w-1.5 h-1.5 bg-yellow-400 rounded-full opacity-40 animate-spark"
                 style={{
                   top: `${Math.random() * 100}%`,
                   left: `${Math.random() * 100}%`,
@@ -54,13 +54,15 @@ export default function BlacksmithModal({ isOpen, onClose }) {
           </div>
         </div>
 
-        {/* CLOSE BUTTON */}
-        <button
-          onClick={onClose}
-          className="mt-4 px-5 py-2 bg-gradient-to-r from-red-700 to-red-900 text-white text-sm font-semibold rounded-full shadow hover:from-red-600 hover:to-red-800 transition"
-        >
-          🔙 Return to Battle
-        </button>
+        {/* RETURN TO BATTLE BUTTON */}
+        <div className="mt-6">
+          <button
+            onClick={onClose}
+            className="px-6 py-3 bg-gradient-to-r from-red-700 to-red-900 text-white text-base font-semibold rounded-full shadow-lg hover:from-red-600 hover:to-red-800 transition-all"
+          >
+            🔙 Return to Battle
+          </button>
+        </div>
       </div>
     </div>
   );
