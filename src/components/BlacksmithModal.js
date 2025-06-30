@@ -19,27 +19,28 @@ export default function BlacksmithModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 px-4">
-      <div className="relative bg-black rounded-xl p-4 shadow-lg max-w-3xl w-full">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 px-2 sm:px-4">
+      <div className="relative bg-black rounded-xl p-4 shadow-lg w-full max-w-[90vw] sm:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col items-center justify-center">
         <video
-  ref={videoRef}
-  src="https://videos.files.wordpress.com/hSoV5UvM/blacksmith_mod-2.mp4"
-  autoPlay
-  loop
-  muted={false}
-  playsInline
-  controls
-  className="w-full h-auto rounded"
-  onError={() => console.error("Failed to load the blacksmith video")}
->
-  Sorry, your browser doesn’t support embedded video.
-</video>
+          ref={videoRef}
+          src="https://videos.files.wordpress.com/hSoV5UvM/blacksmith_mod-2.mp4"
+          autoPlay
+          loop
+          muted={false}
+          playsInline
+          controls={false}
+          className="w-full max-h-[70vh] object-contain rounded"
+          onError={() => console.error("Failed to load the blacksmith video")}
+        >
+          Sorry, your browser doesn’t support embedded video.
+        </video>
 
+        {/* Themed Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-white bg-red-700 hover:bg-red-800 px-3 py-1 rounded shadow"
+          className="mt-4 px-5 py-2 bg-gradient-to-r from-red-700 to-red-900 text-white text-sm font-semibold rounded-full shadow hover:from-red-600 hover:to-red-800 transition"
         >
-          ✖ Close
+          🔙 Return to Battle
         </button>
       </div>
     </div>
