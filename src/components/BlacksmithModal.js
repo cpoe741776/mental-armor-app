@@ -22,15 +22,18 @@ export default function BlacksmithModal({ isOpen, onClose }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 px-4">
       <div className="relative bg-black rounded-xl p-4 shadow-lg max-w-3xl w-full">
         <video
-          ref={videoRef}
-          src="https://mymentalarmor.com/wp-content/uploads/2025/06/blacksmith_mod.mp4"
-          autoPlay
-          loop
-          muted={false}
-          playsInline
-          controls={false}
-          className="w-full h-auto rounded"
-        />
+  ref={videoRef}
+  src="https://videos.files.wordpress.com/hSoV5UvM/blacksmith_mod-2.mp4"
+  autoPlay
+  loop
+  muted={false}
+  playsInline
+  controls
+  className="w-full h-auto rounded"
+  onError={() => console.error("Failed to load the blacksmith video")}
+>
+  Sorry, your browser doesn’t support embedded video.
+</video>
 
         <button
           onClick={onClose}
