@@ -14,7 +14,7 @@ const blacksmithVideos = {
   },
   mod: {
     webm: modWebm,
-    mp4: "https://videos.files.wordpress.com/g0eh9gOS/blacksmith_mod.mp4", // update
+    mp4: "https://videos.files.wordpress.com/KNgBj8RU/blacksmith_mod-1.mp4", // update
   },
   low: {
     webm: lowWebm,
