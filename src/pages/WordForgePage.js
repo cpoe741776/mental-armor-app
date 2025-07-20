@@ -26,10 +26,9 @@ export default function WordForgePage() {
   const [currentLevel, setCurrentLevel] = useState(1);
   const [isLevelCompleted, setIsLevelCompleted] = useState(false);
   const [actualWordsInGrid, setActualWordsInGrid] = useState([]);
-  const [soundEnabled, setSoundEnabled] = useState(false); // NEW STATE: To track if sound is enabled by user gesture
 
   const workerRef = useRef(null);
-  const gridRef = useRef(null);
+  const gridRef = useRef(null); // Ref to the grid container for calculating cell positions
 
   const masterWordsList = useMemo(() => [
     "OPTIMISM", "PURPOSE", "AWARENESS", "RESILIENCE", "FLEXIBILITY",
@@ -39,9 +38,12 @@ export default function WordForgePage() {
   ], []);
 
   // Create a memoized audio instance for the success sound
-  const successSound = useMemo(() => {
+  // In your WordForgePage.js file, find the successSound useMemo:
+
+const successSound = useMemo(() => {
     try {
-        const audio = new Audio("/audio/AnvilSuccess.aac"); // Your AAC file
+        // Change the URL to your new AAC file in the public/audio folder
+        const audio = new Audio("/audio/AnvilSuccess.aac"); // <--- THIS IS THE LINE TO UPDATE
         audio.volume = 0.3;
         audio.load(); // Attempt to preload
         return audio;
@@ -49,7 +51,7 @@ export default function WordForgePage() {
         console.error("Error creating audio object:", e);
         return null;
     }
-  }, []);
+}, []); // Created once
 
   const currentGridSize = useMemo(() => {
     const levelConfig = LEVELS.find(level => level.level === currentLevel);
@@ -62,22 +64,23 @@ export default function WordForgePage() {
 
   // Effect to generate grid when level changes or words change
   useEffect(() => {
-    console.log('useEffect: Grid generation worker setup/trigger. Current level:', currentLevel);
+    console.log('useEffect: Grid generation worker setup/trigger. Current level:', currentLevel); // DEBUG LOG
     if (window.Worker) {
       if (workerRef.current) {
-        workerRef.current.terminate();
+        workerRef.current.terminate(); // Terminate existing worker if changing level
       }
       workerRef.current = new Worker(new URL('./wordWorker.js', import.meta.url));
 
       workerRef.current.onmessage = (event) => {
-        console.log('Worker: Grid data received.', event.data);
-        const { grid: receivedGrid, placedWords } = event.data;
+        console.log('Worker: Grid data received.', event.data); // DEBUG LOG
+        const { grid: receivedGrid, placedWords } = event.data; // Renamed to avoid confusion
 
+        // Defensive check: Ensure receivedGrid is an array of arrays
         if (Array.isArray(receivedGrid) && receivedGrid.every(Array.isArray)) {
             setGrid(receivedGrid);
         } else {
-            console.error("Worker returned malformed grid data:", receivedGrid);
-            setGrid([]);
+            console.error("Worker returned malformed grid data:", receivedGrid); // DEBUG: Error log for malformed grid
+            setGrid([]); // Fallback to empty array if malformed
         }
         
         setActualWordsInGrid(placedWords);
@@ -91,21 +94,21 @@ export default function WordForgePage() {
         setIsLoadingGrid(false);
         setIsLevelCompleted(false);
         setActualWordsInGrid([]);
-        setGrid([]);
+        setGrid([]); // Ensure grid is reset on error too
       };
 
       setIsLoadingGrid(true);
       workerRef.current.postMessage({ words: theoreticallyPlayableWords, size: currentGridSize });
     } else {
       console.warn("Web Workers not supported. Grid generation will block the main thread.");
-      setGrid([[]]);
+      setGrid([[]]); // Ensure grid has basic structure even if worker not supported
       setIsLoadingGrid(false);
       setIsLevelCompleted(false);
       setActualWordsInGrid([]);
     }
 
     return () => {
-      console.log('useEffect cleanup: Grid generation worker termination.');
+      console.log('useEffect cleanup: Grid generation worker termination.'); // DEBUG LOG
       if (workerRef.current) {
         workerRef.current.terminate();
       }
@@ -114,7 +117,7 @@ export default function WordForgePage() {
 
   // Effect to check for level completion
   useEffect(() => {
-    console.log('useEffect: Level completion check. Loading:', isLoadingGrid, 'Actual words:', actualWordsInGrid.length, 'Found words:', foundWords.length);
+    console.log('useEffect: Level completion check. Loading:', isLoadingGrid, 'Actual words:', actualWordsInGrid.length, 'Found words:', foundWords.length); // DEBUG LOG
     if (!isLoadingGrid && actualWordsInGrid.length > 0) {
       const allActualWordsFound = actualWordsInGrid.every(word => foundWords.includes(word));
       setIsLevelCompleted(allActualWordsFound);
@@ -160,15 +163,18 @@ export default function WordForgePage() {
       forge.style.boxShadow = `0 0 ${blurRadius}px ${baseShadow}px ${color}`;
       forge.style.animation = `forgeGlow ${Math.max(0.5, 2 - (totalIntensity * 0.04))}s ease-in-out infinite alternate`;
     }
-  }, [currentLevel]);
+  }, [currentLevel]); // Dependency: currentLevel
 
   // --- Touch Event Handlers (with useCallback) ---
 
   const getCellCoordinates = useCallback((event) => {
+    // This now relies on data-x and data-y attributes on the individual cells
     const touch = event.touches ? event.touches[0] : event;
     const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
 
     let cellElement = targetElement;
+    // Traverse up to find the actual grid cell element with data-x/data-y,
+    // ensuring we don't go past the main grid container, or the body (safeguard)
     while (cellElement && (!cellElement.dataset || !cellElement.dataset.x || !cellElement.dataset.y) && cellElement !== gridRef.current && cellElement !== document.body) {
       cellElement = cellElement.parentElement;
     }
@@ -176,13 +182,15 @@ export default function WordForgePage() {
     if (cellElement && cellElement.dataset.x && cellElement.dataset.y) {
       const x = parseInt(cellElement.dataset.x, 10);
       const y = parseInt(cellElement.dataset.y, 10);
+      // Basic validation to ensure it's within grid bounds
+      // This is still important in case elementFromPoint returns something outside the active grid.
       if (x >= 0 && x < grid[0].length && y >= 0 && y < grid.length) {
         return [x, y];
       }
     }
-    console.log('getCellCoordinates: Could not find a valid cell under touch point. Touched element:', targetElement);
+    console.log('getCellCoordinates: Could not find a valid cell for touch event. Touched element:', targetElement); // DEBUG LOG
     return null;
-  }, [grid]);
+  }, [grid]); // grid dependency for bounds check
 
   const calculateCellsInLine = useCallback((start, end) => {
     const uniqueCells = new Set();
@@ -273,9 +281,9 @@ export default function WordForgePage() {
         if ((str === word || reversedStr === word) && !foundWords.includes(word)) {
           setFoundWords(prev => [...prev, word]);
           updateForgeGlow(word.length);
-          // Only attempt to play sound if it's enabled by user gesture
-          if (successSound && soundEnabled) {
+          if (successSound) {
             successSound.currentTime = 0;
+            // Use setTimeout to yield to event loop for potentially better autoplay policy compliance
             setTimeout(() => {
                 successSound.play().catch(e => {
                   console.warn("Audio playback failed (likely autoplay policy):", e);
@@ -286,7 +294,7 @@ export default function WordForgePage() {
       });
       setSelected([]);
     }
-  }, [isDragging, selected, grid, actualWordsInGrid, foundWords, successSound, updateForgeGlow, soundEnabled]); // Added soundEnabled to deps
+  }, [isDragging, selected, grid, actualWordsInGrid, foundWords, successSound, updateForgeGlow]);
 
 
   const handleCellClick = useCallback((x, y) => {
@@ -316,9 +324,9 @@ export default function WordForgePage() {
         if ((str === word || reversedStr === word) && !foundWords.includes(word)) {
           setFoundWords(prev => [...prev, word]);
           updateForgeGlow(word.length);
-          // Only attempt to play sound if it's enabled by user gesture
-          if (successSound && soundEnabled) {
+          if (successSound) {
             successSound.currentTime = 0;
+            // Use setTimeout for better autoplay compliance
             setTimeout(() => {
                 successSound.play().catch(e => {
                   console.warn("Audio playback failed (likely autoplay policy):", e);
@@ -329,7 +337,7 @@ export default function WordForgePage() {
         }
       });
     }
-  }, [isDragging, selected, grid, actualWordsInGrid, foundWords, successSound, updateForgeGlow, soundEnabled]); // Added soundEnabled to deps
+  }, [isDragging, selected, grid, actualWordsInGrid, foundWords, successSound, updateForgeGlow]);
 
 
   const goToLevel = useCallback((level) => {
@@ -348,12 +356,16 @@ export default function WordForgePage() {
       gridElement.addEventListener('touchstart', handleTouchStart, { passive: false });
       gridElement.addEventListener('touchmove', handleTouchMove, { passive: false });
       gridElement.addEventListener('touchend', handleTouchEnd, { passive: false });
+      // touchcancel might also be useful for robustness
+      // gridElement.addEventListener('touchcancel', handleTouchEnd, { passive: false });
 
+      // Clean up event listeners when component unmounts or dependencies change
       return () => {
         console.log('Removing touch listeners from gridElement.');
         gridElement.removeEventListener('touchstart', handleTouchStart);
         gridElement.removeEventListener('touchmove', handleTouchMove);
         gridElement.removeEventListener('touchend', handleTouchEnd);
+        // gridElement.removeEventListener('touchcancel', handleTouchEnd);
       };
     } else {
       console.log('gridRef.current is null when attempting to attach touch listeners.');
@@ -396,32 +408,7 @@ export default function WordForgePage() {
         ref={gridRef}
       >
         {isLoadingGrid ? (
-          <>
-            <div className="text-center p-8 text-xl">Generating grid...</div>
-            {/* NEW: Enable Sound Button */}
-            {!soundEnabled && (
-              <div className="text-center mt-4">
-                <button
-                  onClick={() => {
-                    if (successSound) {
-                      successSound.play().then(() => {
-                        setSoundEnabled(true);
-                        console.log("Sound enabled by user gesture!");
-                      }).catch(e => {
-                        console.warn("Initial sound play failed (still might be autoplay policy or other issue):", e);
-                        setSoundEnabled(true); // Still enable flag even if first play fails
-                      });
-                    } else {
-                       setSoundEnabled(true); // No sound object, but proceed anyway
-                    }
-                  }}
-                  className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg"
-                >
-                  Tap to Start Forge (Enable Sound)
-                </button>
-              </div>
-            )}
-          </>
+          <div className="text-center p-8 text-xl">Generating grid...</div>
         ) : (
           <div className={`grid gap-1 p-4`}
                style={{ gridTemplateColumns: `repeat(${currentGridSize}, minmax(0, 1fr))` }}
@@ -435,8 +422,8 @@ export default function WordForgePage() {
                       ? "bg-green-500"
                       : "bg-gray-900"} hover:bg-indigo-500`}
                   onClick={() => handleCellClick(x, y)}
-                  data-x={x}
-                  data-y={y}
+                  data-x={x} // ADDED: data-x attribute for elementFromPoint
+                  data-y={y} // ADDED: data-y attribute for elementFromPoint
                 >
                   {letter}
                 </div>
