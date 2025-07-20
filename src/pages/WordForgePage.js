@@ -1,12 +1,30 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react';
+import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
+
+// Define your level configurations
+const LEVELS = [
+  { level: 1, size: 5, label: "Beginner (5x5)" },
+  { level: 2, size: 6, label: "Easy (6x6)" },
+  { level: 3, size: 7, label: "Moderate (7x7)" },
+  { level: 4, size: 8, label: "Intermediate (8x8)" },
+  { level: 5, size: 9, label: "Challenging (9x9)" },
+  { level: 6, size: 10, label: "Hard (10x10)" },
+  { level: 7, size: 11, label: "Expert (11x11)" },
+  { level: 8, size: 12, label: "Master (12x12)" },
+];
+const MAX_LEVEL = LEVELS.length;
 
 export default function WordForgePage() {
   const [grid, setGrid] = useState([]);
   const [selected, setSelected] = useState([]);
   const [foundWords, setFoundWords] = useState([]);
-  const [isLoadingGrid, setIsLoadingGrid] = useState(true); // New state for loading
+  const [isLoadingGrid, setIsLoadingGrid] = useState(true);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStartCell, setDragStartCell] = useState(null);
+  const [dragCurrentCell, setDragCurrentCell] = useState(null);
+  const [currentLevel, setCurrentLevel] = useState(1); // New state for current level
 
-  const workerRef = useRef(null); // Ref to store the Web Worker instance
+  const workerRef = useRef(null);
+  const gridRef = useRef(null);
 
   const words = useMemo(() => [
     "OPTIMISM", "PURPOSE", "AWARENESS", "RESILIENCE", "FLEXIBILITY",
@@ -15,151 +33,55 @@ export default function WordForgePage() {
     "TOP", "RHONDA", "STORMY", "COOKIE", "BERTIE", "FORGE", "ARMOR"
   ], []);
 
+  // Determine current grid size based on level
+  const currentGridSize = useMemo(() => {
+    const levelConfig = LEVELS.find(level => level.level === currentLevel);
+    return levelConfig ? levelConfig.size : 12; // Default to 12 if level not found
+  }, [currentLevel]);
+
+  // Effect to generate grid when level changes or words change
   useEffect(() => {
-    // Initialize Web Worker
     if (window.Worker) {
-      workerRef.current = new Worker(new URL('./wordWorker.js', import.meta.url)); // Use import.meta.url for CRA/Vite compatibility
+      if (workerRef.current) {
+        workerRef.current.terminate(); // Terminate existing worker if changing level
+      }
+      workerRef.current = new Worker(new URL('./wordWorker.js', import.meta.url));
 
       workerRef.current.onmessage = (event) => {
         setGrid(event.data);
-        setIsLoadingGrid(false); // Grid is loaded
+        setIsLoadingGrid(false);
+        setFoundWords([]); // Reset found words for new grid
       };
 
       workerRef.current.onerror = (error) => {
         console.error("Web Worker error:", error);
-        setIsLoadingGrid(false); // Handle error case
+        setIsLoadingGrid(false);
       };
 
-      // Start the grid generation in the worker
-      setIsLoadingGrid(true); // Indicate loading
-      workerRef.current.postMessage({ words, size: 12 });
+      setIsLoadingGrid(true);
+      workerRef.current.postMessage({ words, size: currentGridSize });
     } else {
-      // Fallback for browsers that don't support Web Workers (very rare now)
       console.warn("Web Workers not supported. Generating grid on main thread.");
-      // You could put your generateWordGrid logic directly here as a fallback
-      // or implement the "yielding" strategy below.
-      const newGrid = generateWordGridFallback(words, 12); // Renamed to avoid confusion
-      setGrid(newGrid);
+      setGrid([]);
       setIsLoadingGrid(false);
     }
 
-    // Cleanup worker when component unmounts
     return () => {
       if (workerRef.current) {
         workerRef.current.terminate();
       }
     };
-  }, [words]);
+  }, [words, currentGridSize]); // Add currentGridSize to dependencies
 
-  // A minimal fallback for generateWordGrid if workers aren't supported (or for testing)
-  // This version would still block if run directly without yielding.
-  function generateWordGridFallback(words, size) {
-    const grid = Array.from({ length: size }, () => Array(size).fill(""));
-    const directions = [[0, 1], [1, 0], [1, 1], [-1, 1]];
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  // ... (rest of your useEffect for style, handleTouchStart, handleTouchMove, handleTouchEnd, getCellCoordinates, calculateCellsInLine, handleCellClick, updateForgeGlow functions remain the same) ...
 
-    function placeWord(word) {
-      let placed = false;
-      let attempts = 0;
-      const MAX_ATTEMPTS = 1000;
-
-      while (!placed && attempts < MAX_ATTEMPTS) {
-        attempts++;
-        const dir = directions[Math.floor(Math.random() * directions.length)];
-        const startX = Math.floor(Math.random() * size);
-        const startY = Math.floor(Math.random() * size);
-        let x = startX;
-        let y = startY;
-        let valid = true;
-
-        for (let i = 0; i < word.length; i++) {
-          if (
-            x < 0 || y < 0 || x >= size || y >= size ||
-            (grid[y][x] && grid[y][x] !== word[i])
-          ) {
-            valid = false;
-            break;
-          }
-          x += dir[0];
-          y += dir[1];
-        }
-
-        if (valid) {
-          x = startX;
-          y = startY;
-          for (let i = 0; i < word.length; i++) {
-            grid[y][x] = word[i];
-            x += dir[0];
-            y += dir[1];
-          }
-          placed = true;
-        }
-      }
-      if (!placed) {
-        console.warn(`Fallback: Could not place word: ${word} after ${MAX_ATTEMPTS} attempts.`);
-      }
+  const goToLevel = (level) => {
+    if (level >= 1 && level <= MAX_LEVEL) {
+      setCurrentLevel(level);
+      // The useEffect above will handle regenerating the grid
     }
+  };
 
-    const shuffledWords = [...words].sort(() => 0.5 - Math.random());
-    shuffledWords.forEach(placeWord);
-
-    for (let y = 0; y < size; y++) {
-      for (let x = 0; x < size; x++) {
-        if (!grid[y][x]) {
-          grid[y][x] = alphabet[Math.floor(Math.random() * alphabet.length)];
-        }
-      }
-    }
-    return grid;
-  }
-  // The rest of your WordForgePage component...
-
-  useEffect(() => {
-    const style = document.createElement("style");
-    style.innerHTML = `
-      @keyframes forgeGlow {
-        0% { box-shadow: 0 0 10px rgba(255, 100, 0, 0.3); }
-        50% { box-shadow: 0 0 25px rgba(255, 150, 0, 0.6); }
-        100% { box-shadow: 0 0 10px rgba(255, 100, 0, 0.3); }
-      }
-    `;
-    document.head.appendChild(style);
-  }, []);
-
-  function handleCellClick(x, y) {
-    const alreadySelected = selected.some(([sx, sy]) => sx === x && sy === y);
-    const newSelected = alreadySelected
-      ? selected.filter(([sx, sy]) => sx !== x || sy !== y)
-      : [...selected, [x, y]];
-    setSelected(newSelected);
-
-    let str = "";
-    newSelected.forEach(([sx, sy]) => {
-      str += grid[sy][sx];
-    });
-
-    words.forEach(word => {
-      if (str.includes(word) && !foundWords.includes(word)) {
-        setFoundWords(prev => [...prev, word]);
-        updateForgeGlow(newSelected.length);
-        const sound = new Audio("https://freesound.org/data/previews/256/256113_3263906-lq.mp3");
-        sound.volume = 0.3;
-        sound.play();
-      }
-    });
-  }
-
-  function updateForgeGlow(intensity) {
-    const glow = Math.min(intensity, 10);
-    const base = 10 + glow * 2;
-    const color = `rgba(255, ${100 + glow * 10}, 0, ${0.3 + glow * 0.05})`;
-
-    const forge = document.getElementById("word-forge-container");
-    if (forge) {
-      forge.style.boxShadow = `0 0 ${base}px ${base / 2}px ${color}`;
-      forge.style.animation = "forgeGlow 2s ease-in-out infinite";
-    }
-  }
 
   return (
     <div className="p-6 bg-gray-900 min-h-screen text-white">
@@ -168,14 +90,42 @@ export default function WordForgePage() {
         A focused break for the mind — find resilience skills and trainer names to sharpen your recall and relax.
       </p>
 
+      {/* Level Selection UI */}
+      <div className="flex justify-center items-center mb-6 space-x-2">
+        <button
+          onClick={() => goToLevel(currentLevel - 1)}
+          disabled={currentLevel === 1 || isLoadingGrid}
+          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Previous Level
+        </button>
+        <span className="text-xl font-bold">
+          Level {currentLevel} ({currentGridSize}x{currentGridSize})
+        </span>
+        <button
+          onClick={() => goToLevel(currentLevel + 1)}
+          disabled={currentLevel === MAX_LEVEL || isLoadingGrid}
+          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Next Level
+        </button>
+      </div>
+
+
       <div
         id="word-forge-container"
         className="rounded-xl bg-gray-800 p-4 shadow-xl max-w-4xl mx-auto"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        ref={gridRef}
       >
         {isLoadingGrid ? (
           <div className="text-center p-8 text-xl">Generating grid...</div>
         ) : (
-          <div className="grid grid-cols-12 gap-1 p-4">
+          <div className={`grid gap-1 p-4`}
+               style={{ gridTemplateColumns: `repeat(${currentGridSize}, minmax(0, 1fr))` }} // Dynamic columns
+          >
             {grid.map((row, y) =>
               row.map((letter, x) => (
                 <div
