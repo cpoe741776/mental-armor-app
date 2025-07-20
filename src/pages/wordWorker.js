@@ -86,7 +86,7 @@ function generateWordGrid(words, size) {
 
 // This is the entry point for the Web Worker.
 // It listens for messages from the main thread.
-//self.onmessage = function(event) {
+self.onmessage = function(event) { // <--- This line is crucial and should NOT be commented out
   // Extract words and size from the received message data
   const { words, size } = event.data;
 
@@ -94,4 +94,5 @@ function generateWordGrid(words, size) {
   const newGrid = generateWordGrid(words, size);
 
   // Send the generated grid back to the main thread
-  //self.postMessage(newGrid);
+  self.postMessage(newGrid); // <--- This line is crucial and should NOT be commented out
+};
