@@ -22,11 +22,12 @@ export default function WordForgePage() {
   const [dragStartCell, setDragStartCell] = useState(null);
   const [dragCurrentCell, setDragCurrentCell] = useState(null);
   const [currentLevel, setCurrentLevel] = useState(1);
+  const [isLevelCompleted, setIsLevelCompleted] = useState(false); // New state for level completion
 
   const workerRef = useRef(null);
-  const gridRef = useRef(null); // Ref to the grid container for calculating cell positions
+  const gridRef = useRef(null);
 
-  const words = useMemo(() => [
+  const masterWordsList = useMemo(() => [
     "OPTIMISM", "PURPOSE", "AWARENESS", "RESILIENCE", "FLEXIBILITY",
     "ANCHOR", "THOUGHTS", "CSF", "RHYTHM", "RATIONAL", "CONTROL",
     "FOCUS", "STRENGTH", "GRIT", "GROWTH", "PEER", "SUPPORT",
@@ -38,6 +39,11 @@ export default function WordForgePage() {
     const levelConfig = LEVELS.find(level => level.level === currentLevel);
     return levelConfig ? levelConfig.size : 12; // Default to 12 if level not found
   }, [currentLevel]);
+
+  // Filter words based on the current grid size
+  const playableWords = useMemo(() => {
+    return masterWordsList.filter(word => word.length <= currentGridSize);
+  }, [masterWordsList, currentGridSize]);
 
   // Effect to generate grid when level changes or words change
   useEffect(() => {
@@ -51,19 +57,23 @@ export default function WordForgePage() {
         setGrid(event.data);
         setIsLoadingGrid(false);
         setFoundWords([]); // Reset found words for new grid
+        setIsLevelCompleted(false); // Reset level completion status for new grid
       };
 
       workerRef.current.onerror = (error) => {
         console.error("Web Worker error:", error);
         setIsLoadingGrid(false);
+        setIsLevelCompleted(false);
       };
 
       setIsLoadingGrid(true);
-      workerRef.current.postMessage({ words, size: currentGridSize });
+      // Pass only the playableWords to the worker
+      workerRef.current.postMessage({ words: playableWords, size: currentGridSize });
     } else {
       console.warn("Web Workers not supported. Grid generation will block the main thread.");
-      setGrid([[]]); // Set an empty grid or a very small default
+      setGrid([[]]);
       setIsLoadingGrid(false);
+      setIsLevelCompleted(false);
     }
 
     return () => {
@@ -71,7 +81,19 @@ export default function WordForgePage() {
         workerRef.current.terminate();
       }
     };
-  }, [words, currentGridSize]);
+  }, [playableWords, currentGridSize]); // Depend on playableWords and currentGridSize
+
+  // Effect to check for level completion
+  useEffect(() => {
+    if (!isLoadingGrid && foundWords.length > 0) { // Only check if grid is loaded and words have been found
+      // Check if all playable words have been found
+      const allPlayableWordsFound = playableWords.every(word => foundWords.includes(word));
+      setIsLevelCompleted(allPlayableWordsFound);
+    } else if (!isLoadingGrid && playableWords.length === 0) {
+      // Edge case: if there are no playable words for the current grid size, consider it complete
+      setIsLevelCompleted(true);
+    }
+  }, [foundWords, playableWords, isLoadingGrid]); // Depend on foundWords, playableWords, and isLoadingGrid
 
   useEffect(() => {
     const style = document.createElement("style");
@@ -87,7 +109,6 @@ export default function WordForgePage() {
 
   // --- Drag Selection Logic ---
 
-  // Helper to get grid coordinates from touch/mouse event
   const getCellCoordinates = useCallback((event) => {
     if (!gridRef.current || grid.length === 0 || grid[0].length === 0) return null;
 
@@ -108,7 +129,6 @@ export default function WordForgePage() {
   }, [grid]);
 
 
-  // Helper to calculate cells in a straight line between two points (Bresenham's algorithm)
   const calculateCellsInLine = useCallback((start, end) => {
     const uniqueCells = new Set();
     if (!start || !end) return [];
@@ -122,7 +142,6 @@ export default function WordForgePage() {
     const sy = (y0 < y1) ? 1 : -1;
     let err = dx - dy;
 
-    // Allow only strictly horizontal, vertical, or diagonal lines for word search
     if (!(dx === 0 || dy === 0 || dx === dy)) {
         return [end];
     }
@@ -192,7 +211,7 @@ export default function WordForgePage() {
 
       const reversedStr = str.split('').reverse().join('');
 
-      words.forEach(word => {
+      playableWords.forEach(word => { // Check against playableWords
         if ((str === word || reversedStr === word) && !foundWords.includes(word)) {
           setFoundWords(prev => [...prev, word]);
           updateForgeGlow(selected.length);
@@ -203,7 +222,7 @@ export default function WordForgePage() {
       });
       setSelected([]);
     }
-  }, [isDragging, selected, grid, words, foundWords]);
+  }, [isDragging, selected, grid, playableWords, foundWords]); // Depend on playableWords
 
 
   const handleCellClick = useCallback((x, y) => {
@@ -228,7 +247,7 @@ export default function WordForgePage() {
 
       const reversedStr = str.split('').reverse().join('');
 
-      words.forEach(word => {
+      playableWords.forEach(word => { // Check against playableWords
         if ((str === word || reversedStr === word) && !foundWords.includes(word)) {
           setFoundWords(prev => [...prev, word]);
           updateForgeGlow(newSelected.length);
@@ -239,7 +258,7 @@ export default function WordForgePage() {
         }
       });
     }
-  }, [isDragging, selected, grid, words, foundWords]);
+  }, [isDragging, selected, grid, playableWords, foundWords]); // Depend on playableWords
 
 
   function updateForgeGlow(intensity) {
@@ -281,7 +300,7 @@ export default function WordForgePage() {
         </span>
         <button
           onClick={() => goToLevel(currentLevel + 1)}
-          disabled={currentLevel === MAX_LEVEL || isLoadingGrid}
+          disabled={currentLevel === MAX_LEVEL || isLoadingGrid || !isLevelCompleted} // Disabled if not completed
           className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Next Level
@@ -322,7 +341,7 @@ export default function WordForgePage() {
 
         <div className="mt-4 text-white text-sm font-mono">
           <strong>Find These Words:</strong><br />
-          {words.map(w => (
+          {playableWords.map(w => ( // Display only playable words
             <span
               key={w}
               className={`inline-block m-1 p-1 rounded ${
