@@ -1,3 +1,18 @@
+/* eslint-env worker */
+
+// wordWorker.js
+function generateWordGrid(words, size) {
+  // ... (rest of your worker code)
+}
+
+// Listen for messages from the main thread
+self.onmessage = function(event) { // Line 68:1
+  const { words, size } = event.data;
+  const newGrid = generateWordGrid(words, size);
+  // Send the result back to the main thread
+  self.postMessage(newGrid); // Line 72:3
+};
+
 // wordWorker.js
 function generateWordGrid(words, size) {
   const grid = Array.from({ length: size }, () => Array(size).fill(""));
