@@ -196,10 +196,7 @@ export default function WordForgePage() {
   const [isLevelCompleted, setIsLevelCompleted] = useState(false);
   const [actualWordsInGrid, setActualWordsInGrid] = useState([]);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
-  const [currentLevel, setCurrentLevel] = useState(() => {
-  const savedLevel = localStorage.getItem(`wordForgeLevel-${MODULE_DATA[0].id}`);
-  return savedLevel ? parseInt(savedLevel, 10) : 1;
-});
+};
 
 useEffect(() => {
   const saved = localStorage.getItem(`wordForgeLevel-${currentModuleId}`);
@@ -207,7 +204,10 @@ useEffect(() => {
 }, [currentModuleId]);
   // State for tracking the currently active module by its ID
   const [currentModuleId, setCurrentModuleId] = useState(MODULE_DATA[0].id);
-
+const [currentLevel, setCurrentLevel] = useState(() => {
+  const saved = localStorage.getItem(`wordForgeLevel-${MODULE_DATA[0].id}`);
+  return saved ? parseInt(saved, 10) : 1;
+});
   const workerRef = useRef(null);
   const gridRef = useRef(null);
 
@@ -768,5 +768,5 @@ useEffect(() => {
       </div>
     </div>
   );
-}
+
 export { MODULE_DATA };
