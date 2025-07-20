@@ -46,6 +46,7 @@ export default function WordForgePage() {
     return masterWordsList.filter(word => word.length <= currentGridSize);
   }, [masterWordsList, currentGridSize]);
 
+  // Effect to generate grid when level changes or words change
   useEffect(() => {
     console.log('useEffect: Grid generation worker setup/trigger. Current level:', currentLevel); // DEBUG LOG
     if (window.Worker) {
@@ -56,8 +57,16 @@ export default function WordForgePage() {
 
       workerRef.current.onmessage = (event) => {
         console.log('Worker: Grid data received.', event.data); // DEBUG LOG
-        const { grid, placedWords } = event.data;
-        setGrid(grid);
+        const { grid: receivedGrid, placedWords } = event.data; // Renamed to avoid confusion
+
+        // Defensive check: Ensure receivedGrid is an array of arrays
+        if (Array.isArray(receivedGrid) && receivedGrid.every(Array.isArray)) {
+            setGrid(receivedGrid);
+        } else {
+            console.error("Worker returned malformed grid data:", receivedGrid); // DEBUG: Error log for malformed grid
+            setGrid([]); // Fallback to empty array if malformed
+        }
+        
         setActualWordsInGrid(placedWords);
         setIsLoadingGrid(false);
         setFoundWords([]);
@@ -65,16 +74,17 @@ export default function WordForgePage() {
       };
 
       workerRef.current.onerror = (error) => {
-        console.error("Web Worker error:", error); // Already here
+        console.error("Web Worker error:", error);
         setIsLoadingGrid(false);
         setIsLevelCompleted(false);
         setActualWordsInGrid([]);
+        setGrid([]); // Ensure grid is reset on error too
       };
 
       setIsLoadingGrid(true);
       workerRef.current.postMessage({ words: theoreticallyPlayableWords, size: currentGridSize });
     } else {
-      console.warn("Web Workers not supported. Grid generation will block the main thread."); // Already here
+      console.warn("Web Workers not supported. Grid generation will block the main thread.");
       setGrid([[]]); // Ensure grid has basic structure even if worker not supported
       setIsLoadingGrid(false);
       setIsLevelCompleted(false);
@@ -87,8 +97,9 @@ export default function WordForgePage() {
         workerRef.current.terminate();
       }
     };
-  }, [theoreticallyPlayableWords, currentGridSize, currentLevel]); // Added currentLevel to deps, though currentGridSize should cover it
+  }, [theoreticallyPlayableWords, currentGridSize, currentLevel]);
 
+  // Effect to check for level completion
   useEffect(() => {
     console.log('useEffect: Level completion check. Loading:', isLoadingGrid, 'Actual words:', actualWordsInGrid.length, 'Found words:', foundWords.length); // DEBUG LOG
     if (!isLoadingGrid && actualWordsInGrid.length > 0) {
@@ -101,6 +112,7 @@ export default function WordForgePage() {
     }
   }, [foundWords, actualWordsInGrid, isLoadingGrid, theoreticallyPlayableWords]);
 
+  // Effect for global CSS animation
   useEffect(() => {
     const style = document.createElement("style");
     style.innerHTML = `
@@ -303,12 +315,16 @@ export default function WordForgePage() {
       gridElement.addEventListener('touchstart', handleTouchStart, { passive: false });
       gridElement.addEventListener('touchmove', handleTouchMove, { passive: false });
       gridElement.addEventListener('touchend', handleTouchEnd, { passive: false });
+      // You might also add touchcancel if needed for robustness
+      // gridElement.addEventListener('touchcancel', handleTouchEnd, { passive: false });
 
+      // Clean up event listeners when component unmounts or dependencies change
       return () => {
         console.log('Removing touch listeners from gridElement.'); // DEBUG LOG
         gridElement.removeEventListener('touchstart', handleTouchStart);
         gridElement.removeEventListener('touchmove', handleTouchMove);
         gridElement.removeEventListener('touchend', handleTouchEnd);
+        // gridElement.removeEventListener('touchcancel', handleTouchEnd);
       };
     } else {
       console.log('gridRef.current is null when attempting to attach touch listeners.'); // DEBUG LOG
