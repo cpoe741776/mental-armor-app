@@ -13,9 +13,10 @@ export default function WordForgePage() {
   ];
 
   useEffect(() => {
-    const newGrid = generateWordGrid(words, 12);
-    setGrid(newGrid);
-  }, []);
+  const newGrid = generateWordGrid(words, 12);
+  setGrid(newGrid);
+}, [words]); // ✅ add words to dependency array
+
 
   useEffect(() => {
     const style = document.createElement("style");
