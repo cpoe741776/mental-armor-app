@@ -26,7 +26,7 @@ export default function WordForgePage() {
   const [currentLevel, setCurrentLevel] = useState(1);
   const [isLevelCompleted, setIsLevelCompleted] = useState(false);
   const [actualWordsInGrid, setActualWordsInGrid] = useState([]);
-  const [isMusicPlaying, setIsMusicPlaying] = useState(false); // NEW STATE for background music
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
   const workerRef = useRef(null);
   const gridRef = useRef(null);
@@ -38,7 +38,7 @@ export default function WordForgePage() {
     "TOP", "RHONDA", "STORMY", "COOKIE", "BERTIE", "FORGE", "ARMOR"
   ], []);
 
-  // Memoized audio instance for the success sound
+  // Memoized audio instance for the success sound (word found)
   const successSound = useMemo(() => {
     console.log('useMemo: Creating successSound Audio object.');
     try {
@@ -48,50 +48,78 @@ export default function WordForgePage() {
         console.log('Audio object created:', audio);
         return audio;
     } catch (e) {
-        console.error("Error creating success sound object:", e); // Changed log message
+        console.error("Error creating success sound object:", e);
         return null;
     }
   }, []);
 
   // Memoized audio instance for background music
   const bgMusic = useMemo(() => {
-    console.log('useMemo: Creating bgMusic Audio object.'); // DEBUG LOG
+    console.log('useMemo: Creating bgMusic Audio object.');
     try {
         const audio = new Audio("/audio/WordGamebgmc.aac");
-        audio.volume = 0.1; // Set a lower volume for background music
-        audio.loop = true; // Make it loop
-        audio.load(); // Preload
-        console.log('Background music object created:', audio); // DEBUG LOG
+        audio.volume = 0.1;
+        audio.loop = true;
+        audio.load();
+        console.log('Background music object created:', audio);
         return audio;
     } catch (e) {
-        console.error("Error creating background music object:", e); // Changed log message
+        console.error("Error creating background music object:", e);
+        return null;
+    }
+  }, []);
+
+  // Memoized audio instance for level completion sound
+  const nextLevelSound = useMemo(() => { // NEW: Next Level Sound
+    console.log('useMemo: Creating nextLevelSound Audio object.');
+    try {
+        const audio = new Audio("/audio/NEXTLEVEL.aac");
+        audio.volume = 0.5; // Slightly louder, as it's an alert
+        audio.load();
+        console.log('Next Level Sound object created:', audio);
+        return audio;
+    } catch (e) {
+        console.error("Error creating next level sound object:", e);
         return null;
     }
   }, []); // Created once
 
+
   // Effect to control background music playback
   useEffect(() => {
-    console.log('useEffect: Music playback control. isMusicPlaying:', isMusicPlaying); // DEBUG LOG
+    console.log('useEffect: Music playback control. isMusicPlaying:', isMusicPlaying);
     if (bgMusic) {
       if (isMusicPlaying) {
         bgMusic.play().catch(e => {
           console.warn("Background music autoplay failed:", e);
-          setIsMusicPlaying(false); // Revert state if playback fails
+          setIsMusicPlaying(false);
         });
       } else {
         bgMusic.pause();
       }
     }
-
-    // Cleanup: pause music when component unmounts
     return () => {
-      console.log('useEffect cleanup: Pausing background music.'); // DEBUG LOG
+      console.log('useEffect cleanup: Pausing background music.');
       if (bgMusic) {
         bgMusic.pause();
-        // bgMusic.src = ''; // Optional: release resource immediately
       }
     };
-  }, [isMusicPlaying, bgMusic]); // Depend on isMusicPlaying and bgMusic object
+  }, [isMusicPlaying, bgMusic]);
+
+  // Effect to play sound when level is completed
+  useEffect(() => { // NEW: Effect for Level Completion Sound
+    console.log('useEffect: Checking for level completion sound trigger. isLevelCompleted:', isLevelCompleted, 'isLoadingGrid:', isLoadingGrid);
+    if (isLevelCompleted && !isLoadingGrid) { // Only play if level is completed and grid is not loading (stable state)
+      if (nextLevelSound) {
+        nextLevelSound.currentTime = 0; // Reset sound
+        nextLevelSound.play().catch(e => {
+          console.warn("Next level sound playback failed:", e);
+        });
+      } else {
+        console.log("Next level sound object is null.");
+      }
+    }
+  }, [isLevelCompleted, isLoadingGrid, nextLevelSound]); // Depend on relevant states and sound object
 
 
   const currentGridSize = useMemo(() => {
@@ -417,28 +445,32 @@ export default function WordForgePage() {
         A focused break for the mind — find resilience skills and trainer names to sharpen your recall and relax.
       </p>
 
-      {/* Level Selection UI */}
-      <div className="flex justify-center items-center mb-6 space-x-2">
-        <button
-          onClick={() => goToLevel(currentLevel - 1)}
-          disabled={currentLevel === 1 || isLoadingGrid}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Previous Level
-        </button>
-        <span className="text-xl font-bold">
+      {/* Level Selection UI (with improved centering) */}
+      <div className="flex items-center justify-between mb-6"> {/* Use justify-between */}
+        <div className="flex-grow flex justify-end pr-2"> {/* Wrapper for left button */}
+          <button
+            onClick={() => goToLevel(currentLevel - 1)}
+            disabled={currentLevel === 1 || isLoadingGrid}
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Previous Level
+          </button>
+        </div>
+        <span className="text-xl font-bold text-center whitespace-nowrap"> {/* Center text and prevent wrapping */}
           Level {currentLevel} ({currentGridSize}x{currentGridSize})
         </span>
-        <button
-          onClick={() => goToLevel(currentLevel + 1)}
-          disabled={currentLevel === MAX_LEVEL || isLoadingGrid || !isLevelCompleted}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Next Level
-        </button>
+        <div className="flex-grow flex justify-start pl-2"> {/* Wrapper for right button */}
+          <button
+            onClick={() => goToLevel(currentLevel + 1)}
+            disabled={currentLevel === MAX_LEVEL || isLoadingGrid || !isLevelCompleted}
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Next Level
+          </button>
+        </div>
       </div>
 
-      {/* NEW: Music Toggle Button */}
+      {/* Music Toggle Button */}
       <div className="flex justify-center mb-4">
         <button
           onClick={() => setIsMusicPlaying(prev => !prev)}
