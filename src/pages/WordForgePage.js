@@ -1,5 +1,145 @@
 import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 
+// Define your module and word data
+const MODULE_DATA = [
+  {
+    id: 'foundations',
+    name: 'Foundations of Resilience',
+    words: [
+      "RESILIENCE", "ADAPT", "RECOVER", "GROW", "STRENGTH",
+      "ENDURANCE", "SKILLS", "MYTHS", "FACTS", "BENEFITS",
+      "PRACTICE", "MINDSET", "STRESSORS", "WELLBEING", "PURPOSE",
+      "EMOTIONS", "CHALLENGES", "AWARE", "COMPOSED", "RESOURCES",
+      "PERFORMANCE", "TEAMWORK", "LEADERSHIP", "DECISION", "IDEAS",
+      "NAVIGATING", "CHANGING", "PHYSICAL", "HEALTH", "SYMPTOMS",
+      "BURNOUT", "CYNICISM", "PESSIMISM", "REWIRE", "INTENTIONAL",
+      "FIXED", "FEEDBACK", "JUDGEMENT"
+    ]
+  },
+  {
+    id: 'flexStrengths',
+    name: 'Flex Your Strengths',
+    words: [
+      "STRENGTHS", "SIGNATURE", "REGULATION", "SPOTTING", "FLEXING",
+      "CHARACTER", "VIA", "SURVEY", "VALUES", "CHALLENGE",
+      "SELF-AWARENESS", "APPRECIATION", "EXPRESSION", "ENCOURAGEMENT", "WELLBEING",
+      "GROWTH", "HABIT", "PRACTICE", "MOTIVATION", "ENERGY",
+      "POSITIVE", "RESILIENCE", "ADAPT", "RECOGNITION", "EXPLORE",
+      "INSPIRE", "FLOW", "REFLECTION", "PERSPECTIVE", "CONFIDENCE"
+    ]
+  },
+  {
+    id: 'valuesBased',
+    name: 'Values Based Living',
+    words: [
+      "PURPOSE", "MEANING", "VALUES", "GOALS", "DIRECTION",
+      "RENEWAL", "CHART", "COURSE", "INTERNAL", "EXTERNAL",
+      "OBSTACLES", "OVERCOME", "DEFINE", "SET", "PLAN",
+      "LONGTERM", "SHORTTERM", "IMMEDIATE", "PARTNER", "ACTION",
+      "SHARE", "NAVIGATE", "JOURNEY", "REFLECTION", "MOTIVATION",
+      "CLARITY", "INTENTIONAL", "ALIGNMENT", "COMMITMENT", "PRIORITIES"
+    ]
+  },
+  {
+    id: 'mindfulness',
+    name: 'Mindfulness',
+    words: [
+      "PRESENCE", "FOCUS", "GROUNDING", "AWARENESS", "BREATH",
+      "CALM", "REFLECTION", "OBSERVE", "DISTRACTION", "ATTENTION",
+      "STILLNESS", "BALANCE", "CONSCIOUS", "ANCHORING", "GROUNDED",
+      "RECENTER", "ACCEPTANCE", "SENSATIONS", "NONJUDGMENT", "PAUSE",
+      "MEDITATION", "RESILIENCE", "RESPONSE", "MOMENT", "INTENTIONAL",
+      "CLARITY", "CENTER", "STRESS", "ENGAGEMENT", "NOW"
+    ]
+  },
+  {
+    id: 'spiritual',
+    name: 'Spiritual Resilience',
+    words: [
+      "PURPOSE", "BELIEFS", "VALUES", "MEANING", "FAITH",
+      "HOPE", "STRENGTH", "GRACE", "GROWTH", "RESILIENT",
+      "INSPIRE", "SPIRIT", "WELLNESS", "ENDURE", "COURAGE",
+      "VISION", "TRUST", "ANCHORED", "REFLECT", "HEALING",
+      "GROUNDED", "CLARITY", "CONNECTION", "PEACE", "MINDSET",
+      "ACCEPTANCE", "BALANCE", "RENEWAL", "OPTIMISM", "PERSEVERE"
+    ]
+  },
+  {
+    id: 'gratitude',
+    name: 'Cultivate Gratitude',
+    words: [
+      "GRATITUDE", "OPTIMISM", "APPRECIATION", "POSITIVITY", "REFLECTION",
+      "PERSPECTIVE", "AWARENESS", "BLESSINGS", "THANKFULNESS", "PRESENCE",
+      "GOODNESS", "JOY", "SAVORING", "KINDNESS", "CONTENTMENT",
+      "HOPE", "REWIRE", "ANCHORING", "MINDSET", "WARMTH",
+      "ATTITUDE", "FOCUS", "UPLIFT", "RECOGNITION", "ENERGY",
+      "NOTICING", "ACKNOWLEDGMENT", "BALANCE", "CALM", "PURPOSE"
+    ]
+  },
+  {
+    id: 'reframe',
+    name: 'ReFrame',
+    words: [
+      "THOUGHTS", "EVENTS", "REACTIONS", "EMOTION", "PHYSICAL",
+      "AWARENESS", "PAUSE", "PERSPECTIVE", "CLARITY", "INTENTION",
+      "SHIFT", "TRIGGER", "OBJECTIVITY", "PERCEPTION", "INFLUENCE",
+      "INTERPRETATION", "RECOVERY", "FOCUS", "MODEL", "MINDSET",
+      "EVALUATE", "ADJUST", "HARM", "HELP", "RESPONSE",
+      "CHOICE", "REFLECTION", "PATTERN", "REFRAME", "STRENGTH"
+    ]
+  },
+  {
+    id: 'balanceThinking',
+    name: 'Balance Your Thinking',
+    words: [
+      "ACCURACY", "EVIDENCE", "CLARITY", "REACTION", "EMOTION",
+      "COGNITION", "BIAS", "STRATEGY", "PATTERN", "TRAPS",
+      "BLAMING", "OBJECTIVITY", "MINDSET", "EXAMINE", "CHECK",
+      "DOUBLE", "PHONEAFRIEND", "DISTORTION", "PERSPECTIVE", "RESPONSE",
+      "REFRAME", "AWARENESS", "CLARIFY", "PAUSE", "EVALUATE",
+      "FACTS", "CHALLENGE", "ASSUMPTION", "BALANCE", "THOUGHTS"
+    ]
+  },
+  {
+    id: 'mostImportant',
+    name: "What's Most Important",
+    words: [
+      "AWARENESS", "REACTIONS", "PATTERNS", "PLAN", "TRIGGER",
+      "VALUES", "GOALS", "RELATIONSHIPS", "EVENT", "OBJECTIVE",
+      "THOUGHTS", "EMOTIONS", "REACTIONS", "INFLUENCE", "SHOULDS",
+      "DIRECTORS", "REFRAME", "PERFORMANCE", "UNPRODUCTIVE", "PRODUCTIVE",
+      "INTERNALBOARD", "CLARITY", "PERSPECTIVE", "RESET", "ANCHOR",
+      "VOTE", "FILTER", "INTENTION", "REGULATE", "PAUSE"
+    ]
+  },
+  {
+    id: 'problemSolving',
+    name: 'Interpersonal Problem Solving',
+    words: [
+      "CONFLICT", "RESOLUTION", "RESPECT", "FEEDBACK", "OPTIONS",
+      "EMPATHY", "PROBLEM", "DIALOGUE", "DECISION", "AGREEMENT",
+      "LISTENING", "TRUST", "HOMEWORK", "COMPETING", "COMPROMISE",
+      "CHALLENGE", "AVOIDANCE", "EVALUATION", "INTENSITY", "CONFIRM",
+      "ENGAGEMENT", "TRIVIALIZE", "COLLABORATE", "CLARITY", "REFLECTION",
+      "REFRAME", "SHARE", "EXPLORE", "CONSIDER", "SUPPORT"
+    ]
+  },
+  {
+    id: 'celebrateNews',
+    name: 'Celebrate Good News',
+    words: [
+      "CELEBRATE", "GOODNESS", "SHARING", "REJOICE", "LISTEN",
+      "SUPPORT", "UPLIFT", "RESPOND", "BONDING", "EMOTION",
+      "SQUASH", "STEAL", "PRAISE", "MOMENT", "MOTIVATE",
+      "TRUST", "STORY", "EXAMPLE", "GROWTH", "CHEER",
+      "JOYFUL", "CARING", "BANKED", "HABIT", "CONNECT",
+      "SAVOR", "THANKFUL", "KINDNESS", "ENERGY", "SMILE"
+    ]
+  }
+];
+
+const MAX_MODULE_INDEX = MODULE_DATA.length - 1; // Used for disabled state of module navigation
+
 // Define your level configurations
 const LEVELS = [
   { level: 1, size: 5, label: "Beginner (5x5)" },
@@ -27,16 +167,11 @@ export default function WordForgePage() {
   const [isLevelCompleted, setIsLevelCompleted] = useState(false);
   const [actualWordsInGrid, setActualWordsInGrid] = useState([]);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  // State for tracking the currently active module by its ID
+  const [currentModuleId, setCurrentModuleId] = useState(MODULE_DATA[0].id);
 
   const workerRef = useRef(null);
   const gridRef = useRef(null);
-
-  const masterWordsList = useMemo(() => [
-    "OPTIMISM", "PURPOSE", "AWARENESS", "RESILIENCE", "FLEXIBILITY",
-    "ANCHOR", "THOUGHTS", "CSF", "RHYTHM", "RATIONAL", "CONTROL",
-    "FOCUS", "STRENGTH", "GRIT", "GROWTH", "PEER", "SUPPORT",
-    "TOP", "RHONDA", "STORMY", "COOKIE", "BERTIE", "FORGE", "ARMOR"
-  ], []);
 
   // Memoized audio instance for the success sound (word found)
   const successSound = useMemo(() => {
@@ -70,11 +205,11 @@ export default function WordForgePage() {
   }, []);
 
   // Memoized audio instance for level completion sound
-  const nextLevelSound = useMemo(() => { // NEW: Next Level Sound
+  const nextLevelSound = useMemo(() => {
     console.log('useMemo: Creating nextLevelSound Audio object.');
     try {
         const audio = new Audio("/audio/NEXTLEVEL.aac");
-        audio.volume = 0.5; // Slightly louder, as it's an alert
+        audio.volume = 0.5;
         audio.load();
         console.log('Next Level Sound object created:', audio);
         return audio;
@@ -82,7 +217,7 @@ export default function WordForgePage() {
         console.error("Error creating next level sound object:", e);
         return null;
     }
-  }, []); // Created once
+  }, []);
 
 
   // Effect to control background music playback
@@ -107,19 +242,21 @@ export default function WordForgePage() {
   }, [isMusicPlaying, bgMusic]);
 
   // Effect to play sound when level is completed
-  useEffect(() => { // NEW: Effect for Level Completion Sound
+  useEffect(() => {
     console.log('useEffect: Checking for level completion sound trigger. isLevelCompleted:', isLevelCompleted, 'isLoadingGrid:', isLoadingGrid);
     if (isLevelCompleted && !isLoadingGrid) { // Only play if level is completed and grid is not loading (stable state)
       if (nextLevelSound) {
         nextLevelSound.currentTime = 0; // Reset sound
-        nextLevelSound.play().catch(e => {
-          console.warn("Next level sound playback failed:", e);
-        });
+        setTimeout(() => { // Using setTimeout to yield to event loop for potentially better autoplay policy compliance
+          nextLevelSound.play().catch(e => {
+            console.warn("Next level sound playback failed:", e);
+          });
+        }, 0);
       } else {
         console.log("Next level sound object is null.");
       }
     }
-  }, [isLevelCompleted, isLoadingGrid, nextLevelSound]); // Depend on relevant states and sound object
+  }, [isLevelCompleted, isLoadingGrid, nextLevelSound]);
 
 
   const currentGridSize = useMemo(() => {
@@ -127,13 +264,20 @@ export default function WordForgePage() {
     return levelConfig ? levelConfig.size : 12;
   }, [currentLevel]);
 
-  const theoreticallyPlayableWords = useMemo(() => {
-    return masterWordsList.filter(word => word.length <= currentGridSize);
-  }, [masterWordsList, currentGridSize]);
+  // Get the words for the currently selected module
+  const currentModuleWords = useMemo(() => {
+    const module = MODULE_DATA.find(mod => mod.id === currentModuleId);
+    return module ? module.words : [];
+  }, [currentModuleId]);
 
-  // Effect to generate grid when level changes or words change
+  // theoreticallyPlayableWords now filters from currentModuleWords
+  const theoreticallyPlayableWords = useMemo(() => {
+    return currentModuleWords.filter(word => word.length <= currentGridSize);
+  }, [currentModuleWords, currentGridSize]);
+
+  // Effect to generate grid when module, level, or words change
   useEffect(() => {
-    console.log('useEffect: Grid generation worker setup/trigger. Current level:', currentLevel);
+    console.log('useEffect: Grid generation worker setup/trigger. Current level:', currentLevel, 'Module:', currentModuleId);
     if (window.Worker) {
       if (workerRef.current) {
         workerRef.current.terminate();
@@ -166,6 +310,7 @@ export default function WordForgePage() {
       };
 
       setIsLoadingGrid(true);
+      // Pass words from the current module
       workerRef.current.postMessage({ words: theoreticallyPlayableWords, size: currentGridSize });
     } else {
       console.warn("Web Workers not supported. Grid generation will block the main thread.");
@@ -181,7 +326,7 @@ export default function WordForgePage() {
         workerRef.current.terminate();
       }
     };
-  }, [theoreticallyPlayableWords, currentGridSize, currentLevel]);
+  }, [theoreticallyPlayableWords, currentGridSize, currentLevel, currentModuleId]);
 
   // Effect to check for level completion
   useEffect(() => {
@@ -445,6 +590,39 @@ export default function WordForgePage() {
         A focused break for the mind — find resilience skills and trainer names to sharpen your recall and relax.
       </p>
 
+      {/* Module Selection UI */}
+      <div className="flex justify-center items-center mb-6 space-x-2">
+        <button
+          onClick={() => {
+            const currentIndex = MODULE_DATA.findIndex(mod => mod.id === currentModuleId);
+            if (currentIndex > 0) {
+              setCurrentModuleId(MODULE_DATA[currentIndex - 1].id);
+              setCurrentLevel(1); // Reset level to 1 when changing module
+            }
+          }}
+          disabled={MODULE_DATA.findIndex(mod => mod.id === currentModuleId) === 0}
+          className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Previous Module
+        </button>
+        <span className="text-xl font-bold">
+          {MODULE_DATA.find(mod => mod.id === currentModuleId)?.name || 'Module'}
+        </span>
+        <button
+          onClick={() => {
+            const currentIndex = MODULE_DATA.findIndex(mod => mod.id === currentModuleId);
+            if (currentIndex < MAX_MODULE_INDEX) { // Use MAX_MODULE_INDEX
+              setCurrentModuleId(MODULE_DATA[currentIndex + 1].id);
+              setCurrentLevel(1); // Reset level to 1 when changing module
+            }
+          }}
+          disabled={MODULE_DATA.findIndex(mod => mod.id === currentModuleId) === MAX_MODULE_INDEX} // Use MAX_MODULE_INDEX
+          className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Next Module
+        </button>
+      </div>
+
       {/* Level Selection UI (with improved centering) */}
       <div className="flex items-center justify-between mb-6"> {/* Use justify-between */}
         <div className="flex-grow flex justify-end pr-2"> {/* Wrapper for left button */}
@@ -513,6 +691,7 @@ export default function WordForgePage() {
 
         <div className="mt-4 text-white text-sm font-mono">
           <strong>Find These Words:</strong><br />
+          {/* Display actual words in grid based on the current module */}
           {actualWordsInGrid.map(w => (
             <span
               key={w}
