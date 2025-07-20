@@ -10,145 +10,8 @@ const WORD_LIST = [
 export default function WordForgePage() {
   useEffect(() => {
     injectForgeGlowKeyframes();
-    renderWordForge("word-forge-container");
+    renderWordForge("word-forge-container", WORD_LIST);
   }, []);
-
-  function injectForgeGlowKeyframes() {
-    const style = document.createElement("style");
-    style.innerHTML = `
-      @keyframes forgeGlow {
-        0% { box-shadow: 0 0 10px rgba(255, 100, 0, 0.3); }
-        50% { box-shadow: 0 0 25px rgba(255, 150, 0, 0.6); }
-        100% { box-shadow: 0 0 10px rgba(255, 100, 0, 0.3); }
-      }
-    `;
-    document.head.appendChild(style);
-  }
-
-  function renderWordForge(containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-
-    container.innerHTML = "";
-
-    const gridSize = 12;
-    const grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(""));
-
-    const foundSound = new Audio("https://freesound.org/data/previews/256/256113_3263906-lq.mp3");
-    foundSound.volume = 0.3;
-
-    function placeWord(word) {
-      const directions = [[0, 1], [1, 0], [1, 1], [-1, 1]];
-      let placed = false;
-      while (!placed) {
-        const dir = directions[Math.floor(Math.random() * directions.length)];
-        const startX = Math.floor(Math.random() * gridSize);
-        const startY = Math.floor(Math.random() * gridSize);
-        let x = startX;
-        let y = startY;
-        let valid = true;
-
-        for (let i = 0; i < word.length; i++) {
-          if (
-            x < 0 || y < 0 || x >= gridSize || y >= gridSize ||
-            (grid[y][x] && grid[y][x] !== word[i])
-          ) {
-            valid = false;
-            break;
-          }
-          x += dir[0];
-          y += dir[1];
-        }
-
-        if (valid) {
-          x = startX;
-          y = startY;
-          for (let i = 0; i < word.length; i++) {
-            grid[y][x] = word[i];
-            x += dir[0];
-            y += dir[1];
-          }
-          placed = true;
-        }
-      }
-    }
-
-    WORD_LIST.forEach(placeWord);
-
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    for (let y = 0; y < gridSize; y++) {
-      for (let x = 0; x < gridSize; x++) {
-        if (!grid[y][x]) {
-          grid[y][x] = alphabet[Math.floor(Math.random() * alphabet.length)];
-        }
-      }
-    }
-
-    const board = document.createElement("div");
-    board.className = "grid grid-cols-12 gap-1 p-4 bg-gray-800 rounded-xl shadow-lg";
-
-    const selectedCells = new Set();
-    const foundWords = new Set();
-
-    for (let y = 0; y < gridSize; y++) {
-      for (let x = 0; x < gridSize; x++) {
-        const cell = document.createElement("div");
-        cell.textContent = grid[y][x];
-        cell.dataset.x = x;
-        cell.dataset.y = y;
-        cell.className =
-          "text-white bg-gray-900 w-8 h-8 flex items-center justify-center text-sm font-bold rounded hover:bg-indigo-500 cursor-pointer select-none";
-        board.appendChild(cell);
-      }
-    }
-
-    const wordList = document.createElement("div");
-    wordList.className = "mt-4 text-white text-sm font-mono";
-    wordList.innerHTML =
-      "<strong>Find These Words:</strong><br>" +
-      WORD_LIST.map(w => `<span class="inline-block m-1 p-1 bg-gray-700 rounded">${w}</span>`).join(" ");
-
-    container.appendChild(board);
-    container.appendChild(wordList);
-
-    board.addEventListener("click", (e) => {
-      if (!e.target.dataset.x) return;
-      const cell = e.target;
-      const key = cell.dataset.x + "," + cell.dataset.y;
-      if (selectedCells.has(key)) {
-        selectedCells.delete(key);
-        cell.classList.remove("bg-green-500");
-      } else {
-        selectedCells.add(key);
-        cell.classList.add("bg-green-500");
-      }
-
-      let selectedString = "";
-      selectedCells.forEach(k => {
-        const [x, y] = k.split(",").map(Number);
-        selectedString += grid[y][x];
-      });
-
-      WORD_LIST.forEach(word => {
-        if (selectedString.includes(word) && !foundWords.has(word)) {
-          foundWords.add(word);
-          foundSound.play();
-          updateForgeGlow(container, foundWords.size);
-        }
-      });
-    });
-
-    updateForgeGlow(container, 0);
-  }
-
-  function updateForgeGlow(container, foundCount) {
-    let glowLevel = Math.min(foundCount, 10);
-    const base = 10 + glowLevel * 2;
-    const color = `rgba(255, ${100 + glowLevel * 10}, 0, ${0.3 + glowLevel * 0.05})`;
-
-    container.style.boxShadow = `0 0 ${base}px ${base / 2}px ${color}`;
-    container.style.animation = "forgeGlow 2s ease-in-out infinite";
-  }
 
   return (
     <div className="p-6 bg-gray-900 min-h-screen text-white">
@@ -159,4 +22,144 @@ export default function WordForgePage() {
       <div id="word-forge-container" className="rounded-xl bg-gray-800 p-4 shadow-xl max-w-4xl mx-auto" />
     </div>
   );
+}
+
+// ----------------------------
+// 🔧 Utility Functions Below
+// ----------------------------
+
+function injectForgeGlowKeyframes() {
+  const style = document.createElement("style");
+  style.innerHTML = `
+    @keyframes forgeGlow {
+      0% { box-shadow: 0 0 10px rgba(255, 100, 0, 0.3); }
+      50% { box-shadow: 0 0 25px rgba(255, 150, 0, 0.6); }
+      100% { box-shadow: 0 0 10px rgba(255, 100, 0, 0.3); }
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+function renderWordForge(containerId, words) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = "";
+
+  const gridSize = 12;
+  const grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(""));
+
+  const foundSound = new Audio("https://freesound.org/data/previews/256/256113_3263906-lq.mp3");
+  foundSound.volume = 0.3;
+
+  function placeWord(word) {
+    const directions = [[0, 1], [1, 0], [1, 1], [-1, 1]];
+    let placed = false;
+    while (!placed) {
+      const dir = directions[Math.floor(Math.random() * directions.length)];
+      const startX = Math.floor(Math.random() * gridSize);
+      const startY = Math.floor(Math.random() * gridSize);
+      let x = startX;
+      let y = startY;
+      let valid = true;
+
+      for (let i = 0; i < word.length; i++) {
+        if (
+          x < 0 || y < 0 || x >= gridSize || y >= gridSize ||
+          (grid[y][x] && grid[y][x] !== word[i])
+        ) {
+          valid = false;
+          break;
+        }
+        x += dir[0];
+        y += dir[1];
+      }
+
+      if (valid) {
+        x = startX;
+        y = startY;
+        for (let i = 0; i < word.length; i++) {
+          grid[y][x] = word[i];
+          x += dir[0];
+          y += dir[1];
+        }
+        placed = true;
+      }
+    }
+  }
+
+  words.forEach(placeWord);
+
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  for (let y = 0; y < gridSize; y++) {
+    for (let x = 0; x < gridSize; x++) {
+      if (!grid[y][x]) {
+        grid[y][x] = alphabet[Math.floor(Math.random() * alphabet.length)];
+      }
+    }
+  }
+
+  const board = document.createElement("div");
+  board.className = "grid grid-cols-12 gap-1 p-4 bg-gray-800 rounded-xl shadow-lg";
+
+  const selectedCells = new Set();
+  const foundWords = new Set();
+
+  for (let y = 0; y < gridSize; y++) {
+    for (let x = 0; x < gridSize; x++) {
+      const cell = document.createElement("div");
+      cell.textContent = grid[y][x];
+      cell.dataset.x = x;
+      cell.dataset.y = y;
+      cell.className =
+        "text-white bg-gray-900 w-8 h-8 flex items-center justify-center text-sm font-bold rounded hover:bg-indigo-500 cursor-pointer select-none";
+      board.appendChild(cell);
+    }
+  }
+
+  const wordList = document.createElement("div");
+  wordList.className = "mt-4 text-white text-sm font-mono";
+  wordList.innerHTML =
+    "<strong>Find These Words:</strong><br>" +
+    words.map(w => `<span class="inline-block m-1 p-1 bg-gray-700 rounded">${w}</span>`).join(" ");
+
+  container.appendChild(board);
+  container.appendChild(wordList);
+
+  board.addEventListener("click", (e) => {
+    if (!e.target.dataset.x) return;
+    const cell = e.target;
+    const key = cell.dataset.x + "," + cell.dataset.y;
+    if (selectedCells.has(key)) {
+      selectedCells.delete(key);
+      cell.classList.remove("bg-green-500");
+    } else {
+      selectedCells.add(key);
+      cell.classList.add("bg-green-500");
+    }
+
+    let selectedString = "";
+    selectedCells.forEach(k => {
+      const [x, y] = k.split(",").map(Number);
+      selectedString += grid[y][x];
+    });
+
+    words.forEach(word => {
+      if (selectedString.includes(word) && !foundWords.has(word)) {
+        foundWords.add(word);
+        foundSound.play();
+        updateForgeGlow(container, foundWords.size);
+      }
+    });
+  });
+
+  updateForgeGlow(container, 0);
+}
+
+function updateForgeGlow(container, foundCount) {
+  let glowLevel = Math.min(foundCount, 10);
+  const base = 10 + glowLevel * 2;
+  const color = `rgba(255, ${100 + glowLevel * 10}, 0, ${0.3 + glowLevel * 0.05})`;
+
+  container.style.boxShadow = `0 0 ${base}px ${base / 2}px ${color}`;
+  container.style.animation = "forgeGlow 2s ease-in-out infinite";
 }
