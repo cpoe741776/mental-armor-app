@@ -1,19 +1,7 @@
 /* eslint-env worker */
 
 // wordWorker.js
-function generateWordGrid(words, size) {
-  // ... (rest of your worker code)
-}
-
-// Listen for messages from the main thread
-self.onmessage = function(event) { // Line 68:1
-  const { words, size } = event.data;
-  const newGrid = generateWordGrid(words, size);
-  // Send the result back to the main thread
-  self.postMessage(newGrid); // Line 72:3
-};
-
-// wordWorker.js
+// This function should be defined ONLY ONCE in this file
 function generateWordGrid(words, size) {
   const grid = Array.from({ length: size }, () => Array(size).fill(""));
   const directions = [[0, 1], [1, 0], [1, 1], [-1, 1]];
@@ -21,8 +9,8 @@ function generateWordGrid(words, size) {
 
   function placeWord(word) {
     let placed = false;
-    let attempts = 0; // Add an attempt counter to prevent infinite loops for impossible placements
-    const MAX_ATTEMPTS = 1000; // Limit attempts per word
+    let attempts = 0;
+    const MAX_ATTEMPTS = 1000;
 
     while (!placed && attempts < MAX_ATTEMPTS) {
       attempts++;
