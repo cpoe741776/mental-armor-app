@@ -8,20 +8,23 @@ export default function WordForgePage() {
   }, []);
 
   function injectForgeGlowKeyframes() {
-    const style = document.createElement("style");
-    style.innerHTML = \`
-      @keyframes forgeGlow {
-        0% {
-          box-shadow: 0 0 10px rgba(255, 100, 0, 0.3);
-        }
-        50% {
-          box-shadow: 0 0 25px rgba(255, 150, 0, 0.6);
-        }
-        100% {
-          box-shadow: 0 0 10px rgba(255, 100, 0, 0.3);
-        }
+  const style = document.createElement("style");
+  style.innerHTML = `
+    @keyframes forgeGlow {
+      0% {
+        box-shadow: 0 0 10px rgba(255, 100, 0, 0.3);
       }
-    \`;
+      50% {
+        box-shadow: 0 0 25px rgba(255, 150, 0, 0.6);
+      }
+      100% {
+        box-shadow: 0 0 10px rgba(255, 100, 0, 0.3);
+      }
+    }
+  `;
+  document.head.appendChild(style);
+}
+
     document.head.appendChild(style);
   }
 
