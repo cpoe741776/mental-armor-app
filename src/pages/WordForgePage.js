@@ -22,10 +22,11 @@ export default function WordForgePage() {
   const [dragStartCell, setDragStartCell] = useState(null);
   const [dragCurrentCell, setDragCurrentCell] = useState(null);
   const [currentLevel, setCurrentLevel] = useState(1);
-  const [isLevelCompleted, setIsLevelCompleted] = useState(false); // New state for level completion
+  const [isLevelCompleted, setIsLevelCompleted] = useState(false);
+  const [actualWordsInGrid, setActualWordsInGrid] = useState([]);
 
   const workerRef = useRef(null);
-  const gridRef = useRef(null);
+  const gridRef = useRef(null); // Ref to the grid container for calculating cell positions
 
   const masterWordsList = useMemo(() => [
     "OPTIMISM", "PURPOSE", "AWARENESS", "RESILIENCE", "FLEXIBILITY",
@@ -34,46 +35,46 @@ export default function WordForgePage() {
     "TOP", "RHONDA", "STORMY", "COOKIE", "BERTIE", "FORGE", "ARMOR"
   ], []);
 
-  // Determine current grid size based on level
   const currentGridSize = useMemo(() => {
     const levelConfig = LEVELS.find(level => level.level === currentLevel);
-    return levelConfig ? levelConfig.size : 12; // Default to 12 if level not found
+    return levelConfig ? levelConfig.size : 12;
   }, [currentLevel]);
 
-  // Filter words based on the current grid size
-  const playableWords = useMemo(() => {
+  const theoreticallyPlayableWords = useMemo(() => {
     return masterWordsList.filter(word => word.length <= currentGridSize);
   }, [masterWordsList, currentGridSize]);
 
-  // Effect to generate grid when level changes or words change
   useEffect(() => {
     if (window.Worker) {
       if (workerRef.current) {
-        workerRef.current.terminate(); // Terminate existing worker if changing level
+        workerRef.current.terminate();
       }
       workerRef.current = new Worker(new URL('./wordWorker.js', import.meta.url));
 
       workerRef.current.onmessage = (event) => {
-        setGrid(event.data);
+        const { grid, placedWords } = event.data;
+        setGrid(grid);
+        setActualWordsInGrid(placedWords);
         setIsLoadingGrid(false);
-        setFoundWords([]); // Reset found words for new grid
-        setIsLevelCompleted(false); // Reset level completion status for new grid
+        setFoundWords([]);
+        setIsLevelCompleted(false);
       };
 
       workerRef.current.onerror = (error) => {
         console.error("Web Worker error:", error);
         setIsLoadingGrid(false);
         setIsLevelCompleted(false);
+        setActualWordsInGrid([]);
       };
 
       setIsLoadingGrid(true);
-      // Pass only the playableWords to the worker
-      workerRef.current.postMessage({ words: playableWords, size: currentGridSize });
+      workerRef.current.postMessage({ words: theoreticallyPlayableWords, size: currentGridSize });
     } else {
       console.warn("Web Workers not supported. Grid generation will block the main thread.");
       setGrid([[]]);
       setIsLoadingGrid(false);
       setIsLevelCompleted(false);
+      setActualWordsInGrid([]);
     }
 
     return () => {
@@ -81,19 +82,18 @@ export default function WordForgePage() {
         workerRef.current.terminate();
       }
     };
-  }, [playableWords, currentGridSize]); // Depend on playableWords and currentGridSize
+  }, [theoreticallyPlayableWords, currentGridSize]);
 
-  // Effect to check for level completion
   useEffect(() => {
-    if (!isLoadingGrid && foundWords.length > 0) { // Only check if grid is loaded and words have been found
-      // Check if all playable words have been found
-      const allPlayableWordsFound = playableWords.every(word => foundWords.includes(word));
-      setIsLevelCompleted(allPlayableWordsFound);
-    } else if (!isLoadingGrid && playableWords.length === 0) {
-      // Edge case: if there are no playable words for the current grid size, consider it complete
+    if (!isLoadingGrid && actualWordsInGrid.length > 0) {
+      const allActualWordsFound = actualWordsInGrid.every(word => foundWords.includes(word));
+      setIsLevelCompleted(allActualWordsFound);
+    } else if (!isLoadingGrid && actualWordsInGrid.length === 0 && theoreticallyPlayableWords.length === 0) {
       setIsLevelCompleted(true);
+    } else if (!isLoadingGrid && actualWordsInGrid.length === 0 && theoreticallyPlayableWords.length > 0) {
+      setIsLevelCompleted(false);
     }
-  }, [foundWords, playableWords, isLoadingGrid]); // Depend on foundWords, playableWords, and isLoadingGrid
+  }, [foundWords, actualWordsInGrid, isLoadingGrid, theoreticallyPlayableWords]);
 
   useEffect(() => {
     const style = document.createElement("style");
@@ -107,7 +107,7 @@ export default function WordForgePage() {
     document.head.appendChild(style);
   }, []);
 
-  // --- Drag Selection Logic ---
+  // --- Touch Event Handlers (with useCallback) ---
 
   const getCellCoordinates = useCallback((event) => {
     if (!gridRef.current || grid.length === 0 || grid[0].length === 0) return null;
@@ -167,7 +167,7 @@ export default function WordForgePage() {
 
   const handleTouchStart = useCallback((event) => {
     if (event.touches.length === 1) {
-        event.preventDefault();
+        event.preventDefault(); // Prevent default touch actions like scrolling
         const coords = getCellCoordinates(event);
         if (coords) {
             setIsDragging(true);
@@ -180,7 +180,7 @@ export default function WordForgePage() {
 
   const handleTouchMove = useCallback((event) => {
     if (!isDragging) return;
-    event.preventDefault();
+    event.preventDefault(); // Prevent default touch actions like scrolling
 
     const coords = getCellCoordinates(event);
     if (coords && (coords[0] !== dragCurrentCell?.[0] || coords[1] !== dragCurrentCell?.[1])) {
@@ -211,7 +211,7 @@ export default function WordForgePage() {
 
       const reversedStr = str.split('').reverse().join('');
 
-      playableWords.forEach(word => { // Check against playableWords
+      actualWordsInGrid.forEach(word => {
         if ((str === word || reversedStr === word) && !foundWords.includes(word)) {
           setFoundWords(prev => [...prev, word]);
           updateForgeGlow(selected.length);
@@ -222,7 +222,7 @@ export default function WordForgePage() {
       });
       setSelected([]);
     }
-  }, [isDragging, selected, grid, playableWords, foundWords]); // Depend on playableWords
+  }, [isDragging, selected, grid, actualWordsInGrid, foundWords]);
 
 
   const handleCellClick = useCallback((x, y) => {
@@ -247,7 +247,7 @@ export default function WordForgePage() {
 
       const reversedStr = str.split('').reverse().join('');
 
-      playableWords.forEach(word => { // Check against playableWords
+      actualWordsInGrid.forEach(word => {
         if ((str === word || reversedStr === word) && !foundWords.includes(word)) {
           setFoundWords(prev => [...prev, word]);
           updateForgeGlow(newSelected.length);
@@ -258,7 +258,7 @@ export default function WordForgePage() {
         }
       });
     }
-  }, [isDragging, selected, grid, playableWords, foundWords]); // Depend on playableWords
+  }, [isDragging, selected, grid, actualWordsInGrid, foundWords]);
 
 
   function updateForgeGlow(intensity) {
@@ -278,6 +278,28 @@ export default function WordForgePage() {
       setCurrentLevel(level);
     }
   }, []);
+
+  // --- New useEffect for manual touch event listeners ---
+  useEffect(() => {
+    const gridElement = gridRef.current;
+    if (gridElement) {
+      // Add event listeners with { passive: false } to override browser defaults
+      gridElement.addEventListener('touchstart', handleTouchStart, { passive: false });
+      gridElement.addEventListener('touchmove', handleTouchMove, { passive: false });
+      gridElement.addEventListener('touchend', handleTouchEnd, { passive: false });
+      // You might also add touchcancel if needed for robustness
+      // gridElement.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+
+      // Clean up event listeners when component unmounts or dependencies change
+      return () => {
+        gridElement.removeEventListener('touchstart', handleTouchStart);
+        gridElement.removeEventListener('touchmove', handleTouchMove);
+        gridElement.removeEventListener('touchend', handleTouchEnd);
+        // gridElement.removeEventListener('touchcancel', handleTouchEnd);
+      };
+    }
+  }, [handleTouchStart, handleTouchMove, handleTouchEnd]); // Dependencies are the stable callback functions
+
 
   return (
     <div className="p-6 bg-gray-900 min-h-screen text-white">
@@ -300,7 +322,7 @@ export default function WordForgePage() {
         </span>
         <button
           onClick={() => goToLevel(currentLevel + 1)}
-          disabled={currentLevel === MAX_LEVEL || isLoadingGrid || !isLevelCompleted} // Disabled if not completed
+          disabled={currentLevel === MAX_LEVEL || isLoadingGrid || !isLevelCompleted}
           className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Next Level
@@ -311,9 +333,9 @@ export default function WordForgePage() {
       <div
         id="word-forge-container"
         className="rounded-xl bg-gray-800 p-4 shadow-xl max-w-4xl mx-auto"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
+        // REMOVED: onTouchStart={handleTouchStart}
+        // REMOVED: onTouchMove={handleTouchMove}
+        // REMOVED: onTouchEnd={handleTouchEnd}
         ref={gridRef}
       >
         {isLoadingGrid ? (
@@ -341,7 +363,7 @@ export default function WordForgePage() {
 
         <div className="mt-4 text-white text-sm font-mono">
           <strong>Find These Words:</strong><br />
-          {playableWords.map(w => ( // Display only playable words
+          {actualWordsInGrid.map(w => (
             <span
               key={w}
               className={`inline-block m-1 p-1 rounded ${
