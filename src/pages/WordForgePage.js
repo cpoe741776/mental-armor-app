@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react'; // Import useMemo
 
 export default function WordForgePage() {
   const [grid, setGrid] = useState([]);
   const [selected, setSelected] = useState([]);
   const [foundWords, setFoundWords] = useState([]);
 
-  const words = [
+  // Memoize the words array
+  const words = useMemo(() => [
     "OPTIMISM", "PURPOSE", "AWARENESS", "RESILIENCE", "FLEXIBILITY",
     "ANCHOR", "THOUGHTS", "CSF", "RHYTHM", "RATIONAL", "CONTROL",
     "FOCUS", "STRENGTH", "GRIT", "GROWTH", "PEER", "SUPPORT",
     "TOP", "RHONDA", "STORMY", "COOKIE", "BERTIE", "FORGE", "ARMOR"
-  ];
+  ], []); // Empty dependency array means it's created only once
 
   useEffect(() => {
-  const newGrid = generateWordGrid(words, 12);
-  setGrid(newGrid);
-}, [words]); // ✅ add words to dependency array
-
+    const newGrid = generateWordGrid(words, 12);
+    setGrid(newGrid);
+  }, [words]); // Now 'words' is stable and won't cause re-renders
 
   useEffect(() => {
     const style = document.createElement("style");
