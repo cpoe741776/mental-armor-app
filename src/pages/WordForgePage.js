@@ -1,43 +1,70 @@
-import React, { useEffect, useState, useMemo } from 'react'; // Import useMemo
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 
 export default function WordForgePage() {
   const [grid, setGrid] = useState([]);
   const [selected, setSelected] = useState([]);
   const [foundWords, setFoundWords] = useState([]);
+  const [isLoadingGrid, setIsLoadingGrid] = useState(true); // New state for loading
 
-  // Memoize the words array
+  const workerRef = useRef(null); // Ref to store the Web Worker instance
+
   const words = useMemo(() => [
     "OPTIMISM", "PURPOSE", "AWARENESS", "RESILIENCE", "FLEXIBILITY",
     "ANCHOR", "THOUGHTS", "CSF", "RHYTHM", "RATIONAL", "CONTROL",
     "FOCUS", "STRENGTH", "GRIT", "GROWTH", "PEER", "SUPPORT",
     "TOP", "RHONDA", "STORMY", "COOKIE", "BERTIE", "FORGE", "ARMOR"
-  ], []); // Empty dependency array means it's created only once
+  ], []);
 
   useEffect(() => {
-    const newGrid = generateWordGrid(words, 12);
-    setGrid(newGrid);
-  }, [words]); // Now 'words' is stable and won't cause re-renders
+    // Initialize Web Worker
+    if (window.Worker) {
+      workerRef.current = new Worker(new URL('./wordWorker.js', import.meta.url)); // Use import.meta.url for CRA/Vite compatibility
 
-  useEffect(() => {
-    const style = document.createElement("style");
-    style.innerHTML = `
-      @keyframes forgeGlow {
-        0% { box-shadow: 0 0 10px rgba(255, 100, 0, 0.3); }
-        50% { box-shadow: 0 0 25px rgba(255, 150, 0, 0.6); }
-        100% { box-shadow: 0 0 10px rgba(255, 100, 0, 0.3); }
+      workerRef.current.onmessage = (event) => {
+        setGrid(event.data);
+        setIsLoadingGrid(false); // Grid is loaded
+      };
+
+      workerRef.current.onerror = (error) => {
+        console.error("Web Worker error:", error);
+        setIsLoadingGrid(false); // Handle error case
+      };
+
+      // Start the grid generation in the worker
+      setIsLoadingGrid(true); // Indicate loading
+      workerRef.current.postMessage({ words, size: 12 });
+    } else {
+      // Fallback for browsers that don't support Web Workers (very rare now)
+      console.warn("Web Workers not supported. Generating grid on main thread.");
+      // You could put your generateWordGrid logic directly here as a fallback
+      // or implement the "yielding" strategy below.
+      const newGrid = generateWordGridFallback(words, 12); // Renamed to avoid confusion
+      setGrid(newGrid);
+      setIsLoadingGrid(false);
+    }
+
+    // Cleanup worker when component unmounts
+    return () => {
+      if (workerRef.current) {
+        workerRef.current.terminate();
       }
-    `;
-    document.head.appendChild(style);
-  }, []);
+    };
+  }, [words]);
 
-  function generateWordGrid(words, size) {
+  // A minimal fallback for generateWordGrid if workers aren't supported (or for testing)
+  // This version would still block if run directly without yielding.
+  function generateWordGridFallback(words, size) {
     const grid = Array.from({ length: size }, () => Array(size).fill(""));
     const directions = [[0, 1], [1, 0], [1, 1], [-1, 1]];
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     function placeWord(word) {
       let placed = false;
-      while (!placed) {
+      let attempts = 0;
+      const MAX_ATTEMPTS = 1000;
+
+      while (!placed && attempts < MAX_ATTEMPTS) {
+        attempts++;
         const dir = directions[Math.floor(Math.random() * directions.length)];
         const startX = Math.floor(Math.random() * size);
         const startY = Math.floor(Math.random() * size);
@@ -68,9 +95,13 @@ export default function WordForgePage() {
           placed = true;
         }
       }
+      if (!placed) {
+        console.warn(`Fallback: Could not place word: ${word} after ${MAX_ATTEMPTS} attempts.`);
+      }
     }
 
-    words.forEach(placeWord);
+    const shuffledWords = [...words].sort(() => 0.5 - Math.random());
+    shuffledWords.forEach(placeWord);
 
     for (let y = 0; y < size; y++) {
       for (let x = 0; x < size; x++) {
@@ -79,9 +110,21 @@ export default function WordForgePage() {
         }
       }
     }
-
     return grid;
   }
+  // The rest of your WordForgePage component...
+
+  useEffect(() => {
+    const style = document.createElement("style");
+    style.innerHTML = `
+      @keyframes forgeGlow {
+        0% { box-shadow: 0 0 10px rgba(255, 100, 0, 0.3); }
+        50% { box-shadow: 0 0 25px rgba(255, 150, 0, 0.6); }
+        100% { box-shadow: 0 0 10px rgba(255, 100, 0, 0.3); }
+      }
+    `;
+    document.head.appendChild(style);
+  }, []);
 
   function handleCellClick(x, y) {
     const alreadySelected = selected.some(([sx, sy]) => sx === x && sy === y);
@@ -129,22 +172,26 @@ export default function WordForgePage() {
         id="word-forge-container"
         className="rounded-xl bg-gray-800 p-4 shadow-xl max-w-4xl mx-auto"
       >
-        <div className="grid grid-cols-12 gap-1 p-4">
-          {grid.map((row, y) =>
-            row.map((letter, x) => (
-              <div
-                key={`${x},${y}`}
-                className={`w-8 h-8 flex items-center justify-center text-sm font-bold rounded select-none cursor-pointer
-                  ${selected.some(([sx, sy]) => sx === x && sy === y)
-                    ? "bg-green-500"
-                    : "bg-gray-900"} hover:bg-indigo-500`}
-                onClick={() => handleCellClick(x, y)}
-              >
-                {letter}
-              </div>
-            ))
-          )}
-        </div>
+        {isLoadingGrid ? (
+          <div className="text-center p-8 text-xl">Generating grid...</div>
+        ) : (
+          <div className="grid grid-cols-12 gap-1 p-4">
+            {grid.map((row, y) =>
+              row.map((letter, x) => (
+                <div
+                  key={`${x},${y}`}
+                  className={`w-8 h-8 flex items-center justify-center text-sm font-bold rounded select-none cursor-pointer
+                    ${selected.some(([sx, sy]) => sx === x && sy === y)
+                      ? "bg-green-500"
+                      : "bg-gray-900"} hover:bg-indigo-500`}
+                  onClick={() => handleCellClick(x, y)}
+                >
+                  {letter}
+                </div>
+              ))
+            )}
+          </div>
+        )}
 
         <div className="mt-4 text-white text-sm font-mono">
           <strong>Find These Words:</strong><br />
