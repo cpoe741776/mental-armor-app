@@ -1,45 +1,53 @@
-// src/pages/WordForgePage.js
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const WORDS = [
-  "OPTIMISM", "PURPOSE", "AWARENESS", "RESILIENCE", "FLEXIBILITY",
-  "ANCHOR", "TOUGHTS", "CSF", "RHYTHM", "RATIONAL", "CONTROL",
-  "FOCUS", "STRENGTH", "GRIT", "GROWTH", "PEER", "SUPPORT",
-  "TOP", "RHONDA", "STORMY", "COOKIE", "BERTIE", "FORGE", "ARMOR"
-];
-
-const GRID_SIZE = 12;
-const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-function WordForgePage() {
+export default function WordForgePage() {
   const [grid, setGrid] = useState([]);
   const [selected, setSelected] = useState([]);
   const [foundWords, setFoundWords] = useState([]);
 
+  const words = [
+    "OPTIMISM", "PURPOSE", "AWARENESS", "RESILIENCE", "FLEXIBILITY",
+    "ANCHOR", "THOUGHTS", "CSF", "RHYTHM", "RATIONAL", "CONTROL",
+    "FOCUS", "STRENGTH", "GRIT", "GROWTH", "PEER", "SUPPORT",
+    "TOP", "RHONDA", "STORMY", "COOKIE", "BERTIE", "FORGE", "ARMOR"
+  ];
+
   useEffect(() => {
-    const emptyGrid = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(""));
-    const filledGrid = placeWordsInGrid(emptyGrid);
-    setGrid(filledGrid);
+    const newGrid = generateWordGrid(words, 12);
+    setGrid(newGrid);
   }, []);
 
-  function placeWordsInGrid(grid) {
-    const newGrid = [...grid.map(row => [...row])];
+  useEffect(() => {
+    const style = document.createElement("style");
+    style.innerHTML = `
+      @keyframes forgeGlow {
+        0% { box-shadow: 0 0 10px rgba(255, 100, 0, 0.3); }
+        50% { box-shadow: 0 0 25px rgba(255, 150, 0, 0.6); }
+        100% { box-shadow: 0 0 10px rgba(255, 100, 0, 0.3); }
+      }
+    `;
+    document.head.appendChild(style);
+  }, []);
 
+  function generateWordGrid(words, size) {
+    const grid = Array.from({ length: size }, () => Array(size).fill(""));
     const directions = [[0, 1], [1, 0], [1, 1], [-1, 1]];
-    for (const word of WORDS) {
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    function placeWord(word) {
       let placed = false;
       while (!placed) {
         const dir = directions[Math.floor(Math.random() * directions.length)];
-        const startX = Math.floor(Math.random() * GRID_SIZE);
-        const startY = Math.floor(Math.random() * GRID_SIZE);
+        const startX = Math.floor(Math.random() * size);
+        const startY = Math.floor(Math.random() * size);
         let x = startX;
         let y = startY;
         let valid = true;
 
         for (let i = 0; i < word.length; i++) {
           if (
-            x < 0 || y < 0 || x >= GRID_SIZE || y >= GRID_SIZE ||
-            (newGrid[y][x] && newGrid[y][x] !== word[i])
+            x < 0 || y < 0 || x >= size || y >= size ||
+            (grid[y][x] && grid[y][x] !== word[i])
           ) {
             valid = false;
             break;
@@ -52,7 +60,7 @@ function WordForgePage() {
           x = startX;
           y = startY;
           for (let i = 0; i < word.length; i++) {
-            newGrid[y][x] = word[i];
+            grid[y][x] = word[i];
             x += dir[0];
             y += dir[1];
           }
@@ -61,49 +69,53 @@ function WordForgePage() {
       }
     }
 
-    // Fill empty cells
-    for (let y = 0; y < GRID_SIZE; y++) {
-      for (let x = 0; x < GRID_SIZE; x++) {
-        if (!newGrid[y][x]) {
-          newGrid[y][x] = ALPHABET[Math.floor(Math.random() * ALPHABET.length)];
+    words.forEach(placeWord);
+
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        if (!grid[y][x]) {
+          grid[y][x] = alphabet[Math.floor(Math.random() * alphabet.length)];
         }
       }
     }
 
-    return newGrid;
+    return grid;
   }
 
   function handleCellClick(x, y) {
-    const key = `${x},${y}`;
-    const isSelected = selected.some(([sx, sy]) => sx === x && sy === y);
-    const updated = isSelected
-      ? selected.filter(([sx, sy]) => !(sx === x && sy === y))
+    const alreadySelected = selected.some(([sx, sy]) => sx === x && sy === y);
+    const newSelected = alreadySelected
+      ? selected.filter(([sx, sy]) => sx !== x || sy !== y)
       : [...selected, [x, y]];
-    setSelected(updated);
+    setSelected(newSelected);
 
-    // Build string from selected cells
-    const selectedString = updated.map(([sx, sy]) => grid[sy][sx]).join("");
+    let str = "";
+    newSelected.forEach(([sx, sy]) => {
+      str += grid[sy][sx];
+    });
 
-    for (const word of WORDS) {
-      if (selectedString.includes(word) && !foundWords.includes(word)) {
-        setFoundWords([...foundWords, word]);
+    words.forEach(word => {
+      if (str.includes(word) && !foundWords.includes(word)) {
+        setFoundWords(prev => [...prev, word]);
+        updateForgeGlow(newSelected.length);
         const sound = new Audio("https://freesound.org/data/previews/256/256113_3263906-lq.mp3");
         sound.volume = 0.3;
         sound.play();
-        break;
       }
-    }
+    });
   }
 
-  const getGlowStyle = () => {
-    const glowLevel = Math.min(foundWords.length, 10);
-    const base = 10 + glowLevel * 2;
-    const color = `rgba(255, ${100 + glowLevel * 10}, 0, ${0.3 + glowLevel * 0.05})`;
-    return {
-      boxShadow: `0 0 ${base}px ${base / 2}px ${color}`,
-      animation: `forgeGlow 2s ease-in-out infinite`,
-    };
-  };
+  function updateForgeGlow(intensity) {
+    const glow = Math.min(intensity, 10);
+    const base = 10 + glow * 2;
+    const color = `rgba(255, ${100 + glow * 10}, 0, ${0.3 + glow * 0.05})`;
+
+    const forge = document.getElementById("word-forge-container");
+    if (forge) {
+      forge.style.boxShadow = `0 0 ${base}px ${base / 2}px ${color}`;
+      forge.style.animation = "forgeGlow 2s ease-in-out infinite";
+    }
+  }
 
   return (
     <div className="p-6 bg-gray-900 min-h-screen text-white">
@@ -111,47 +123,42 @@ function WordForgePage() {
       <p className="text-center mb-6 text-sm text-gray-400">
         A focused break for the mind — find resilience skills and trainer names to sharpen your recall and relax.
       </p>
+
       <div
-        className="bg-gray-800 rounded-xl p-4 shadow-xl max-w-4xl mx-auto"
-        style={getGlowStyle()}
+        id="word-forge-container"
+        className="rounded-xl bg-gray-800 p-4 shadow-xl max-w-4xl mx-auto"
       >
-        <div className="grid grid-cols-12 gap-1 justify-center">
+        <div className="grid grid-cols-12 gap-1 p-4">
           {grid.map((row, y) =>
-            row.map((letter, x) => {
-              const isSelected = selected.some(([sx, sy]) => sx === x && sy === y);
-              return (
-                <div
-                  key={`${x}-${y}`}
-                  className={`w-8 h-8 flex items-center justify-center text-sm font-bold rounded select-none cursor-pointer
-                    ${isSelected ? "bg-green-500" : "bg-gray-900"} hover:bg-indigo-500`}
-                  onClick={() => handleCellClick(x, y)}
-                >
-                  {letter}
-                </div>
-              );
-            })
+            row.map((letter, x) => (
+              <div
+                key={`${x},${y}`}
+                className={`w-8 h-8 flex items-center justify-center text-sm font-bold rounded select-none cursor-pointer
+                  ${selected.some(([sx, sy]) => sx === x && sy === y)
+                    ? "bg-green-500"
+                    : "bg-gray-900"} hover:bg-indigo-500`}
+                onClick={() => handleCellClick(x, y)}
+              >
+                {letter}
+              </div>
+            ))
           )}
         </div>
+
         <div className="mt-4 text-white text-sm font-mono">
-          <strong>Find These Words:</strong>
-          <div className="flex flex-wrap mt-1">
-            {WORDS.map(word => (
-              <span
-                key={word}
-                className={`m-1 p-1 rounded ${
-                  foundWords.includes(word)
-                    ? "bg-green-600 text-white"
-                    : "bg-gray-700 text-gray-300"
-                }`}
-              >
-                {word}
-              </span>
-            ))}
-          </div>
+          <strong>Find These Words:</strong><br />
+          {words.map(w => (
+            <span
+              key={w}
+              className={`inline-block m-1 p-1 rounded ${
+                foundWords.includes(w) ? "bg-green-700" : "bg-gray-700"
+              }`}
+            >
+              {w}
+            </span>
+          ))}
         </div>
       </div>
     </div>
   );
 }
-
-export default WordForgePage;
