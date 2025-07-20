@@ -62,9 +62,6 @@ export default function WordForgePage() {
       workerRef.current.postMessage({ words, size: currentGridSize });
     } else {
       console.warn("Web Workers not supported. Grid generation will block the main thread.");
-      // Fallback: If Web Workers are not supported, you would run the grid generation here.
-      // This part is intentionally omitted to keep the worker path clean,
-      // but in a real app, you'd have generateWordGridFallback here or a simpler grid.
       setGrid([[]]); // Set an empty grid or a very small default
       setIsLoadingGrid(false);
     }
@@ -74,7 +71,7 @@ export default function WordForgePage() {
         workerRef.current.terminate();
       }
     };
-  }, [words, currentGridSize]); // Add currentGridSize to dependencies
+  }, [words, currentGridSize]);
 
   useEffect(() => {
     const style = document.createElement("style");
@@ -98,14 +95,12 @@ export default function WordForgePage() {
     const cellWidth = gridRect.width / grid[0].length;
     const cellHeight = gridRect.height / grid.length;
 
-    // Use changedTouches[0] for touch events, or event for mouse events
     const clientX = event.touches ? event.touches[0].clientX : event.clientX;
     const clientY = event.touches ? event.touches[0].clientY : event.clientY;
 
     const x = Math.floor((clientX - gridRect.left) / cellWidth);
     const y = Math.floor((clientY - gridRect.top) / cellHeight);
 
-    // Ensure coordinates are within grid bounds
     if (x >= 0 && x < grid[0].length && y >= 0 && y < grid.length) {
       return [x, y];
     }
@@ -115,8 +110,8 @@ export default function WordForgePage() {
 
   // Helper to calculate cells in a straight line between two points (Bresenham's algorithm)
   const calculateCellsInLine = useCallback((start, end) => {
-    const cells = [];
-    if (!start || !end) return cells;
+    const uniqueCells = new Set();
+    if (!start || !end) return [];
 
     let [x0, y0] = start;
     const [x1, y1] = end;
@@ -128,18 +123,12 @@ export default function WordForgePage() {
     let err = dx - dy;
 
     // Allow only strictly horizontal, vertical, or diagonal lines for word search
-    // This part ensures selections are meaningful for word search
-    if (!(dx === 0 || dy === 0 || dx === dy || dx === -dy)) {
-        // If not a straight line, only select the start and end cell
-        // Or, better, just the current cell if it's the only one valid
-        return [end]; // Only select the current cell if not a valid line
+    if (!(dx === 0 || dy === 0 || dx === dy)) {
+        return [end];
     }
 
     while (true) {
-        // Add cell if it's not already in the path (to avoid duplicates from line algorithm)
-        if (!cells.some(c => c[0] === x0 && c[1] === y0)) {
-            cells.push([x0, y0]);
-        }
+        uniqueCells.add(`${x0},${y0}`);
 
         if (x0 === x1 && y0 === y1) break;
 
@@ -153,33 +142,31 @@ export default function WordForgePage() {
             y0 += sy;
         }
     }
-    return cells;
+    return Array.from(uniqueCells).map(coordStr => coordStr.split(',').map(Number));
   }, []);
 
 
   const handleTouchStart = useCallback((event) => {
-    // Only respond to the first touch to prevent multi-touch issues with selection
     if (event.touches.length === 1) {
-        event.preventDefault(); // Prevent scrolling on touch
+        event.preventDefault();
         const coords = getCellCoordinates(event);
         if (coords) {
             setIsDragging(true);
             setDragStartCell(coords);
-            setDragCurrentCell(coords); // Initialize current cell
-            setSelected([coords]); // Start selection with the first touched cell
+            setDragCurrentCell(coords);
+            setSelected([coords]);
         }
     }
   }, [getCellCoordinates]);
 
   const handleTouchMove = useCallback((event) => {
     if (!isDragging) return;
-    event.preventDefault(); // Prevent scrolling on touch
+    event.preventDefault();
 
     const coords = getCellCoordinates(event);
     if (coords && (coords[0] !== dragCurrentCell?.[0] || coords[1] !== dragCurrentCell?.[1])) {
-        setDragCurrentCell(coords); // Update current cell only if it changed
+        setDragCurrentCell(coords);
 
-        // Calculate and set the new selected cells based on drag path
         const newSelectedCells = calculateCellsInLine(dragStartCell, coords);
         setSelected(newSelectedCells);
     }
@@ -191,25 +178,20 @@ export default function WordForgePage() {
       setDragStartCell(null);
       setDragCurrentCell(null);
 
-      // Finalize the word check after drag ends
       let str = "";
-      // Sort selected cells to form the word in reading order (left-to-right, top-to-bottom)
-      // This is crucial for correct word matching, as drag path might be irregular
       const sortedSelected = [...selected].sort((a, b) => {
-        if (a[1] === b[1]) return a[0] - b[0]; // Same row, sort by column
-        return a[1] - b[1]; // Sort by row
+        if (a[1] === b[1]) return a[0] - b[0];
+        return a[1] - b[1];
       });
 
       sortedSelected.forEach(([sx, sy]) => {
-        if (grid[sy] && grid[sy][sx]) { // Defensive check
+        if (grid[sy] && grid[sy][sx]) {
             str += grid[sy][sx];
         }
       });
 
-      // Check if the formed string or its reverse is a word
-      const reversedStr = str.split('').reverse().join(''); // Word search words can be reversed
+      const reversedStr = str.split('').reverse().join('');
 
-      let wordFound = false;
       words.forEach(word => {
         if ((str === word || reversedStr === word) && !foundWords.includes(word)) {
           setFoundWords(prev => [...prev, word]);
@@ -217,21 +199,14 @@ export default function WordForgePage() {
           const sound = new Audio("https://freesound.org/data/previews/256/256113_3263906-lq.mp3");
           sound.volume = 0.3;
           sound.play();
-          wordFound = true;
         }
       });
-      setSelected([]); // Clear selection after checking
-
-      // If a word was found, consider generating a new grid or just celebrating
-      // For now, it just clears selection and celebrates
+      setSelected([]);
     }
   }, [isDragging, selected, grid, words, foundWords]);
 
 
-  // --- Existing single-click logic adjusted ---
   const handleCellClick = useCallback((x, y) => {
-    // If not dragging, allow single clicks to select/deselect
-    // (This path will likely be less used with drag select but kept for completeness)
     if (!isDragging) {
       const alreadySelected = selected.some(([sx, sy]) => sx === x && sy === y);
       const newSelected = alreadySelected
@@ -260,7 +235,7 @@ export default function WordForgePage() {
           const sound = new Audio("https://freesound.org/data/previews/256/256113_3263906-lq.mp3");
           sound.volume = 0.3;
           sound.play();
-          setSelected([]); // Clear selection after finding a word on single click
+          setSelected([]);
         }
       });
     }
@@ -282,7 +257,6 @@ export default function WordForgePage() {
   const goToLevel = useCallback((level) => {
     if (level >= 1 && level <= MAX_LEVEL) {
       setCurrentLevel(level);
-      // The useEffect above will handle regenerating the grid
     }
   }, []);
 
