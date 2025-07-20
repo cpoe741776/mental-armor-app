@@ -37,6 +37,19 @@ export default function WordForgePage() {
     "TOP", "RHONDA", "STORMY", "COOKIE", "BERTIE", "FORGE", "ARMOR"
   ], []);
 
+  // Create a memoized audio instance for the success sound
+  const successSound = useMemo(() => {
+    try {
+        const audio = new Audio("https://freesound.org/data/previews/256/256113_3263906-lq.mp3");
+        audio.volume = 0.3;
+        audio.load(); // Attempt to preload
+        return audio;
+    } catch (e) {
+        console.error("Error creating audio object:", e);
+        return null;
+    }
+  }, []); // Created once
+
   const currentGridSize = useMemo(() => {
     const levelConfig = LEVELS.find(level => level.level === currentLevel);
     return levelConfig ? levelConfig.size : 12;
@@ -239,15 +252,18 @@ export default function WordForgePage() {
       actualWordsInGrid.forEach(word => {
         if ((str === word || reversedStr === word) && !foundWords.includes(word)) {
           setFoundWords(prev => [...prev, word]);
-          updateForgeGlow(selected.length);
-          const sound = new Audio("https://freesound.org/data/previews/256/256113_3263906-lq.mp3");
-          sound.volume = 0.3;
-          sound.play();
+          updateForgeGlow(word.length); // Pass actual word length
+          if (successSound) {
+            successSound.currentTime = 0; // Reset to start
+            successSound.play().catch(e => {
+              console.warn("Audio playback failed (likely autoplay policy):", e);
+            });
+          }
         }
       });
       setSelected([]);
     }
-  }, [isDragging, selected, grid, actualWordsInGrid, foundWords]);
+  }, [isDragging, selected, grid, actualWordsInGrid, foundWords, successSound, currentLevel]);
 
 
   const handleCellClick = useCallback((x, y) => {
@@ -276,26 +292,42 @@ export default function WordForgePage() {
       actualWordsInGrid.forEach(word => {
         if ((str === word || reversedStr === word) && !foundWords.includes(word)) {
           setFoundWords(prev => [...prev, word]);
-          updateForgeGlow(newSelected.length);
-          const sound = new Audio("https://freesound.org/data/previews/256/256113_3263906-lq.mp3");
-          sound.volume = 0.3;
-          sound.play();
+          updateForgeGlow(word.length); // Pass actual word length
+          if (successSound) {
+            successSound.currentTime = 0; // Reset to start
+            successSound.play().catch(e => {
+              console.warn("Audio playback failed (likely autoplay policy):", e);
+            });
+          }
           setSelected([]);
         }
       });
     }
-  }, [isDragging, selected, grid, actualWordsInGrid, foundWords]);
+  }, [isDragging, selected, grid, actualWordsInGrid, foundWords, successSound, currentLevel]);
 
 
-  function updateForgeGlow(intensity) {
-    const glow = Math.min(intensity, 10);
-    const base = 10 + glow * 2;
-    const color = `rgba(255, ${100 + glow * 10}, 0, ${0.3 + glow * 0.05})`;
+  function updateForgeGlow(wordLength) { // wordLength is passed
+    const levelIntensity = currentLevel * 2; // Scales 2 to 24
+    const wordBonus = wordLength * 0.5; // Small bonus for longer words
+    const totalIntensity = Math.min(levelIntensity + wordBonus, 35); // Cap max intensity slightly higher
+
+    const baseShadow = 10 + totalIntensity;
+    const blurRadius = 5 + totalIntensity * 0.5;
+    const colorAlpha = 0.3 + totalIntensity * 0.02; // Max 0.3 + 35*0.02 = 1.0 (capped at 0.9)
+
+    // Make it more orange/red and vibrant as intensity increases
+    const colorRed = 255;
+    const colorGreen = Math.max(0, 150 - totalIntensity * 5); // Goes from 150 down to 0
+    const colorBlue = Math.max(0, 0 + totalIntensity * 1); // Goes from 0 up to 35, making it slightly purple-ish at max
+
+    const color = `rgba(${colorRed}, ${colorGreen}, ${colorBlue}, ${Math.min(colorAlpha, 0.9)})`;
+
 
     const forge = document.getElementById("word-forge-container");
     if (forge) {
-      forge.style.boxShadow = `0 0 ${base}px ${base / 2}px ${color}`;
-      forge.style.animation = "forgeGlow 2s ease-in-out infinite";
+      forge.style.boxShadow = `0 0 ${blurRadius}px ${baseShadow}px ${color}`;
+      // Make animation faster for higher levels / intensity
+      forge.style.animation = `forgeGlow ${Math.max(0.5, 2 - (totalIntensity * 0.04))}s ease-in-out infinite alternate`;
     }
   }
 
