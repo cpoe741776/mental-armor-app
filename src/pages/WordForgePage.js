@@ -155,8 +155,10 @@ export default function WordForgePage() {
   function updateForgeGlow(container, foundCount) {
     let glowLevel = Math.min(foundCount, 10); // Cap glow
     const base = 10 + glowLevel * 2;
-    const color = \`rgba(255, \${100 + glowLevel * 10}, 0, \${0.3 + glowLevel * 0.05})\`;
-    container.style.boxShadow = \`0 0 \${base}px \${base / 2}px \${color}\`;
+    const color = `rgba(255, ${100 + glowLevel * 10}, 0, ${0.3 + glowLevel * 0.05})`;
+
+    container.style.boxShadow = `0 0 ${base}px ${base / 2}px ${color}`;
+
     container.style.animation = "forgeGlow 2s ease-in-out infinite";
   }
 
