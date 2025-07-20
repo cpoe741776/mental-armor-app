@@ -38,9 +38,12 @@ export default function WordForgePage() {
   ], []);
 
   // Create a memoized audio instance for the success sound
-  const successSound = useMemo(() => {
+  // In your WordForgePage.js file, find the successSound useMemo:
+
+const successSound = useMemo(() => {
     try {
-        const audio = new Audio("https://freesound.org/data/previews/256/256113_3263906-lq.mp3");
+        // Change the URL to your new AAC file in the public/audio folder
+        const audio = new Audio("/audio/AnvilSuccess.aac"); // <--- THIS IS THE LINE TO UPDATE
         audio.volume = 0.3;
         audio.load(); // Attempt to preload
         return audio;
@@ -48,7 +51,7 @@ export default function WordForgePage() {
         console.error("Error creating audio object:", e);
         return null;
     }
-  }, []); // Created once
+}, []); // Created once
 
   const currentGridSize = useMemo(() => {
     const levelConfig = LEVELS.find(level => level.level === currentLevel);
