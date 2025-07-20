@@ -14,6 +14,8 @@ const LEVELS = [
 const MAX_LEVEL = LEVELS.length;
 
 export default function WordForgePage() {
+  console.log('WordForgePage component render cycle start'); // DEBUG LOG
+
   const [grid, setGrid] = useState([]);
   const [selected, setSelected] = useState([]);
   const [foundWords, setFoundWords] = useState([]);
@@ -26,7 +28,7 @@ export default function WordForgePage() {
   const [actualWordsInGrid, setActualWordsInGrid] = useState([]);
 
   const workerRef = useRef(null);
-  const gridRef = useRef(null); // Ref to the grid container for calculating cell positions
+  const gridRef = useRef(null);
 
   const masterWordsList = useMemo(() => [
     "OPTIMISM", "PURPOSE", "AWARENESS", "RESILIENCE", "FLEXIBILITY",
@@ -45,13 +47,15 @@ export default function WordForgePage() {
   }, [masterWordsList, currentGridSize]);
 
   useEffect(() => {
+    console.log('useEffect: Grid generation worker setup/trigger. Current level:', currentLevel); // DEBUG LOG
     if (window.Worker) {
       if (workerRef.current) {
-        workerRef.current.terminate();
+        workerRef.current.terminate(); // Terminate existing worker if changing level
       }
       workerRef.current = new Worker(new URL('./wordWorker.js', import.meta.url));
 
       workerRef.current.onmessage = (event) => {
+        console.log('Worker: Grid data received.', event.data); // DEBUG LOG
         const { grid, placedWords } = event.data;
         setGrid(grid);
         setActualWordsInGrid(placedWords);
@@ -61,7 +65,7 @@ export default function WordForgePage() {
       };
 
       workerRef.current.onerror = (error) => {
-        console.error("Web Worker error:", error);
+        console.error("Web Worker error:", error); // Already here
         setIsLoadingGrid(false);
         setIsLevelCompleted(false);
         setActualWordsInGrid([]);
@@ -70,21 +74,23 @@ export default function WordForgePage() {
       setIsLoadingGrid(true);
       workerRef.current.postMessage({ words: theoreticallyPlayableWords, size: currentGridSize });
     } else {
-      console.warn("Web Workers not supported. Grid generation will block the main thread.");
-      setGrid([[]]);
+      console.warn("Web Workers not supported. Grid generation will block the main thread."); // Already here
+      setGrid([[]]); // Ensure grid has basic structure even if worker not supported
       setIsLoadingGrid(false);
       setIsLevelCompleted(false);
       setActualWordsInGrid([]);
     }
 
     return () => {
+      console.log('useEffect cleanup: Grid generation worker termination.'); // DEBUG LOG
       if (workerRef.current) {
         workerRef.current.terminate();
       }
     };
-  }, [theoreticallyPlayableWords, currentGridSize]);
+  }, [theoreticallyPlayableWords, currentGridSize, currentLevel]); // Added currentLevel to deps, though currentGridSize should cover it
 
   useEffect(() => {
+    console.log('useEffect: Level completion check. Loading:', isLoadingGrid, 'Actual words:', actualWordsInGrid.length, 'Found words:', foundWords.length); // DEBUG LOG
     if (!isLoadingGrid && actualWordsInGrid.length > 0) {
       const allActualWordsFound = actualWordsInGrid.every(word => foundWords.includes(word));
       setIsLevelCompleted(allActualWordsFound);
@@ -110,7 +116,11 @@ export default function WordForgePage() {
   // --- Touch Event Handlers (with useCallback) ---
 
   const getCellCoordinates = useCallback((event) => {
-    if (!gridRef.current || grid.length === 0 || grid[0].length === 0) return null;
+    // Defensive check: use optional chaining for grid[0] to prevent errors if grid is empty or grid[0] is undefined
+    if (!gridRef.current || grid.length === 0 || !grid[0] || grid[0].length === 0) {
+      console.log('getCellCoordinates: Grid not ready or empty. gridRef:', !!gridRef.current, 'grid.len:', grid.length, 'grid[0]:', !!grid[0]); // DEBUG LOG
+      return null;
+    }
 
     const gridRect = gridRef.current.getBoundingClientRect();
     const cellWidth = gridRect.width / grid[0].length;
@@ -166,6 +176,7 @@ export default function WordForgePage() {
 
 
   const handleTouchStart = useCallback((event) => {
+    console.log('handleTouchStart triggered.'); // DEBUG LOG
     if (event.touches.length === 1) {
         event.preventDefault(); // Prevent default touch actions like scrolling
         const coords = getCellCoordinates(event);
@@ -180,6 +191,7 @@ export default function WordForgePage() {
 
   const handleTouchMove = useCallback((event) => {
     if (!isDragging) return;
+    console.log('handleTouchMove triggered.'); // DEBUG LOG
     event.preventDefault(); // Prevent default touch actions like scrolling
 
     const coords = getCellCoordinates(event);
@@ -193,6 +205,7 @@ export default function WordForgePage() {
 
   const handleTouchEnd = useCallback(() => {
     if (isDragging) {
+      console.log('handleTouchEnd triggered. Selected:', selected.length); // DEBUG LOG
       setIsDragging(false);
       setDragStartCell(null);
       setDragCurrentCell(null);
@@ -226,6 +239,7 @@ export default function WordForgePage() {
 
 
   const handleCellClick = useCallback((x, y) => {
+    console.log('handleCellClick triggered. Cell:', x, y); // DEBUG LOG
     if (!isDragging) {
       const alreadySelected = selected.some(([sx, sy]) => sx === x && sy === y);
       const newSelected = alreadySelected
@@ -274,31 +288,32 @@ export default function WordForgePage() {
   }
 
   const goToLevel = useCallback((level) => {
+    console.log('goToLevel triggered. New level:', level); // DEBUG LOG
     if (level >= 1 && level <= MAX_LEVEL) {
       setCurrentLevel(level);
     }
   }, []);
 
-  // --- New useEffect for manual touch event listeners ---
+  // --- useEffect for manual touch event listeners ---
   useEffect(() => {
+    console.log('useEffect: Attaching/Detaching touch listeners.'); // DEBUG LOG
     const gridElement = gridRef.current;
     if (gridElement) {
-      // Add event listeners with { passive: false } to override browser defaults
+      console.log('Adding touch listeners to gridElement.'); // DEBUG LOG
       gridElement.addEventListener('touchstart', handleTouchStart, { passive: false });
       gridElement.addEventListener('touchmove', handleTouchMove, { passive: false });
       gridElement.addEventListener('touchend', handleTouchEnd, { passive: false });
-      // You might also add touchcancel if needed for robustness
-      // gridElement.addEventListener('touchcancel', handleTouchEnd, { passive: false });
 
-      // Clean up event listeners when component unmounts or dependencies change
       return () => {
+        console.log('Removing touch listeners from gridElement.'); // DEBUG LOG
         gridElement.removeEventListener('touchstart', handleTouchStart);
         gridElement.removeEventListener('touchmove', handleTouchMove);
         gridElement.removeEventListener('touchend', handleTouchEnd);
-        // gridElement.removeEventListener('touchcancel', handleTouchEnd);
       };
+    } else {
+      console.log('gridRef.current is null when attempting to attach touch listeners.'); // DEBUG LOG
     }
-  }, [handleTouchStart, handleTouchMove, handleTouchEnd]); // Dependencies are the stable callback functions
+  }, [handleTouchStart, handleTouchMove, handleTouchEnd]);
 
 
   return (
@@ -333,10 +348,7 @@ export default function WordForgePage() {
       <div
         id="word-forge-container"
         className="rounded-xl bg-gray-800 p-4 shadow-xl max-w-4xl mx-auto"
-        // REMOVED: onTouchStart={handleTouchStart}
-        // REMOVED: onTouchMove={handleTouchMove}
-        // REMOVED: onTouchEnd={handleTouchEnd}
-        ref={gridRef}
+        ref={gridRef} // Ref attached to this div
       >
         {isLoadingGrid ? (
           <div className="text-center p-8 text-xl">Generating grid...</div>
