@@ -8,6 +8,8 @@ import { BlacksmithShop } from './components/BlacksmithComponents';
 import netlifyIdentity from 'netlify-identity-widget';
 import { auth } from './auth';
 import ProfileReflections from './components/ProfileReflections';
+import { MODULE_DATA } from './wordforgepage';
+
 
 const labelMap = {
   emotional: 'Emotional Fitness',
@@ -63,6 +65,7 @@ export default function Profile() {
     setMfaScores(scores);
     setStrengths(md.topStrengths ?? {});
     setSuggest(mapScoresToSkills(scores));
+    setWordForgeLevels(md.wordForgeLevels ?? {});
     setAvatar(md.avatar || localStorage.getItem('selectedAvatar') || '');
   };
 
@@ -118,6 +121,9 @@ export default function Profile() {
       })
       .catch(err => alert('Error updating avatar: ' + err.message));
   };
+  const [wordForgeLevels, setWordForgeLevels] = useState({});
+const masteredSkills = MODULE_DATA.filter(mod => wordForgeLevels[mod.id] >= 8);
+
 
   if (loading) {
     return (
@@ -212,6 +218,18 @@ export default function Profile() {
                       </ul>
                     ) : <p className="text-gray-600">No skills viewed yet.</p>}
                   </section>
+<section>
+  <h2 className="text-xl font-semibold mb-2">🧩 Word Forge Mastery</h2>
+  {masteredSkills.length > 0 ? (
+    <ul className="list-disc list-inside text-gray-700">
+      {masteredSkills.map(({ id, name }) => (
+        <li key={id}>{name}</li>
+      ))}
+    </ul>
+  ) : (
+    <p className="text-gray-600">You haven’t reached Level 8 on any skill yet. Keep forging!</p>
+  )}
+</section>
 
                   <ProfileReflections />
                 </div>

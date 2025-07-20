@@ -1,4 +1,28 @@
 import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
+import netlifyIdentity from 'netlify-identity-widget';
+
+function saveMasteryLevel(moduleId, level) {
+  const user = netlifyIdentity.currentUser();
+  if (!user || level < 8) return;
+
+  const currentLevels = user.user_metadata.wordForgeLevels || {};
+  if (currentLevels[moduleId] >= 8) return; // Already saved
+
+  const updatedLevels = { ...currentLevels, [moduleId]: 8 };
+
+  user.update({
+    user_metadata: {
+      ...user.user_metadata,
+      wordForgeLevels: updatedLevels,
+    }
+  })
+  .then(u => {
+    console.log(`🔥 Saved mastery for ${moduleId}`);
+  })
+  .catch(err => {
+    console.error('⚠️ Error updating mastery level:', err);
+  });
+}
 
 // Define your module and word data
 const MODULE_DATA = [
@@ -330,16 +354,33 @@ export default function WordForgePage() {
 
   // Effect to check for level completion
   useEffect(() => {
-    console.log('useEffect: Level completion check. Loading:', isLoadingGrid, 'Actual words:', actualWordsInGrid.length, 'Found words:', foundWords.length);
-    if (!isLoadingGrid && actualWordsInGrid.length > 0) {
-      const allActualWordsFound = actualWordsInGrid.every(word => foundWords.includes(word));
-      setIsLevelCompleted(allActualWordsFound);
-    } else if (!isLoadingGrid && actualWordsInGrid.length === 0 && theoreticallyPlayableWords.length === 0) {
-      setIsLevelCompleted(true);
-    } else if (!isLoadingGrid && actualWordsInGrid.length === 0 && theoreticallyPlayableWords.length > 0) {
-      setIsLevelCompleted(false);
+  console.log(
+    'useEffect: Level completion check. Loading:',
+    isLoadingGrid,
+    'Actual words:',
+    actualWordsInGrid.length,
+    'Found words:',
+    foundWords.length
+  );
+
+  if (!isLoadingGrid && actualWordsInGrid.length > 0) {
+    const allActualWordsFound = actualWordsInGrid.every(word => foundWords.includes(word));
+    setIsLevelCompleted(allActualWordsFound);
+
+    if (allActualWordsFound && currentLevel === 8) {
+      saveMasteryLevel(currentModuleId, 8);
     }
-  }, [foundWords, actualWordsInGrid, isLoadingGrid, theoreticallyPlayableWords]);
+  } else if (!isLoadingGrid && actualWordsInGrid.length === 0 && theoreticallyPlayableWords.length === 0) {
+    setIsLevelCompleted(true);
+
+    if (currentLevel === 8) {
+      saveMasteryLevel(currentModuleId, 8);
+    }
+  } else if (!isLoadingGrid && actualWordsInGrid.length === 0 && theoreticallyPlayableWords.length > 0) {
+    setIsLevelCompleted(false);
+  }
+}, [foundWords, actualWordsInGrid, isLoadingGrid, theoreticallyPlayableWords, currentLevel, currentModuleId]);
+
 
   // Effect for global CSS animation
   useEffect(() => {
@@ -707,3 +748,4 @@ export default function WordForgePage() {
     </div>
   );
 }
+export { MODULE_DATA };
