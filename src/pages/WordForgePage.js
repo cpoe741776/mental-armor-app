@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 const WORD_LIST = [
   "OPTIMISM", "PURPOSE", "AWARENESS", "RESILIENCE", "FLEXIBILITY",
@@ -8,9 +8,13 @@ const WORD_LIST = [
 ];
 
 export default function WordForgePage() {
+  const containerRef = useRef(null);
+
   useEffect(() => {
     injectForgeGlowKeyframes();
-    renderWordForge("word-forge-container", WORD_LIST);
+    if (containerRef.current) {
+      renderWordForge(containerRef.current, WORD_LIST);
+    }
   }, []);
 
   return (
@@ -19,14 +23,10 @@ export default function WordForgePage() {
       <p className="text-center mb-6 text-sm text-gray-400">
         A focused break for the mind — find resilience skills and trainer names to sharpen your recall and relax.
       </p>
-      <div id="word-forge-container" className="rounded-xl bg-gray-800 p-4 shadow-xl max-w-4xl mx-auto" />
+      <div ref={containerRef} className="rounded-xl bg-gray-800 p-4 shadow-xl max-w-4xl mx-auto" />
     </div>
   );
 }
-
-// ----------------------------
-// 🔧 Utility Functions Below
-// ----------------------------
 
 function injectForgeGlowKeyframes() {
   const style = document.createElement("style");
@@ -40,16 +40,18 @@ function injectForgeGlowKeyframes() {
   document.head.appendChild(style);
 }
 
-function renderWordForge(containerId, words) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-  container.innerHTML = "";
-
+function renderWordForge(container, words) {
   const gridSize = 12;
   const grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(""));
 
-  const foundSound = new Audio("https://freesound.org/data/previews/256/256113_3263906-lq.mp3");
-  foundSound.volume = 0.3;
+  let foundSound;
+  try {
+    foundSound = new Audio("https://freesound.org/data/previews/256/256113_3263906-lq.mp3");
+    foundSound.volume = 0.3;
+  } catch (err) {
+    console.warn("⚠️ Could not load sound:", err);
+    foundSound = null;
+  }
 
   function placeWord(word) {
     const directions = [[0, 1], [1, 0], [1, 1], [-1, 1]];
@@ -122,13 +124,14 @@ function renderWordForge(containerId, words) {
     "<strong>Find These Words:</strong><br>" +
     words.map(w => `<span class="inline-block m-1 p-1 bg-gray-700 rounded">${w}</span>`).join(" ");
 
+  container.innerHTML = ""; // Clear old
   container.appendChild(board);
   container.appendChild(wordList);
 
   board.addEventListener("click", (e) => {
     if (!e.target.dataset.x) return;
     const cell = e.target;
-    const key = cell.dataset.x + "," + cell.dataset.y;
+    const key = `${cell.dataset.x},${cell.dataset.y}`;
     if (selectedCells.has(key)) {
       selectedCells.delete(key);
       cell.classList.remove("bg-green-500");
@@ -146,7 +149,7 @@ function renderWordForge(containerId, words) {
     words.forEach(word => {
       if (selectedString.includes(word) && !foundWords.has(word)) {
         foundWords.add(word);
-        foundSound.play();
+        if (foundSound) foundSound.play();
         updateForgeGlow(container, foundWords.size);
       }
     });
@@ -156,10 +159,9 @@ function renderWordForge(containerId, words) {
 }
 
 function updateForgeGlow(container, foundCount) {
-  let glowLevel = Math.min(foundCount, 10);
+  const glowLevel = Math.min(foundCount, 10);
   const base = 10 + glowLevel * 2;
   const color = `rgba(255, ${100 + glowLevel * 10}, 0, ${0.3 + glowLevel * 0.05})`;
-
   container.style.boxShadow = `0 0 ${base}px ${base / 2}px ${color}`;
   container.style.animation = "forgeGlow 2s ease-in-out infinite";
 }
