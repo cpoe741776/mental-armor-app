@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 
 export default function WordForgePage() {
-  function injectForgeGlowKeyframes() {
+  const injectForgeGlowKeyframes = useCallback(() => {
     const style = document.createElement("style");
     style.innerHTML = `
       @keyframes forgeGlow {
@@ -11,17 +11,17 @@ export default function WordForgePage() {
       }
     `;
     document.head.appendChild(style);
-  }
+  }, []);
 
-  function updateForgeGlow(container, foundCount) {
+  const updateForgeGlow = useCallback((container, foundCount) => {
     let glowLevel = Math.min(foundCount, 10);
     const base = 10 + glowLevel * 2;
     const color = `rgba(255, ${100 + glowLevel * 10}, 0, ${0.3 + glowLevel * 0.05})`;
     container.style.boxShadow = `0 0 ${base}px ${base / 2}px ${color}`;
     container.style.animation = "forgeGlow 2s ease-in-out infinite";
-  }
+  }, []);
 
-  function renderWordForge(containerId) {
+  const renderWordForge = useCallback((containerId) => {
     const container = document.getElementById(containerId);
     if (!container) return;
 
@@ -130,12 +130,12 @@ export default function WordForgePage() {
     });
 
     updateForgeGlow(container, 0);
-  }
+  }, [updateForgeGlow]);
 
   useEffect(() => {
     injectForgeGlowKeyframes();
     renderWordForge("word-forge-container");
-  }, []);
+  }, [injectForgeGlowKeyframes, renderWordForge]);
 
   return (
     <div className="p-6 bg-gray-900 min-h-screen text-white">
