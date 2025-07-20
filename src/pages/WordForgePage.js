@@ -14,7 +14,7 @@ const LEVELS = [
 const MAX_LEVEL = LEVELS.length;
 
 export default function WordForgePage() {
-  console.log('WordForgePage component render cycle start'); // DEBUG LOG
+  console.log('WordForgePage component render cycle start');
 
   const [grid, setGrid] = useState([]);
   const [selected, setSelected] = useState([]);
@@ -26,9 +26,10 @@ export default function WordForgePage() {
   const [currentLevel, setCurrentLevel] = useState(1);
   const [isLevelCompleted, setIsLevelCompleted] = useState(false);
   const [actualWordsInGrid, setActualWordsInGrid] = useState([]);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false); // NEW STATE for background music
 
   const workerRef = useRef(null);
-  const gridRef = useRef(null); // Ref to the grid container for calculating cell positions
+  const gridRef = useRef(null);
 
   const masterWordsList = useMemo(() => [
     "OPTIMISM", "PURPOSE", "AWARENESS", "RESILIENCE", "FLEXIBILITY",
@@ -37,21 +38,61 @@ export default function WordForgePage() {
     "TOP", "RHONDA", "STORMY", "COOKIE", "BERTIE", "FORGE", "ARMOR"
   ], []);
 
-  // Create a memoized audio instance for the success sound
-  // In your WordForgePage.js file, find the successSound useMemo:
-
-const successSound = useMemo(() => {
+  // Memoized audio instance for the success sound
+  const successSound = useMemo(() => {
+    console.log('useMemo: Creating successSound Audio object.');
     try {
-        // Change the URL to your new AAC file in the public/audio folder
-        const audio = new Audio("/audio/AnvilSuccess.aac"); // <--- THIS IS THE LINE TO UPDATE
+        const audio = new Audio("/audio/AnvilSuccess.aac");
         audio.volume = 0.3;
-        audio.load(); // Attempt to preload
+        audio.load();
+        console.log('Audio object created:', audio);
         return audio;
     } catch (e) {
-        console.error("Error creating audio object:", e);
+        console.error("Error creating success sound object:", e); // Changed log message
         return null;
     }
-}, []); // Created once
+  }, []);
+
+  // Memoized audio instance for background music
+  const bgMusic = useMemo(() => {
+    console.log('useMemo: Creating bgMusic Audio object.'); // DEBUG LOG
+    try {
+        const audio = new Audio("/audio/WordGamebgmc.aac");
+        audio.volume = 0.1; // Set a lower volume for background music
+        audio.loop = true; // Make it loop
+        audio.load(); // Preload
+        console.log('Background music object created:', audio); // DEBUG LOG
+        return audio;
+    } catch (e) {
+        console.error("Error creating background music object:", e); // Changed log message
+        return null;
+    }
+  }, []); // Created once
+
+  // Effect to control background music playback
+  useEffect(() => {
+    console.log('useEffect: Music playback control. isMusicPlaying:', isMusicPlaying); // DEBUG LOG
+    if (bgMusic) {
+      if (isMusicPlaying) {
+        bgMusic.play().catch(e => {
+          console.warn("Background music autoplay failed:", e);
+          setIsMusicPlaying(false); // Revert state if playback fails
+        });
+      } else {
+        bgMusic.pause();
+      }
+    }
+
+    // Cleanup: pause music when component unmounts
+    return () => {
+      console.log('useEffect cleanup: Pausing background music.'); // DEBUG LOG
+      if (bgMusic) {
+        bgMusic.pause();
+        // bgMusic.src = ''; // Optional: release resource immediately
+      }
+    };
+  }, [isMusicPlaying, bgMusic]); // Depend on isMusicPlaying and bgMusic object
+
 
   const currentGridSize = useMemo(() => {
     const levelConfig = LEVELS.find(level => level.level === currentLevel);
@@ -64,23 +105,22 @@ const successSound = useMemo(() => {
 
   // Effect to generate grid when level changes or words change
   useEffect(() => {
-    console.log('useEffect: Grid generation worker setup/trigger. Current level:', currentLevel); // DEBUG LOG
+    console.log('useEffect: Grid generation worker setup/trigger. Current level:', currentLevel);
     if (window.Worker) {
       if (workerRef.current) {
-        workerRef.current.terminate(); // Terminate existing worker if changing level
+        workerRef.current.terminate();
       }
       workerRef.current = new Worker(new URL('./wordWorker.js', import.meta.url));
 
       workerRef.current.onmessage = (event) => {
-        console.log('Worker: Grid data received.', event.data); // DEBUG LOG
-        const { grid: receivedGrid, placedWords } = event.data; // Renamed to avoid confusion
+        console.log('Worker: Grid data received.', event.data);
+        const { grid: receivedGrid, placedWords } = event.data;
 
-        // Defensive check: Ensure receivedGrid is an array of arrays
         if (Array.isArray(receivedGrid) && receivedGrid.every(Array.isArray)) {
             setGrid(receivedGrid);
         } else {
-            console.error("Worker returned malformed grid data:", receivedGrid); // DEBUG: Error log for malformed grid
-            setGrid([]); // Fallback to empty array if malformed
+            console.error("Worker returned malformed grid data:", receivedGrid);
+            setGrid([]);
         }
         
         setActualWordsInGrid(placedWords);
@@ -94,21 +134,21 @@ const successSound = useMemo(() => {
         setIsLoadingGrid(false);
         setIsLevelCompleted(false);
         setActualWordsInGrid([]);
-        setGrid([]); // Ensure grid is reset on error too
+        setGrid([]);
       };
 
       setIsLoadingGrid(true);
       workerRef.current.postMessage({ words: theoreticallyPlayableWords, size: currentGridSize });
     } else {
       console.warn("Web Workers not supported. Grid generation will block the main thread.");
-      setGrid([[]]); // Ensure grid has basic structure even if worker not supported
+      setGrid([[]]);
       setIsLoadingGrid(false);
       setIsLevelCompleted(false);
       setActualWordsInGrid([]);
     }
 
     return () => {
-      console.log('useEffect cleanup: Grid generation worker termination.'); // DEBUG LOG
+      console.log('useEffect cleanup: Grid generation worker termination.');
       if (workerRef.current) {
         workerRef.current.terminate();
       }
@@ -117,7 +157,7 @@ const successSound = useMemo(() => {
 
   // Effect to check for level completion
   useEffect(() => {
-    console.log('useEffect: Level completion check. Loading:', isLoadingGrid, 'Actual words:', actualWordsInGrid.length, 'Found words:', foundWords.length); // DEBUG LOG
+    console.log('useEffect: Level completion check. Loading:', isLoadingGrid, 'Actual words:', actualWordsInGrid.length, 'Found words:', foundWords.length);
     if (!isLoadingGrid && actualWordsInGrid.length > 0) {
       const allActualWordsFound = actualWordsInGrid.every(word => foundWords.includes(word));
       setIsLevelCompleted(allActualWordsFound);
@@ -163,18 +203,15 @@ const successSound = useMemo(() => {
       forge.style.boxShadow = `0 0 ${blurRadius}px ${baseShadow}px ${color}`;
       forge.style.animation = `forgeGlow ${Math.max(0.5, 2 - (totalIntensity * 0.04))}s ease-in-out infinite alternate`;
     }
-  }, [currentLevel]); // Dependency: currentLevel
+  }, [currentLevel]);
 
   // --- Touch Event Handlers (with useCallback) ---
 
   const getCellCoordinates = useCallback((event) => {
-    // This now relies on data-x and data-y attributes on the individual cells
     const touch = event.touches ? event.touches[0] : event;
     const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
 
     let cellElement = targetElement;
-    // Traverse up to find the actual grid cell element with data-x/data-y,
-    // ensuring we don't go past the main grid container, or the body (safeguard)
     while (cellElement && (!cellElement.dataset || !cellElement.dataset.x || !cellElement.dataset.y) && cellElement !== gridRef.current && cellElement !== document.body) {
       cellElement = cellElement.parentElement;
     }
@@ -182,15 +219,13 @@ const successSound = useMemo(() => {
     if (cellElement && cellElement.dataset.x && cellElement.dataset.y) {
       const x = parseInt(cellElement.dataset.x, 10);
       const y = parseInt(cellElement.dataset.y, 10);
-      // Basic validation to ensure it's within grid bounds
-      // This is still important in case elementFromPoint returns something outside the active grid.
       if (x >= 0 && x < grid[0].length && y >= 0 && y < grid.length) {
         return [x, y];
       }
     }
-    console.log('getCellCoordinates: Could not find a valid cell for touch event. Touched element:', targetElement); // DEBUG LOG
+    console.log('getCellCoordinates: Could not find a valid cell under touch point. Touched element:', targetElement);
     return null;
-  }, [grid]); // grid dependency for bounds check
+  }, [grid]);
 
   const calculateCellsInLine = useCallback((start, end) => {
     const uniqueCells = new Set();
@@ -231,7 +266,7 @@ const successSound = useMemo(() => {
   const handleTouchStart = useCallback((event) => {
     console.log('handleTouchStart triggered.');
     if (event.touches.length === 1) {
-        event.preventDefault(); // Prevent default touch actions like scrolling
+        event.preventDefault();
         const coords = getCellCoordinates(event);
         if (coords) {
             setIsDragging(true);
@@ -245,7 +280,7 @@ const successSound = useMemo(() => {
   const handleTouchMove = useCallback((event) => {
     if (!isDragging) return;
     console.log('handleTouchMove triggered.');
-    event.preventDefault(); // Prevent default touch actions like scrolling
+    event.preventDefault();
 
     const coords = getCellCoordinates(event);
     if (coords && (coords[0] !== dragCurrentCell?.[0] || coords[1] !== dragCurrentCell?.[1])) {
@@ -283,12 +318,13 @@ const successSound = useMemo(() => {
           updateForgeGlow(word.length);
           if (successSound) {
             successSound.currentTime = 0;
-            // Use setTimeout to yield to event loop for potentially better autoplay policy compliance
             setTimeout(() => {
                 successSound.play().catch(e => {
-                  console.warn("Audio playback failed (likely autoplay policy):", e);
+                  console.warn("Audio playback failed (from handleTouchEnd):", e);
                 });
             }, 0);
+          } else {
+             console.log("Sound not playing from handleTouchEnd: sound object null.");
           }
         }
       });
@@ -299,7 +335,7 @@ const successSound = useMemo(() => {
 
   const handleCellClick = useCallback((x, y) => {
     console.log('handleCellClick triggered. Cell:', x, y);
-    if (!isDragging) { // Ensure single click doesn't fire during a drag
+    if (!isDragging) {
       const alreadySelected = selected.some(([sx, sy]) => sx === x && sy === y);
       const newSelected = alreadySelected
         ? selected.filter(([sx, sy]) => sx !== x || sy !== y)
@@ -326,12 +362,13 @@ const successSound = useMemo(() => {
           updateForgeGlow(word.length);
           if (successSound) {
             successSound.currentTime = 0;
-            // Use setTimeout for better autoplay compliance
             setTimeout(() => {
                 successSound.play().catch(e => {
-                  console.warn("Audio playback failed (likely autoplay policy):", e);
+                  console.warn("Audio playback failed (from handleCellClick):", e);
                 });
             }, 0);
+          } else {
+             console.log("Sound not playing from handleCellClick: sound object null.");
           }
           setSelected([]);
         }
@@ -401,6 +438,16 @@ const successSound = useMemo(() => {
         </button>
       </div>
 
+      {/* NEW: Music Toggle Button */}
+      <div className="flex justify-center mb-4">
+        <button
+          onClick={() => setIsMusicPlaying(prev => !prev)}
+          className={`px-4 py-2 rounded-lg font-bold
+            ${isMusicPlaying ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-600 hover:bg-gray-700'} text-white`}
+        >
+          {isMusicPlaying ? 'Pause Music' : 'Play Music'}
+        </button>
+      </div>
 
       <div
         id="word-forge-container"
@@ -422,8 +469,8 @@ const successSound = useMemo(() => {
                       ? "bg-green-500"
                       : "bg-gray-900"} hover:bg-indigo-500`}
                   onClick={() => handleCellClick(x, y)}
-                  data-x={x} // ADDED: data-x attribute for elementFromPoint
-                  data-y={y} // ADDED: data-y attribute for elementFromPoint
+                  data-x={x}
+                  data-y={y}
                 >
                   {letter}
                 </div>
