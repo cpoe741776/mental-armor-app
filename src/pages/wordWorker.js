@@ -1,94 +1,85 @@
-/* eslint-disable no-restricted-globals */
-/* eslint-env worker */
+// wordWorker.js
 
-// wordWorker.js - This file runs in a separate thread (Web Worker)
-
-/**
- * Generates a word search grid containing the specified words.
- *
- * @param {string[]} words - An array of words to place in the grid.
- * @param {number} size - The size of the square grid (e.g., 12 for a 12x12 grid).
- * @returns {{grid: string[][], placedWords: string[]}} The generated grid and a list of words actually placed.
- */
-function generateWordGrid(words, size) {
-  const grid = Array.from({ length: size }, () => Array(size).fill(""));
-  const directions = [[0, 1], [1, 0], [1, 1], [-1, 1]];
-  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const placedWords = []; // Array to store words that were successfully placed
-
-  /**
-   * Attempts to place a single word into the grid.
-   * Includes an attempt counter to prevent infinite loops for unplaceable words.
-   *
-   * @param {string} word - The word to place.
-   * @returns {boolean} True if the word was placed, false otherwise.
-   */
-  function placeWord(word) {
-    let placed = false;
-    let attempts = 0;
-    const MAX_ATTEMPTS = 5000; // Increased attempts for better chance of placement
-
-    while (!placed && attempts < MAX_ATTEMPTS) {
-      attempts++;
-      const dir = directions[Math.floor(Math.random() * directions.length)];
-      const startX = Math.floor(Math.random() * size);
-      const startY = Math.floor(Math.random() * size);
-      let x = startX;
-      let y = startY;
-      let valid = true;
-
-      // First, check if the word can be placed without going out of bounds
-      // or conflicting with existing letters
-      for (let i = 0; i < word.length; i++) {
-        if (
-          x < 0 || y < 0 || x >= size || y >= size || // Out of bounds
-          (grid[y][x] && grid[y][x] !== word[i]) // Conflict with existing letter
-        ) {
-          valid = false;
-          break;
-        }
-        x += dir[0]; // Move to next character position based on direction
-        y += dir[1];
-      }
-
-      // If the word fits and doesn't conflict, place it in the grid
-      if (valid) {
-        x = startX; // Reset to start position for placement
-        y = startY;
-        for (let i = 0; i < word.length; i++) {
-          grid[y][x] = word[i];
-          x += dir[0];
-          y += dir[1];
-        }
-        placed = true;
-        placedWords.push(word); // Add to placedWords only if successful
-      }
-    }
-    if (!placed) {
-      console.warn(`Could not place word: "${word}" after ${MAX_ATTEMPTS} attempts.`);
-    }
-    return placed;
-  }
-
-  const shuffledWords = [...words].sort(() => 0.5 - Math.random());
-
-  shuffledWords.forEach(word => {
-    placeWord(word);
-  });
-
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
-      if (!grid[y][x]) {
-        grid[y][x] = alphabet[Math.floor(Math.random() * alphabet.length)];
-      }
-    }
-  }
-
-  return { grid, placedWords }; // Ensure this returns the object { grid, placedWords }
+function createEmptyGrid(size) {
+    return Array(size).fill(null).map(() => Array(size).fill(''));
 }
 
-self.onmessage = function(event) {
-  const { words, size } = event.data;
-  const { grid, placedWords } = generateWordGrid(words, size);
-  self.postMessage({ grid, placedWords }); // THIS LINE IS THE MOST CRITICAL. It must send an object.
+function getRandomLetter() {
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    return alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+}
+
+function getRandomDirection() {
+    const directions = [
+        [0, 1],   // Horizontal right
+        [1, 1],   // Diagonal down-right
+        [1, 0],   // Vertical down
+        [1, -1],  // Diagonal down-left
+        [0, -1],  // Horizontal left (reversed word handled in UI)
+        [-1, -1], // Diagonal up-left (reversed word handled in UI)
+        [-1, 0],  // Vertical up (reversed word handled in UI)
+        [-1, 1]   // Diagonal up-right (reversed word handled in UI)
+    ];
+    return directions[Math.floor(Math.random() * directions.length)];
+}
+
+function canPlaceWord(grid, word, row, col, dr, dc) {
+    const size = grid.length;
+    for (let i = 0; i < word.length; i++) {
+        const r = row + i * dr;
+        const c = col + i * dc;
+
+        if (r < 0 || r >= size || c < 0 || c >= size) {
+            return false; // Out of bounds
+        }
+        if (grid[r][c] !== '' && grid[r][c] !== word[i]) {
+            return false; // Cell occupied by a different letter
+        }
+    }
+    return true;
+}
+
+function placeWord(grid, word, row, col, dr, dc) {
+    for (let i = 0; i < word.length; i++) {
+        const r = row + i * dr;
+        const c = col + i * dc;
+        grid[r][c] = word[i];
+    }
+}
+
+self.onmessage = (event) => {
+    const { words, size } = event.data;
+    let grid = createEmptyGrid(size);
+    const placedWords = [];
+    const sortedWords = [...words].sort((a, b) => b.length - a.length); // Try placing longer words first
+
+    const maxAttemptsPerWord = 100; // Limit attempts for each word to prevent infinite loops
+
+    for (const word of sortedWords) {
+        let attempts = 0;
+        let wordPlaced = false;
+        while (attempts < maxAttemptsPerWord && !wordPlaced) {
+            const startRow = Math.floor(Math.random() * size);
+            const startCol = Math.floor(Math.random() * size);
+            const [dr, dc] = getRandomDirection();
+
+            if (canPlaceWord(grid, word, startRow, startCol, dr, dc)) {
+                placeWord(grid, word, startRow, startCol, dr, dc);
+                placedWords.push(word);
+                wordPlaced = true;
+            }
+            attempts++;
+        }
+    }
+
+    // Fill remaining empty cells with random letters
+    for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+            if (grid[r][c] === '') {
+                grid[r][c] = getRandomLetter();
+            }
+        }
+    }
+
+    self.postMessage({ grid, placedWords });
 };

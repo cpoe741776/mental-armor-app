@@ -12,7 +12,6 @@ function saveMasteryLevel(moduleId, level) {
   }
 
   const updatedLevels = { ...currentLevels, [moduleId]: 8 };
-
   console.log('🔥 Attempting to save mastery for:', moduleId);
 
   user.update({
@@ -196,18 +195,17 @@ export default function WordForgePage() {
   const [isLevelCompleted, setIsLevelCompleted] = useState(false);
   const [actualWordsInGrid, setActualWordsInGrid] = useState([]);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
-};
-
-useEffect(() => {
-  const saved = localStorage.getItem(`wordForgeLevel-${currentModuleId}`);
-  setCurrentLevel(saved ? parseInt(saved, 10) : 1);
-}, [currentModuleId]);
-  // State for tracking the currently active module by its ID
   const [currentModuleId, setCurrentModuleId] = useState(MODULE_DATA[0].id);
-const [currentLevel, setCurrentLevel] = useState(() => {
-  const saved = localStorage.getItem(`wordForgeLevel-${MODULE_DATA[0].id}`);
-  return saved ? parseInt(saved, 10) : 1;
-});
+  const [currentLevel, setCurrentLevel] = useState(() => {
+    const saved = localStorage.getItem(`wordForgeLevel-${MODULE_DATA[0].id}`);
+    return saved ? parseInt(saved, 10) : 1;
+  });
+
+  useEffect(() => {
+    const saved = localStorage.getItem(`wordForgeLevel-${currentModuleId}`);
+    setCurrentLevel(saved ? parseInt(saved, 10) : 1);
+  }, [currentModuleId]);
+
   const workerRef = useRef(null);
   const gridRef = useRef(null);
 
@@ -685,7 +683,7 @@ const [currentLevel, setCurrentLevel] = useState(() => {
         </button>
       </div>
 
-      {/* Level Selection UI (with improved centering) */}
+      {/* Level Selection UI (improving centering) */}
       <div className="flex items-center justify-between mb-6"> {/* Use justify-between */}
         <div className="flex-grow flex justify-end pr-2"> {/* Wrapper for left button */}
           <button
@@ -767,6 +765,6 @@ const [currentLevel, setCurrentLevel] = useState(() => {
         </div>
       </div>
     </div>
+    
   );
-
-export { MODULE_DATA };
+}
