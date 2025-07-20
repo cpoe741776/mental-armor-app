@@ -356,8 +356,9 @@ export default function WordForgePage() {
           <div className={`grid gap-1 p-4`}
                style={{ gridTemplateColumns: `repeat(${currentGridSize}, minmax(0, 1fr))` }}
           >
-            {grid.map((row, y) =>
-              row.map((letter, x) => (
+            {/* Added defensive checks for grid and row before mapping */}
+            {grid && grid.length > 0 && grid.map((row, y) =>
+              row && row.length > 0 && row.map((letter, x) => ( // Also check if row is valid
                 <div
                   key={`${x},${y}`}
                   className={`w-8 h-8 flex items-center justify-center text-sm font-bold rounded select-none cursor-pointer
