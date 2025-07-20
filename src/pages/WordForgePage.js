@@ -28,7 +28,7 @@ export default function WordForgePage() {
   const [actualWordsInGrid, setActualWordsInGrid] = useState([]);
 
   const workerRef = useRef(null);
-  const gridRef = useRef(null);
+  const gridRef = useRef(null); // Ref to the grid container for calculating cell positions
 
   const masterWordsList = useMemo(() => [
     "OPTIMISM", "PURPOSE", "AWARENESS", "RESILIENCE", "FLEXIBILITY",
@@ -139,19 +139,18 @@ export default function WordForgePage() {
   }, []);
 
   // Define updateForgeGlow using useCallback so it's a stable function reference
-  const updateForgeGlow = useCallback((wordLength) => { // wordLength is passed
-    const levelIntensity = currentLevel * 2; // Scales 2 to 24
-    const wordBonus = wordLength * 0.5; // Small bonus for longer words
-    const totalIntensity = Math.min(levelIntensity + wordBonus, 35); // Cap max intensity slightly higher
+  const updateForgeGlow = useCallback((wordLength) => {
+    const levelIntensity = currentLevel * 2;
+    const wordBonus = wordLength * 0.5;
+    const totalIntensity = Math.min(levelIntensity + wordBonus, 35);
 
     const baseShadow = 10 + totalIntensity;
     const blurRadius = 5 + totalIntensity * 0.5;
-    const colorAlpha = 0.3 + totalIntensity * 0.02; // Max 0.3 + 35*0.02 = 1.0 (capped at 0.9)
+    const colorAlpha = 0.3 + totalIntensity * 0.02;
 
-    // Make it more orange/red and vibrant as intensity increases
     const colorRed = 255;
-    const colorGreen = Math.max(0, 150 - totalIntensity * 5); // Goes from 150 down to 0
-    const colorBlue = Math.max(0, 0 + totalIntensity * 1); // Goes from 0 up to 35, making it slightly purple-ish at max
+    const colorGreen = Math.max(0, 150 - totalIntensity * 5);
+    const colorBlue = Math.max(0, 0 + totalIntensity * 1);
 
     const color = `rgba(${colorRed}, ${colorGreen}, ${colorBlue}, ${Math.min(colorAlpha, 0.9)})`;
 
@@ -159,36 +158,36 @@ export default function WordForgePage() {
     const forge = document.getElementById("word-forge-container");
     if (forge) {
       forge.style.boxShadow = `0 0 ${blurRadius}px ${baseShadow}px ${color}`;
-      // Make animation faster for higher levels / intensity
       forge.style.animation = `forgeGlow ${Math.max(0.5, 2 - (totalIntensity * 0.04))}s ease-in-out infinite alternate`;
     }
-  }, [currentLevel]); // Dependency: currentLevel, because its logic depends on it.
+  }, [currentLevel]); // Dependency: currentLevel
 
   // --- Touch Event Handlers (with useCallback) ---
 
   const getCellCoordinates = useCallback((event) => {
-    // Defensive check: use optional chaining for grid[0] to prevent errors if grid is empty or grid[0] is undefined
-    if (!gridRef.current || grid.length === 0 || !grid[0] || grid[0].length === 0) {
-      console.log('getCellCoordinates: Grid not ready or empty. gridRef:', !!gridRef.current, 'grid.len:', grid.length, 'grid[0]:', !!grid[0]); // DEBUG LOG
-      return null;
+    // This now relies on data-x and data-y attributes on the individual cells
+    const touch = event.touches ? event.touches[0] : event;
+    const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+
+    let cellElement = targetElement;
+    // Traverse up to find the actual grid cell element with data-x/data-y,
+    // ensuring we don't go past the main grid container, or the body (safeguard)
+    while (cellElement && (!cellElement.dataset || !cellElement.dataset.x || !cellElement.dataset.y) && cellElement !== gridRef.current && cellElement !== document.body) {
+      cellElement = cellElement.parentElement;
     }
 
-    const gridRect = gridRef.current.getBoundingClientRect();
-    const cellWidth = gridRect.width / grid[0].length;
-    const cellHeight = gridRect.height / grid.length;
-
-    const clientX = event.touches ? event.touches[0].clientX : event.clientX;
-    const clientY = event.touches ? event.touches[0].clientY : event.clientY;
-
-    const x = Math.floor((clientX - gridRect.left) / cellWidth);
-    const y = Math.floor((clientY - gridRect.top) / cellHeight);
-
-    if (x >= 0 && x < grid[0].length && y >= 0 && y < grid.length) {
-      return [x, y];
+    if (cellElement && cellElement.dataset.x && cellElement.dataset.y) {
+      const x = parseInt(cellElement.dataset.x, 10);
+      const y = parseInt(cellElement.dataset.y, 10);
+      // Basic validation to ensure it's within grid bounds
+      // This is still important in case elementFromPoint returns something outside the active grid.
+      if (x >= 0 && x < grid[0].length && y >= 0 && y < grid.length) {
+        return [x, y];
+      }
     }
+    console.log('getCellCoordinates: Could not find a valid cell for touch event. Touched element:', targetElement); // DEBUG LOG
     return null;
-  }, [grid]);
-
+  }, [grid]); // grid dependency for bounds check
 
   const calculateCellsInLine = useCallback((start, end) => {
     const uniqueCells = new Set();
@@ -227,7 +226,7 @@ export default function WordForgePage() {
 
 
   const handleTouchStart = useCallback((event) => {
-    console.log('handleTouchStart triggered.'); // DEBUG LOG
+    console.log('handleTouchStart triggered.');
     if (event.touches.length === 1) {
         event.preventDefault(); // Prevent default touch actions like scrolling
         const coords = getCellCoordinates(event);
@@ -242,7 +241,7 @@ export default function WordForgePage() {
 
   const handleTouchMove = useCallback((event) => {
     if (!isDragging) return;
-    console.log('handleTouchMove triggered.'); // DEBUG LOG
+    console.log('handleTouchMove triggered.');
     event.preventDefault(); // Prevent default touch actions like scrolling
 
     const coords = getCellCoordinates(event);
@@ -256,7 +255,7 @@ export default function WordForgePage() {
 
   const handleTouchEnd = useCallback(() => {
     if (isDragging) {
-      console.log('handleTouchEnd triggered. Selected:', selected.length); // DEBUG LOG
+      console.log('handleTouchEnd triggered. Selected:', selected.length);
       setIsDragging(false);
       setDragStartCell(null);
       setDragCurrentCell(null);
@@ -278,12 +277,15 @@ export default function WordForgePage() {
       actualWordsInGrid.forEach(word => {
         if ((str === word || reversedStr === word) && !foundWords.includes(word)) {
           setFoundWords(prev => [...prev, word]);
-          updateForgeGlow(word.length); // Pass actual word length
+          updateForgeGlow(word.length);
           if (successSound) {
-            successSound.currentTime = 0; // Reset to start
-            successSound.play().catch(e => {
-              console.warn("Audio playback failed (likely autoplay policy):", e);
-            });
+            successSound.currentTime = 0;
+            // Use setTimeout to yield to event loop for potentially better autoplay policy compliance
+            setTimeout(() => {
+                successSound.play().catch(e => {
+                  console.warn("Audio playback failed (likely autoplay policy):", e);
+                });
+            }, 0);
           }
         }
       });
@@ -293,8 +295,8 @@ export default function WordForgePage() {
 
 
   const handleCellClick = useCallback((x, y) => {
-    console.log('handleCellClick triggered. Cell:', x, y); // DEBUG LOG
-    if (!isDragging) {
+    console.log('handleCellClick triggered. Cell:', x, y);
+    if (!isDragging) { // Ensure single click doesn't fire during a drag
       const alreadySelected = selected.some(([sx, sy]) => sx === x && sy === y);
       const newSelected = alreadySelected
         ? selected.filter(([sx, sy]) => sx !== x || sy !== y)
@@ -318,12 +320,15 @@ export default function WordForgePage() {
       actualWordsInGrid.forEach(word => {
         if ((str === word || reversedStr === word) && !foundWords.includes(word)) {
           setFoundWords(prev => [...prev, word]);
-          updateForgeGlow(word.length); // Pass actual word length
+          updateForgeGlow(word.length);
           if (successSound) {
             successSound.currentTime = 0;
-            successSound.play().catch(e => {
-              console.warn("Audio playback failed (likely autoplay policy):", e);
-            });
+            // Use setTimeout for better autoplay compliance
+            setTimeout(() => {
+                successSound.play().catch(e => {
+                  console.warn("Audio playback failed (likely autoplay policy):", e);
+                });
+            }, 0);
           }
           setSelected([]);
         }
@@ -333,7 +338,7 @@ export default function WordForgePage() {
 
 
   const goToLevel = useCallback((level) => {
-    console.log('goToLevel triggered. New level:', level); // DEBUG LOG
+    console.log('goToLevel triggered. New level:', level);
     if (level >= 1 && level <= MAX_LEVEL) {
       setCurrentLevel(level);
     }
@@ -341,26 +346,26 @@ export default function WordForgePage() {
 
   // --- useEffect for manual touch event listeners ---
   useEffect(() => {
-    console.log('useEffect: Attaching/Detaching touch listeners.'); // DEBUG LOG
+    console.log('useEffect: Attaching/Detaching touch listeners.');
     const gridElement = gridRef.current;
     if (gridElement) {
-      console.log('Adding touch listeners to gridElement.'); // DEBUG LOG
+      console.log('Adding touch listeners to gridElement.');
       gridElement.addEventListener('touchstart', handleTouchStart, { passive: false });
       gridElement.addEventListener('touchmove', handleTouchMove, { passive: false });
       gridElement.addEventListener('touchend', handleTouchEnd, { passive: false });
-      // You might also add touchcancel if needed for robustness
+      // touchcancel might also be useful for robustness
       // gridElement.addEventListener('touchcancel', handleTouchEnd, { passive: false });
 
       // Clean up event listeners when component unmounts or dependencies change
       return () => {
-        console.log('Removing touch listeners from gridElement.'); // DEBUG LOG
+        console.log('Removing touch listeners from gridElement.');
         gridElement.removeEventListener('touchstart', handleTouchStart);
         gridElement.removeEventListener('touchmove', handleTouchMove);
         gridElement.removeEventListener('touchend', handleTouchEnd);
         // gridElement.removeEventListener('touchcancel', handleTouchEnd);
       };
     } else {
-      console.log('gridRef.current is null when attempting to attach touch listeners.'); // DEBUG LOG
+      console.log('gridRef.current is null when attempting to attach touch listeners.');
     }
   }, [handleTouchStart, handleTouchMove, handleTouchEnd]);
 
@@ -397,7 +402,7 @@ export default function WordForgePage() {
       <div
         id="word-forge-container"
         className="rounded-xl bg-gray-800 p-4 shadow-xl max-w-4xl mx-auto"
-        ref={gridRef} // Ref attached to this div
+        ref={gridRef}
       >
         {isLoadingGrid ? (
           <div className="text-center p-8 text-xl">Generating grid...</div>
@@ -405,9 +410,8 @@ export default function WordForgePage() {
           <div className={`grid gap-1 p-4`}
                style={{ gridTemplateColumns: `repeat(${currentGridSize}, minmax(0, 1fr))` }}
           >
-            {/* Added defensive checks for grid and row before mapping */}
             {grid && grid.length > 0 && grid.map((row, y) =>
-              row && row.length > 0 && row.map((letter, x) => ( // Also check if row is valid
+              row && row.length > 0 && row.map((letter, x) => (
                 <div
                   key={`${x},${y}`}
                   className={`w-8 h-8 flex items-center justify-center text-sm font-bold rounded select-none cursor-pointer
@@ -415,6 +419,8 @@ export default function WordForgePage() {
                       ? "bg-green-500"
                       : "bg-gray-900"} hover:bg-indigo-500`}
                   onClick={() => handleCellClick(x, y)}
+                  data-x={x} // ADDED: data-x attribute for elementFromPoint
+                  data-y={y} // ADDED: data-y attribute for elementFromPoint
                 >
                   {letter}
                 </div>
