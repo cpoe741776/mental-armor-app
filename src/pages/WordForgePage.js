@@ -138,6 +138,32 @@ export default function WordForgePage() {
     document.head.appendChild(style);
   }, []);
 
+  // Define updateForgeGlow using useCallback so it's a stable function reference
+  const updateForgeGlow = useCallback((wordLength) => { // wordLength is passed
+    const levelIntensity = currentLevel * 2; // Scales 2 to 24
+    const wordBonus = wordLength * 0.5; // Small bonus for longer words
+    const totalIntensity = Math.min(levelIntensity + wordBonus, 35); // Cap max intensity slightly higher
+
+    const baseShadow = 10 + totalIntensity;
+    const blurRadius = 5 + totalIntensity * 0.5;
+    const colorAlpha = 0.3 + totalIntensity * 0.02; // Max 0.3 + 35*0.02 = 1.0 (capped at 0.9)
+
+    // Make it more orange/red and vibrant as intensity increases
+    const colorRed = 255;
+    const colorGreen = Math.max(0, 150 - totalIntensity * 5); // Goes from 150 down to 0
+    const colorBlue = Math.max(0, 0 + totalIntensity * 1); // Goes from 0 up to 35, making it slightly purple-ish at max
+
+    const color = `rgba(${colorRed}, ${colorGreen}, ${colorBlue}, ${Math.min(colorAlpha, 0.9)})`;
+
+
+    const forge = document.getElementById("word-forge-container");
+    if (forge) {
+      forge.style.boxShadow = `0 0 ${blurRadius}px ${baseShadow}px ${color}`;
+      // Make animation faster for higher levels / intensity
+      forge.style.animation = `forgeGlow ${Math.max(0.5, 2 - (totalIntensity * 0.04))}s ease-in-out infinite alternate`;
+    }
+  }, [currentLevel]); // Dependency: currentLevel, because its logic depends on it.
+
   // --- Touch Event Handlers (with useCallback) ---
 
   const getCellCoordinates = useCallback((event) => {
@@ -263,7 +289,7 @@ export default function WordForgePage() {
       });
       setSelected([]);
     }
-  }, [isDragging, selected, grid, actualWordsInGrid, foundWords, successSound, currentLevel]);
+  }, [isDragging, selected, grid, actualWordsInGrid, foundWords, successSound, updateForgeGlow]);
 
 
   const handleCellClick = useCallback((x, y) => {
@@ -294,7 +320,7 @@ export default function WordForgePage() {
           setFoundWords(prev => [...prev, word]);
           updateForgeGlow(word.length); // Pass actual word length
           if (successSound) {
-            successSound.currentTime = 0; // Reset to start
+            successSound.currentTime = 0;
             successSound.play().catch(e => {
               console.warn("Audio playback failed (likely autoplay policy):", e);
             });
@@ -303,33 +329,8 @@ export default function WordForgePage() {
         }
       });
     }
-  }, [isDragging, selected, grid, actualWordsInGrid, foundWords, successSound, currentLevel]);
+  }, [isDragging, selected, grid, actualWordsInGrid, foundWords, successSound, updateForgeGlow]);
 
-
-  function updateForgeGlow(wordLength) { // wordLength is passed
-    const levelIntensity = currentLevel * 2; // Scales 2 to 24
-    const wordBonus = wordLength * 0.5; // Small bonus for longer words
-    const totalIntensity = Math.min(levelIntensity + wordBonus, 35); // Cap max intensity slightly higher
-
-    const baseShadow = 10 + totalIntensity;
-    const blurRadius = 5 + totalIntensity * 0.5;
-    const colorAlpha = 0.3 + totalIntensity * 0.02; // Max 0.3 + 35*0.02 = 1.0 (capped at 0.9)
-
-    // Make it more orange/red and vibrant as intensity increases
-    const colorRed = 255;
-    const colorGreen = Math.max(0, 150 - totalIntensity * 5); // Goes from 150 down to 0
-    const colorBlue = Math.max(0, 0 + totalIntensity * 1); // Goes from 0 up to 35, making it slightly purple-ish at max
-
-    const color = `rgba(${colorRed}, ${colorGreen}, ${colorBlue}, ${Math.min(colorAlpha, 0.9)})`;
-
-
-    const forge = document.getElementById("word-forge-container");
-    if (forge) {
-      forge.style.boxShadow = `0 0 ${blurRadius}px ${baseShadow}px ${color}`;
-      // Make animation faster for higher levels / intensity
-      forge.style.animation = `forgeGlow ${Math.max(0.5, 2 - (totalIntensity * 0.04))}s ease-in-out infinite alternate`;
-    }
-  }
 
   const goToLevel = useCallback((level) => {
     console.log('goToLevel triggered. New level:', level); // DEBUG LOG
