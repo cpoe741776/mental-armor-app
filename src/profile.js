@@ -8,7 +8,7 @@ import { BlacksmithShop } from './components/BlacksmithComponents';
 import netlifyIdentity from 'netlify-identity-widget';
 import { auth } from './auth';
 import ProfileReflections from './components/ProfileReflections';
-import { MODULE_DATA } from './wordforgepage';
+import { MODULE_DATA } from './pages/WordForgePage';
 
 
 const labelMap = {
