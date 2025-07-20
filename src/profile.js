@@ -66,6 +66,8 @@ export default function Profile() {
     setStrengths(md.topStrengths ?? {});
     setSuggest(mapScoresToSkills(scores));
     setWordForgeLevels(md.wordForgeLevels ?? {});
+    console.log('🧩 Loaded Word Forge Levels:', md.wordForgeLevels);
+
     setAvatar(md.avatar || localStorage.getItem('selectedAvatar') || '');
   };
 

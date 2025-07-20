@@ -6,9 +6,14 @@ function saveMasteryLevel(moduleId, level) {
   if (!user || level < 8) return;
 
   const currentLevels = user.user_metadata.wordForgeLevels || {};
-  if (currentLevels[moduleId] >= 8) return; // Already saved
+  if (currentLevels[moduleId] >= 8) {
+    console.log(`💾 Already recorded mastery for ${moduleId}`);
+    return;
+  }
 
   const updatedLevels = { ...currentLevels, [moduleId]: 8 };
+
+  console.log('🔥 Attempting to save mastery for:', moduleId);
 
   user.update({
     user_metadata: {
@@ -16,13 +21,14 @@ function saveMasteryLevel(moduleId, level) {
       wordForgeLevels: updatedLevels,
     }
   })
-  .then(u => {
-    console.log(`🔥 Saved mastery for ${moduleId}`);
+  .then((u) => {
+    console.log(`✅ Saved mastery level 8 for ${moduleId}`, u.user_metadata.wordForgeLevels);
   })
-  .catch(err => {
-    console.error('⚠️ Error updating mastery level:', err);
+  .catch((err) => {
+    console.error('❌ Error saving mastery level:', err);
   });
 }
+
 
 // Define your module and word data
 const MODULE_DATA = [
@@ -187,10 +193,18 @@ export default function WordForgePage() {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartCell, setDragStartCell] = useState(null);
   const [dragCurrentCell, setDragCurrentCell] = useState(null);
-  const [currentLevel, setCurrentLevel] = useState(1);
   const [isLevelCompleted, setIsLevelCompleted] = useState(false);
   const [actualWordsInGrid, setActualWordsInGrid] = useState([]);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const [currentLevel, setCurrentLevel] = useState(() => {
+  const savedLevel = localStorage.getItem(`wordForgeLevel-${MODULE_DATA[0].id}`);
+  return savedLevel ? parseInt(savedLevel, 10) : 1;
+});
+
+useEffect(() => {
+  const saved = localStorage.getItem(`wordForgeLevel-${currentModuleId}`);
+  setCurrentLevel(saved ? parseInt(saved, 10) : 1);
+}, [currentModuleId]);
   // State for tracking the currently active module by its ID
   const [currentModuleId, setCurrentModuleId] = useState(MODULE_DATA[0].id);
 
@@ -363,9 +377,16 @@ export default function WordForgePage() {
     foundWords.length
   );
 
+  // 💾 Persist level to localStorage
+  if (currentModuleId && currentLevel) {
+    localStorage.setItem(`wordForgeLevel-${currentModuleId}`, currentLevel.toString());
+    console.log(`💾 Saved level ${currentLevel} for module ${currentModuleId}`);
+  }
+
   if (!isLoadingGrid && actualWordsInGrid.length > 0) {
     const allActualWordsFound = actualWordsInGrid.every(word => foundWords.includes(word));
     setIsLevelCompleted(allActualWordsFound);
+    console.log('🎯 Mastery trigger check:', currentModuleId, currentLevel, allActualWordsFound);
 
     if (allActualWordsFound && currentLevel === 8) {
       saveMasteryLevel(currentModuleId, 8);
