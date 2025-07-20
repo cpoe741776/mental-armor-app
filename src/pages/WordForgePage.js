@@ -133,9 +133,10 @@ export default function WordForgePage() {
   }, [updateForgeGlow]);
 
   useEffect(() => {
-    injectForgeGlowKeyframes();
-    renderWordForge("word-forge-container");
-  }, [injectForgeGlowKeyframes, renderWordForge]);
+  injectForgeGlowKeyframes();
+  requestAnimationFrame(() => renderWordForge("word-forge-container"));
+}, [injectForgeGlowKeyframes, renderWordForge]);
+
 
   return (
     <div className="p-6 bg-gray-900 min-h-screen text-white">
