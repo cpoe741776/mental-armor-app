@@ -1,9 +1,10 @@
+
 // src/Header.js
 import React, { useEffect, useState } from 'react';
 import { Link, NavLink }              from 'react-router-dom';
 import netlifyIdentity                from 'netlify-identity-widget';
 import Logo                           from './Logo';
-import { BlacksmithHeader }          from './components/BlacksmithComponents';  // ✅ Updated import
+import { BlacksmithHeader }          from './components/BlacksmithComponents';
 import useMfaScores                   from './hooks/useMfaScores';
 
 export default function Header() {
@@ -66,11 +67,7 @@ export default function Header() {
             "
           >
             {user
-              ? `Log Out${
-                  user.user_metadata?.full_name
-                    ? ` (${user.user_metadata.full_name})`
-                    : ''
-                }`
+              ? \`Log Out\${user.user_metadata?.full_name ? \` (\${user.user_metadata.full_name})\` : ''}\`
               : 'Log In'}
           </button>
         </div>
@@ -90,6 +87,7 @@ export default function Header() {
             ['/repair-kit', 'Repair Kit'],
             ['/enter-scores', 'Enter Scores'],
             ['/profile', 'Profile'],
+            ['/wordforge', 'Word Forge'], // 🧠 New module
           ].map(([to, label]) => (
             <li key={to}>
               <NavLink

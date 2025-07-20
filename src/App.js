@@ -12,6 +12,8 @@ import SkillDetail from './SkillDetail'
 import EnterScores from './EnterScores'
 import RepairKit from './RepairKit'
 import Profile from './profile'
+import WordForgePage from './WordForgePage' // adjust path if needed
+
 
 // Note: netlifyIdentity.init() is called in src/index.js
 export default function App() {
@@ -46,6 +48,9 @@ export default function App() {
           <Route path="/enter-scores" element={<EnterScores />} />
           <Route path="/repair-kit" element={<RepairKit />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/wordforge" element={<WordForgePage />} />
+
+
         </Routes>
       </main>
     </Router>
