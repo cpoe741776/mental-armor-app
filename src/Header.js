@@ -66,9 +66,11 @@ export default function Header() {
               w-36 md:w-auto
             "
           >
-            {user
-              ? \`Log Out\${user.user_metadata?.full_name ? \` (\${user.user_metadata.full_name})\` : ''}\`
-              : 'Log In'}
+            
+              {user
+  ? `Log Out${user.user_metadata?.full_name ? ` (${user.user_metadata.full_name})` : ''}`
+  : 'Log In'}
+
           </button>
         </div>
 
