@@ -12,7 +12,7 @@ import SkillDetail from './SkillDetail'
 import EnterScores from './EnterScores'
 import RepairKit from './RepairKit'
 import Profile from './profile'
-import WordForgePage from './WordForgePage' // adjust path if needed
+import WordForgePage from './pages/WordForgePage'; // ✅ CORRECTED LINE
 
 
 // Note: netlifyIdentity.init() is called in src/index.js
