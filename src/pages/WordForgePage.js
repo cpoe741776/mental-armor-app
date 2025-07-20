@@ -30,7 +30,7 @@ function saveMasteryLevel(moduleId, level) {
 
 
 // Define your module and word data
-const MODULE_DATA = [
+export const MODULE_DATA = [
   {
     id: 'foundations',
     name: 'Foundations of Resilience',
