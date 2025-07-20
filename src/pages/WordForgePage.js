@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 
 export default function WordForgePage() {
@@ -8,23 +7,20 @@ export default function WordForgePage() {
   }, []);
 
   function injectForgeGlowKeyframes() {
-  const style = document.createElement("style");
-  style.innerHTML = `
-    @keyframes forgeGlow {
-      0% {
-        box-shadow: 0 0 10px rgba(255, 100, 0, 0.3);
+    const style = document.createElement("style");
+    style.innerHTML = `
+      @keyframes forgeGlow {
+        0% {
+          box-shadow: 0 0 10px rgba(255, 100, 0, 0.3);
+        }
+        50% {
+          box-shadow: 0 0 25px rgba(255, 150, 0, 0.6);
+        }
+        100% {
+          box-shadow: 0 0 10px rgba(255, 100, 0, 0.3);
+        }
       }
-      50% {
-        box-shadow: 0 0 25px rgba(255, 150, 0, 0.6);
-      }
-      100% {
-        box-shadow: 0 0 10px rgba(255, 100, 0, 0.3);
-      }
-    }
-  `;
-  document.head.appendChild(style);
-}
-
+    `;
     document.head.appendChild(style);
   }
 
@@ -40,7 +36,7 @@ export default function WordForgePage() {
       "OPTIMISM", "PURPOSE", "AWARENESS", "RESILIENCE", "FLEXIBILITY",
       "ANCHOR", "TOUGHTS", "CSF", "RHYTHM", "RATIONAL", "CONTROL",
       "FOCUS", "STRENGTH", "GRIT", "GROWTH", "PEER", "SUPPORT",
-      "TOP", "RHONDA", "STORMY", "COOKIE", "BERTIE", "FORGE", "ARMOR"
+      "TOP", "RHONDA", "STORMY", "COOKIE", "MINDFULNESS", "FORGE", "ARMOR"
     ];
 
     const gridSize = 12;
@@ -158,7 +154,6 @@ export default function WordForgePage() {
     const color = `rgba(255, ${100 + glowLevel * 10}, 0, ${0.3 + glowLevel * 0.05})`;
 
     container.style.boxShadow = `0 0 ${base}px ${base / 2}px ${color}`;
-
     container.style.animation = "forgeGlow 2s ease-in-out infinite";
   }
 
